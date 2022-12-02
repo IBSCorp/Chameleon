@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema elementFormDefault="qualified"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://qualit.ibs-qa.ru/schema/db">
+
+    <xs:annotation>
+        <xs:appinfo>Repository</xs:appinfo>
+    </xs:annotation>
+
+    <xs:simpleType name="nonEmptyString">
+        <xs:restriction base="xs:string">
+            <xs:minLength value="1"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:element name="DbGears" type="DbGearsType"/>
+
+    <xs:complexType name="DbGearsType">
+        <xs:sequence minOccurs="1" maxOccurs="unbounded">
+            <xs:element name="Connection" type="ConnectionType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="Query" type="QueryType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="ConnectionType" mixed="true">
+        <xs:sequence>
+            <xs:element name="Params" type="ParamsType" minOccurs="0" maxOccurs="1"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="nonEmptyString" use="required"/>
+        <xs:attribute name="driver" type="nonEmptyString" use="required"/>
+        <xs:attribute name="url" type="nonEmptyString" use="required"/>
+        <xs:attribute name="autoCommit" type="xs:boolean" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="QueryType" mixed="true">
+        <xs:sequence>
+            <xs:element name="Params" type="ParamsType" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="Result" type="ResultType" minOccurs="0" maxOccurs="1"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="nonEmptyString" use="required"/>
+        <xs:attribute name="statement" type="nonEmptyString" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="ParamsType" mixed="true">
+        <xs:choice maxOccurs="unbounded">
+            <xs:group ref="FieldsType"/>
+        </xs:choice>
+    </xs:complexType>
+
+    <xs:complexType name="ResultType" mixed="true">
+        <xs:choice maxOccurs="unbounded">
+            <xs:group ref="FieldsType"/>
+        </xs:choice>
+    </xs:complexType>
+
+    <xs:complexType name="FieldType" mixed="true">
+        <xs:attribute name="name" type="nonEmptyString" use="required"/>
+        <xs:attribute name="locator" type="nonEmptyString" use="required"/>
+    </xs:complexType>
+
+    <xs:group name="FieldsType">
+        <xs:choice>
+            <xs:element name="FieldString" type="FieldType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="FieldNumber" type="FieldType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="FieldInteger" type="FieldType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="FieldBoolean" type="FieldType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:choice>
+    </xs:group>
+
+</xs:schema>

@@ -1,0 +1,24 @@
+{
+  "scenario": {
+    "id": 1,
+    "key": "04_Поиск отправлений по фамилии получателя",
+    "active": true
+  },
+  "store": {
+    "id": "153996",
+    "active": true
+  },
+  "terminal": null,
+  "weight": 2,
+  "mailingType": "Почтовая карточка",
+  "category": "Заказное",
+  "sum": null,
+  "packageType": "",
+  "barCodeType": "RUSSIAN",
+  "dispatchOperReason": null,
+  "operReasonForTemporaryStorage": null,
+  "operationOnRPO": null,
+  "state": "CREATED",
+  "finishTime": null,
+  "usedTime": null
+}

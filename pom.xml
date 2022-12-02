@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>ru.ibsqa.qualit</groupId>
+    <artifactId>qualit</artifactId>
+    <version>3.2.2-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>qualit-allure</module>
+        <module>qualit-allure-cucumber</module>
+        <module>qualit-allure-jbehave</module>
+        <module>qualit-api-test</module>
+        <module>qualit-api-test-cucumber</module>
+        <module>qualit-api-test-jbehave</module>
+        <module>qualit-appium</module>
+        <module>qualit-bom</module>
+        <module>qualit-browser-utils</module>
+        <module>qualit-core</module>
+        <module>qualit-core-cucumber</module>
+        <module>qualit-core-jbehave</module>
+        <module>qualit-data</module>
+        <module>qualit-db</module>
+        <module>qualit-db-cucumber</module>
+        <module>qualit-db-jbehave</module>
+        <module>qualit-image</module>
+        <module>qualit-influx</module>
+        <module>qualit-influx-cucumber</module>
+        <module>qualit-json-cucumber</module>
+        <module>qualit-json-jbehave</module>
+        <module>qualit-log</module>
+        <module>qualit-sap</module>
+        <module>qualit-sap-cucumber</module>
+        <module>qualit-screen-recorder</module>
+        <module>qualit-selenium</module>
+        <module>qualit-selenium-cucumber</module>
+        <module>qualit-selenium-jbehave</module>
+        <module>qualit-soap</module>
+        <module>qualit-soap-cucumber</module>
+        <module>qualit-jira-jbehave</module>
+        <module>qualit-thirdparty-jsonassert-patched</module>
+        <module>qualit-uia</module>
+        <module>qualit-uia-cucumber</module>
+        <module>qualit-web</module>
+        <module>qualit-web-cucumber</module>
+        <module>qualit-web-jbehave</module>
+        <module>qualit-windows</module>
+        <module>qualit-windows-cucumber</module>
+        <module>qualit-windows-jbehave</module>
+        <module>qualit-winium</module>
+        <module>qualit-winium-cucumber</module>
+    </modules>
+
+    <url>https://gitlab.appline.ru/ibs-qa/qualit</url>
+    <licenses>
+        <license>
+            <name>MPL 2.0</name>
+            <url>https://www.mozilla.org/en-US/MPL/2.0/</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>NStreltsov</id>
+            <name>Nikolay Streltsov</name>
+            <roles>
+                <role>architect</role>
+                <role>developer</role>
+            </roles>
+            <timezone>Europe/Moscow</timezone>
+        </developer>
+        <developer>
+            <id>NDildin</id>
+            <name>Nikolay Dildin</name>
+            <email>Nikolay.Dildin@ibs.ru</email>
+            <organization>IBS</organization>
+            <organizationUrl>https://ibs-qa.ru/</organizationUrl>
+            <roles>
+                <role>architect</role>
+                <role>developer</role>
+            </roles>
+            <timezone>Europe/Moscow</timezone>
+        </developer>
+        <developer>
+            <id>MBaykova</id>
+            <name>Mariya Baykova</name>
+            <roles>
+                <role>architect</role>
+                <role>developer</role>
+            </roles>
+            <timezone>Europe/Moscow</timezone>
+        </developer>
+        <developer>
+            <id>ATugushev</id>
+            <name>Artem Tugushev</name>
+            <email>Artem.Tugushev@ibs.ru</email>
+            <organization>IBS</organization>
+            <organizationUrl>https://ibs-qa.ru/</organizationUrl>
+            <roles>
+                <role>developer</role>
+            </roles>
+            <timezone>Europe/Moscow</timezone>
+        </developer>
+        <developer>
+            <id>GDjamalov</id>
+            <name>Gazimagomed Djamalov</name>
+            <email>Gazimagomed.Djamalov@ibs.ru</email>
+            <organization>IBS</organization>
+            <organizationUrl>https://ibs-qa.ru/</organizationUrl>
+            <roles>
+                <role>updater</role>
+            </roles>
+            <timezone>Europe/Moscow</timezone>
+        </developer>
+    </developers>
+
+    <distributionManagement>
+        <!-- Publish the versioned releases here -->
+        <snapshotRepository>
+            <id>qualit-snapshots</id>
+            <name>QualIT Framework Snapshots Repo</name>
+            <url>https://nexus.appline.ru/repository/qualit-snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>qualit</id>
+            <name>QualIT Framework</name>
+            <url>https://nexus.appline.ru/repository/qualit</url>
+        </repository>
+    </distributionManagement>
+
+    <properties>
+        <qualit.version>3.2.2-SNAPSHOT</qualit.version>
+
+        <encoding>UTF-8</encoding>
+        <file.encoding>${encoding}</file.encoding>
+        <project.build.sourceEncoding>${encoding}</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>${encoding}</project.reporting.outputEncoding>
+
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+
+        <allure-maven.version>2.10.0</allure-maven.version>
+        <allure.report.version>2.17.3</allure.report.version>
+        <appium.version>8.0.0</appium.version>
+        <aspectj.version>1.9.9.1</aspectj.version>
+        <dependency.locations.enabled>false</dependency.locations.enabled>
+        <fasterxml.jackson.version>2.13.2</fasterxml.jackson.version>
+        <httpcomponents.version>4.5.13</httpcomponents.version>
+        <jbehave.version>4.8.3</jbehave.version>
+        <jna-platform.version>5.11.0</jna-platform.version>
+        <junit-jupiter.version>5.8.2</junit-jupiter.version>
+        <junit.version>1.8.2</junit.version>
+        <maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
+        <maven-project-info-reports-plugin.version>3.2.2</maven-project-info-reports-plugin.version>
+        <maven-surefire-plugin.version>3.0.0-M6</maven-surefire-plugin.version>
+        <projectlombok.version>1.18.24</projectlombok.version>
+        <rest-assured.version>5.0.1</rest-assured.version>
+        <slf4j.binding.artifactId>slf4j-reload4j</slf4j.binding.artifactId>
+        <slf4j.binding.groupId>org.slf4j</slf4j.binding.groupId>
+        <slf4j.binding.version>1.2.20</slf4j.binding.version>
+        <slf4j.version>1.7.36</slf4j.version>
+<!--        <sonar.moduleKey>${project.artifactId}</sonar.moduleKey>-->
+<!--        <sonar.projectKey>${project.artifactId}</sonar.projectKey>-->
+<!--        <sonar.projectName>${project.artifactId}</sonar.projectName>-->
+        <spring-framework.version>5.3.19</spring-framework.version>
+        <testit-api-client-java.version>1.0.8</testit-api-client-java.version>
+    </properties>
+
+    <!-- Прочитать про управление зависимостями:
+        https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html
+        Для правильного определения версий зависимостей библиотек. При указании в проектах наследованных от QualIT
+        зависимостей от junit и cucumber не нужно указывать тег <version> -->
+    <repositories>
+        <repository>
+            <id>qualit-snapshots</id>
+            <name>IBS QualIT Snapshots Repo</name>
+            <url>https://nexus.appline.ru/repository/qualit-snapshots</url>
+            <layout>default</layout>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>qualit</id>
+            <name>QualIT Framework</name>
+            <url>https://nexus.appline.ru/repository/qualit</url>
+        </repository>
+    </repositories>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${maven-compiler-plugin.version}</version>
+                    <configuration>
+                        <encoding>${encoding}</encoding>
+                        <release>11</release>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>3.0.0-M6</version>
+                    <configuration>
+                        <reuseForks>true</reuseForks>
+                        <forkCount>1</forkCount>
+                        <!-- Activate the use of TCP to transmit events to the plugin -->
+                        <forkNode implementation="org.apache.maven.plugin.surefire.extensions.SurefireForkNodeFactory"/>
+                        <argLine>-Dfile.encoding=${encoding} -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"</argLine>
+                        <reportFormat>plain</reportFormat>
+                        <testFailureIgnore>true</testFailureIgnore>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>io.qameta.allure</groupId>
+                    <artifactId>allure-maven</artifactId>
+                    <version>${allure-maven.version}</version>
+                    <configuration>
+                        <reportVersion>${allure.report.version}</reportVersion>
+                        <installDirectory>${project.basedir}/.allure</installDirectory>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        <resources>
+            <resource>
+                <directory>${basedir}/src/main/java</directory>
+                <excludes>
+                    <exclude>**/*.java</exclude>
+                </excludes>
+                <filtering>false</filtering>
+            </resource>
+            <resource>
+                <directory>${basedir}/src/main/resources</directory>
+                <filtering>false</filtering>
+            </resource>
+        </resources>
+        <testResources>
+            <testResource>
+                <directory>${basedir}/src/test/java</directory>
+                <excludes>
+                    <exclude>**/*.java</exclude>
+                </excludes>
+                <filtering>false</filtering>
+            </testResource>
+            <testResource>
+                <directory>${basedir}/src/test/resources</directory>
+                <excludes>
+                    <exclude>**/*.feature</exclude>
+                </excludes>
+                <filtering>false</filtering>
+            </testResource>
+        </testResources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.2.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.github.ekryd.sortpom</groupId>
+                <artifactId>sortpom-maven-plugin</artifactId>
+                <version>3.0.1</version>
+                <configuration>
+                    <createBackupFile>false</createBackupFile>
+                    <predefinedSortOrder>custom_1</predefinedSortOrder>
+                    <lineSeparator>\n</lineSeparator>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                    <sortProperties>true</sortProperties>
+                    <keepBlankLines>true</keepBlankLines>
+                    <sortDependencies>groupId,artifactId</sortDependencies>
+                    <nrOfIndentSpace>4</nrOfIndentSpace>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <reporting>
+        <excludeDefaults>true</excludeDefaults>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>${maven-project-info-reports-plugin.version}</version>
+                <reportSets>
+                    <reportSet>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+        </plugins>
+    </reporting>
+</project>

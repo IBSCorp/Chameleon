@@ -1,0 +1,79 @@
+{
+  "background": {
+    "page": "background.html"
+  },
+  "applications": {
+    "gecko": {
+      "id": "borderify@example.com"
+    }
+  },
+  "browser_action": {
+    "default_icon": {
+      "128": "images/icons/128x128.png",
+      "16": "images/icons/16x16.png",
+      "48": "images/icons/48x48.png"
+    },
+    "default_title": "__MSG_appName__"
+  },
+  "commands": {
+    "pause_video": {
+      "description": "Pause video recording",
+      "suggested_key": {
+        "default": "Ctrl+Shift+0",
+        "mac": "Command+Shift+0"
+      }
+    },
+    "start_desktop_video": {
+      "description": "Start record desktop",
+      "suggested_key": {
+        "default": "Ctrl+Shift+8",
+        "mac": "Command+Shift+8"
+      }
+    },
+    "start_tab_video": {
+      "description": "Start record tab/page",
+      "suggested_key": {
+        "default": "Ctrl+Shift+7",
+        "mac": "Command+Shift+7"
+      }
+    },
+    "stop_video": {
+      "description": "Stop video recording",
+      "suggested_key": {
+        "default": "Ctrl+Shift+9",
+        "mac": "Command+Shift+9"
+      }
+    }
+  },
+  "content_scripts": [ {
+    "js": [ "js/hotkeys.js" ],
+    "matches": [ "\u003Call_urls>" ],
+    "run_at": "document_end"
+  } ],
+  "content_security_policy": "script-src 'self' https://apis.google.com; object-src 'self'",
+  "default_locale": "ru",
+  "description": "__MSG_appDesc__",
+  "homepage_url": "https://ibs-qa.ru/",
+  "icons": {
+    "128": "images/icons/128x128.png",
+    "16": "images/icons/16x16.png",
+    "48": "images/icons/48x48.png"
+  },
+  "incognito": "spanning",
+  "manifest_version": 2,
+  "minimum_chrome_version": "43",
+  "name": "__MSG_appName__",
+  "offline_enabled": true,
+  "permissions": [ "*://*/*", "http://*.google.com/", "\u003Call_urls>", "downloads", "clipboardWrite", "clipboardRead", "tabs", "activeTab", "storage", "unlimitedStorage", "contextMenus", "identity", "desktopCapture", "tabCapture" ],
+  "externally_connectable": {
+    "matches": ["*://*.google.com/*"]
+  },
+  "omnibox": {
+    "keyword" : "google"
+  },
+  "key": "cffifjgabjalihmjiojbennijblkhccc",
+  "update_url": "https://bitst0rm.github.io/releases/bitstsadf0rm-chrome-extensions/Nimbus-Screenshot-Screen-Video-Recorder/update.xml",
+  "short_name": "IBS Screen Recorder",
+  "version": "1.0",
+  "web_accessible_resources": ["images/*"]
+}

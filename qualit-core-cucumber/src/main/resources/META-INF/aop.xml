@@ -1,0 +1,5 @@
+<aspectj>
+    <aspects>
+        <aspect name="ru.ibsqa.qualit.steps.aspect.CucumberAspectSteps"/>
+    </aspects>
+</aspectj>

@@ -1,0 +1,23 @@
+{
+   "appDesc": {
+      "message": "Capture Video with hotkeys"
+   },
+   "appName": {
+      "message": "IBS Video Recorder"
+   },
+   "appNameMini": {
+      "message": "Video Recorder"
+   },
+   "notificationErrorActiveTab": {
+      "message": "IBS Video Recorder can't start the recording while it's being initialized. To activate the extension you need to click on the IBS Video Recorder icon on the panel."
+   },
+   "notificationErrorChromeTab": {
+      "message": "Recording of the Internal Chrome pages or App's pages is currently not supported."
+   },
+   "btnCaptureVideo": {
+      "message": "Record Video"
+   },
+   "optionsLabelStopVideo": {
+      "message": "Stop video recording"
+   }
+}

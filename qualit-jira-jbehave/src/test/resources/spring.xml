@@ -1,0 +1,28 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+
+<beans xmlns = "http://www.springframework.org/schema/beans"
+       xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation = "
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd"
+       default-lazy-init="true">
+
+    <context:component-scan base-package="ru.ibsqa.qualit"/>
+
+    <bean class="ru.ibsqa.qualit.configuration.suite.SuiteConfigFileImpl">
+        <property name="suite" value="**\*.story"/>
+    </bean>
+
+    <bean id="tasktrackerAdapter" class="ru.ibsqa.qualit.integration.TasktrackerAdapterJiraImpl" primary="true">
+        <property name="url" value="http://localhost:8080"/>
+        <property name="linkMeta" value="jira_link"/>
+        <property name="storiesFolder" value="target\test-classes\stories"/>
+        <property name="projectName" value="EASTEST"/>
+        <property name="cycleProperty" value="jira.test.cycle"/>
+        <property name="versionProperty" value="jira.plugin.version"/>
+    </bean>
+
+</beans>

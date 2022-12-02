@@ -1,0 +1,57 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+
+<beans xmlns = "http://www.springframework.org/schema/beans"
+       xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation = "http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd"
+       default-lazy-init = "true"
+       default-autowire = "byName">
+
+    <bean id = "chromeDriverConfiguration" class = "ru.ibsqa.qualit.selenium.driver.configuration.DefaultDriverConfiguration">
+        <property name = "driverPath" value = "drivers\chromedriver.exe"/>
+        <property name="applicationUrl" value="https://www.yandex.ru/"/>
+        <property name = "implicitlyWait" value = "60"/>
+        <property name = "maximizeWindow" value = "false"/>
+        <property name="desiredCapabilities" ref="desiredCapabilities"/>
+        <property name = "driverType">
+            <value type = "ru.ibsqa.qualit.selenium.driver.WebSupportedDriver">CHROME</value>
+        </property>
+    </bean>
+    <bean id="capabilitiesFactory" class="ru.ibsqa.qualit.selenium.driver.configuration.DesiredCapabilitiesFactory"/>
+    <bean id="chromeOptions" class="ru.ibsqa.qualit.selenium.driver.configuration.options.DefaultChromeOptions">
+        <property name="arguments">
+            <list>
+                <value>--load-extension=#{systemProperties['user.dir']}\src\main\resources\RecordPlugin\chrome</value>
+            </list>
+        </property>
+    </bean>
+    <bean id="desiredCapabilities" class="org.openqa.selenium.remote.DesiredCapabilities"
+          factory-bean="capabilitiesFactory" factory-method="setOptions">
+        <constructor-arg ref="chromeOptions"/>
+    </bean>
+    <bean id="videoConfiguration" class="ru.ibsqa.qualit.recorders.DefaultVideoRecorderConfiguration">
+        <property name="extensionId" value="bmphfkokgkcdfknoimdjkikimoamgfkn"/>
+        <property name="forSites">
+            <array value-type="java.lang.String">
+                <value>*://*.google.com/*</value>
+                <value>*://*.yandex.ru/*</value>
+            </array>
+        </property>
+        <property name="extensionPath" value="#{systemProperties['user.dir']}\src\main\resources\RecordPlugin\chrome"/>
+        <property name="enabled" value="true"/>
+    </bean>
+
+    <bean id = "exampleDriver" class = "ru.ibsqa.qualit.driver.WebDriverVideoFacade" destroy-method="quit">
+        <property name = "defaultDriver" value = "true"/>
+        <property name = "driverFactory">
+            <bean class = "ru.ibsqa.qualit.selenium.driver.WebDriverFactory">
+                <constructor-arg ref = "chromeDriverConfiguration"/>
+            </bean>
+        </property>
+        <property name="videoRecorder">
+            <bean class="ru.ibsqa.qualit.recorders.BrowserVideoRecorder">
+                <property name="videoRecorderConfiguration" ref="videoConfiguration"/>
+            </bean>
+        </property>
+    </bean>
+
+</beans>
