@@ -9,7 +9,9 @@ import ru.ibsqa.qualit.definitions.repository.ConfigurationPriority;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -46,7 +48,11 @@ public class MetaApiGears implements IRepositoryData, IRepositoryElementApi {
     @SuppressWarnings("unchecked")
     public <E extends IRepositoryElement> List<E> pickAllElements() {
         return (List<E>)
-                Stream.of(endpoints.stream(), credentials.stream(), proxies.stream())
+                Stream.of(
+                        Optional.ofNullable(endpoints).stream().flatMap(Collection::stream),
+                        Optional.ofNullable(credentials).stream().flatMap(Collection::stream),
+                        Optional.ofNullable(proxies).stream().flatMap(Collection::stream)
+                )
                 .flatMap(i -> i)
                 .collect(Collectors.toList());
     }

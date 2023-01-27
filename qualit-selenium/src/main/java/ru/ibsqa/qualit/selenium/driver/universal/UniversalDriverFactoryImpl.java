@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import ru.ibsqa.qualit.definitions.repository.ConfigurationPriority;
 import ru.ibsqa.qualit.selenium.driver.AbstractDriverFactory;
 import ru.ibsqa.qualit.selenium.driver.DriverFactory;
+import ru.ibsqa.qualit.selenium.driver.ISupportedDriver;
 import ru.ibsqa.qualit.selenium.driver.configuration.IDriverConfiguration;
 import ru.ibsqa.qualit.selenium.driver.configuration.IDriverConfigurationProvider;
 
@@ -17,17 +18,18 @@ import java.util.*;
 /***
  * Универсальная фабрика для создания драйвера. Автоматически подбирает подходящую фабрику в зависимости от типа драйвера.
  * Использует по умолчанию единственную универсальную конфигурацию драйвера. В случае наличия в контексте нескольких конфигураций
- * необходимо самостоятельно создавать бин этой фабрики, передавая нужную конфигурацию в ее конструктор.
+ * ни одна из них не используется и универсальный драйвер не работоспособен.
+ * При наличии в конфигурации драйверов универсальный драйвер не используется и данная фабрика не срабатывает.
  */
 @Component
 @NoArgsConstructor
 @Slf4j
 public class UniversalDriverFactoryImpl implements IUniversalDriverFactory {
 
-    private List<AbstractDriverFactory> driverFactories;
+    private List<AbstractDriverFactory<? extends ISupportedDriver>> driverFactories;
 
     @Autowired
-    private void collectDriverFactories(List<AbstractDriverFactory> driverFactories) {
+    private void collectDriverFactories(List<AbstractDriverFactory<? extends ISupportedDriver>> driverFactories) {
         this.driverFactories = driverFactories;
     }
 
@@ -61,7 +63,7 @@ public class UniversalDriverFactoryImpl implements IUniversalDriverFactory {
                 )
                 .sorted(Comparator.comparing(this::getDriverFactoryPriority))
                 .map(f -> {
-                    WebDriver driver = f.newInstance(driverId);
+                    WebDriver driver = f.newInstance(driverId, getConfiguration());
                     if (Objects.nonNull(driver)) {
                         return driver;
                     }
@@ -72,7 +74,7 @@ public class UniversalDriverFactoryImpl implements IUniversalDriverFactory {
                 .orElse(null);
     }
 
-    private ConfigurationPriority getDriverFactoryPriority(AbstractDriverFactory candidate) {
+    private ConfigurationPriority getDriverFactoryPriority(AbstractDriverFactory<? extends ISupportedDriver> candidate) {
         return Optional.ofNullable(candidate.getClass().getAnnotation(DriverFactory.class))
                 .map(DriverFactory::priority)
                 .orElse(ConfigurationPriority.NORMAL);

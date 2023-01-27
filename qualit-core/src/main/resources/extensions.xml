@@ -1,0 +1,6 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<Extensions xmlns="http://qualit.ibs-qa.ru/internal/schema/extensions">
+    <Extension name="java"/>
+    <Extension name="properties"/>
+    <Extension name="xml"/>
+</Extensions>

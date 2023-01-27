@@ -9,13 +9,15 @@ import java.lang.annotation.Target;
 @Target({ ElementType.FIELD, ElementType.METHOD })
 public @interface Field {
 
-    String names() default "";
+    String name() default "";
 
     String locator() default "";
 
     int waitTimeOut() default -1;
 
     String[] frames() default {};
+
+    String template() default "";
 
 }
 

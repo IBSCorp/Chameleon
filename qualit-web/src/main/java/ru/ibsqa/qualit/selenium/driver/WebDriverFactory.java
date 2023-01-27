@@ -1,5 +1,8 @@
 package ru.ibsqa.qualit.selenium.driver;
 
+import lombok.NonNull;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 import ru.ibsqa.qualit.definitions.repository.ConfigurationPriority;
 import ru.ibsqa.qualit.i18n.ILocaleManager;
@@ -15,8 +18,11 @@ import org.openqa.selenium.support.events.EventFiringWebDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URL;
+import java.util.Objects;
+import java.util.Optional;
 
 @DriverFactory(priority = ConfigurationPriority.LOW)
 @NoArgsConstructor
@@ -31,7 +37,12 @@ public class WebDriverFactory extends AbstractDriverFactory<WebSupportedDriver> 
         super(configuration);
     }
 
-    // TODO надо переделать
+    /**
+     * Создание Web-драйвера по его идентификатору
+     * @param driverId
+     * @return
+     */
+    @Override
     public WebDriver newInstance(String driverId) {
         System.setProperty("java.net.preferIPv4Stack", "true");
         getConfiguration().initDriver();
@@ -42,60 +53,49 @@ public class WebDriverFactory extends AbstractDriverFactory<WebSupportedDriver> 
             return driverSerialization.createDriver(driverId, aClass, getConfiguration());
         }
 
-        WebDriver driver = null;
-        try {
-            if (aClass.isAssignableFrom(RemoteWebDriver.class)) {
-                driver = createInstanceRemoteDriver(aClass);
-            } else {
-                if (getConfiguration().getDesiredCapabilities() == null) {
-                    driver = aClass.newInstance();
-                } else {
-                    Constructor<? extends WebDriver> constructor = aClass.getConstructor(Capabilities.class);
-                    if (getConfiguration().isHighlightElements()){
-                        driver = new EventFiringWebDriver(constructor.newInstance(getConfiguration().getDesiredCapabilities()))
-                            .register(new Highlighter());
-                    }else{
-                        driver = constructor.newInstance(getConfiguration().getDesiredCapabilities());
-                    }
+        // Создание драйвера
+        WebDriver driver = newInstance(aClass, getConfiguration().getCapabilities());
 
-                }
-            }
+        if (Objects.nonNull(driver)) {
             String url = getConfiguration().getApplicationUrl();
-            if (null != url && !url.isEmpty()) {
-                driver.get(getConfiguration().getApplicationUrl());
+            if (StringUtils.isNotEmpty(url)) {
+                driver.get(url);
             }
             if (getConfiguration().isMaximizeWindow()) {
                 driver.manage().window().maximize();
             }
-
-
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            throw new NoSupportedDriverException(ILocaleManager.message("noSupportedDriverException", getConfiguration().getDriverType().name()));
-        }
-
-        // Если после завершения работы требуется оставить драйвер, то сохраним его сессию в файл
-        if (!getConfiguration().isCloseDriverAfterTest()) {
-            driverSerialization.saveDriver(driver, driverId);
+            // Если после завершения работы требуется оставить драйвер, то сохраним его сессию в файл
+            if (!getConfiguration().isCloseDriverAfterTest()) {
+                driverSerialization.saveDriver(driver, driverId);
+            }
         }
 
         return driver;
     }
 
-    private WebDriver createInstanceRemoteDriver(Class<? extends WebDriver> aClass) {
+    /**
+     * Создание Web-драйвера
+     * @param driverClass класс драйвера (тип браузера)
+     * @param options опции драйвера
+     * @param <T> класс опцций
+     * @return
+     */
+    public <T extends Capabilities> WebDriver newInstance(@NonNull Class<? extends WebDriver> driverClass, @Nullable T options) {
+        WebDriver driver;
         try {
-            Constructor<? extends WebDriver> constructor = aClass.getConstructor(URL.class, Capabilities.class);
-            if (getConfiguration().isHighlightElements()){
-                return new EventFiringWebDriver(new RemoteWebDriver(URI.create(getConfiguration().getDriverPath()).toURL(), getConfiguration().getDesiredCapabilities()))
-                    .register(new Highlighter());
-            }else{
-                return constructor.newInstance(URI.create(getConfiguration().getDriverPath()).toURL(), getConfiguration().getDesiredCapabilities());
+            driver = Objects.nonNull(options)
+                    ? driverClass.getConstructor(options.getClass()).newInstance(getConfiguration().getCapabilities())
+                    : driverClass.getConstructor().newInstance();
 
+            if (getConfiguration().isHighlightElements()) {
+                driver = new EventFiringWebDriver(driver).register(new Highlighter());
             }
-        } catch (Exception e) {
+
+            return driver;
+        } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
             log.error(e.getMessage(), e);
+            throw new NoSupportedDriverException(ILocaleManager.message("noSupportedDriverException", getConfiguration().getDriverType().name()));
         }
-        return null;
     }
 
 }

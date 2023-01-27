@@ -1,86 +1,53 @@
 package ru.ibsqa.qualit.selenium.driver;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.chromium.ChromiumDriver;
+import org.openqa.selenium.edge.EdgeOptions;
+import org.openqa.selenium.firefox.FirefoxOptions;
+import org.openqa.selenium.ie.InternetExplorerOptions;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.safari.SafariOptions;
 import ru.ibsqa.qualit.selenium.driver.configuration.IDriverConfiguration;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
-import org.openqa.selenium.opera.OperaDriver;
 import org.openqa.selenium.safari.SafariDriver;
 
+@RequiredArgsConstructor
 public enum WebSupportedDriver implements ISupportedDriver {
-    CHROME(ChromeDriver.class),
-    FIREFOX(FirefoxDriver.class),
-    SAFARI(SafariDriver.class),
-    IE(InternetExplorerDriver.class),
-    EDGE(EdgeDriver.class),
-    OPERA(OperaDriver.class),
-    CHROMIUM(ChromiumDriver.class),
+    CHROME(ChromeDriver.class, ChromeOptions.class, "webdriver.chrome.driver"),
+    FIREFOX(FirefoxDriver.class, FirefoxOptions.class, "webdriver.gecko.driver"),
+    SAFARI(SafariDriver.class, SafariOptions.class, null),
+    IE(InternetExplorerDriver.class, InternetExplorerOptions.class, "webdriver.ie.driver"),
+    EDGE(EdgeDriver.class, EdgeOptions.class, "webdriver.edge.drive"),
+    CHROMIUM(ChromiumDriver.class, DesiredCapabilities.class, null),
+    REMOTEDRIVER(RemoteWebDriver.class, DesiredCapabilities.class, null),
     ;
-//    REMOTEDRIVER(RemoteWebDriver.class),
+    // Смотрите в CHANGELOG по слову OPERA для подробностей
+    // OPERA(OperaDriver.class)
     // Смотрите в CHANGELOG по слову MARIONETTE для подробностей
-    // MARIONETTE(FirefoxDriver.class),
-//    OTHER(WiniumDriver.class);
+    // MARIONETTE(FirefoxDriver.class)
 
-    private final Class<? extends WebDriver> _class;
-    private final String _item;
-
-    WebSupportedDriver(Class<? extends WebDriver> __class, String item) {
-        this._class = __class;
-        this._item = item;
-    }
-
-    WebSupportedDriver(Class<? extends WebDriver> __class) {
-        this._class = __class;
-        this._item = null;
-    }
+    private final Class<? extends WebDriver> driverClass;
+    private final Class<? extends Capabilities> capabilitiesClass;
+    private final String driverPathProperty;
 
     @Override
     public Class<? extends WebDriver> getAsClass() {
-        return _class;
-    }
-
-    public String getItem() {
-        return _item;
+        return driverClass;
     }
 
     @Override
     public void initDriver(IDriverConfiguration configuration) {
-        switch (this) {
-            case FIREFOX:
-                if (!StringUtils.isEmpty(configuration.getDriverPath())) {
-                    System.setProperty("webdriver.gecko.driver", System.getProperty("user.dir") + System.getProperty("file.separator") + configuration.getDriverPath());
-                }
-                break;
-            case CHROME:
-                if (!StringUtils.isEmpty(configuration.getDriverPath())) {
-                    System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir") + System.getProperty("file.separator") + configuration.getDriverPath());
-                }
-                break;
-            case IE:
-                if (!StringUtils.isEmpty(configuration.getDriverPath())) {
-                    System.setProperty("webdriver.ie.driver", System.getProperty("user.dir") + System.getProperty("file.separator") + configuration.getDriverPath());
-                }
-                break;
-            case EDGE:
-                if (!StringUtils.isEmpty(configuration.getDriverPath())) {
-                    System.setProperty("webdriver.edge.drive", System.getProperty("user.dir") + System.getProperty("file.separator") + configuration.getDriverPath());
-                }
-                break;
-            case CHROMIUM:
-            case OPERA:
-            case SAFARI:
-                break;
-            // Смотрите в CHANGELOG по слову MARIONETTE для подробностей
-            // case MARIONETTE:
-            //     //для FireFox версий < 47.0
-            //     System.setProperty("webdriver.firefox.marionette", System.getProperty("user.dir") + System.getProperty("file.separator") + configuration.getDriverPath());
-            //     break;
-//            case REMOTEDRIVER:
-//            case OTHER:
+        if (StringUtils.isNotEmpty(configuration.getDriverPath()) && StringUtils.isNotEmpty(driverPathProperty)) {
+            System.setProperty(driverPathProperty, System.getProperty("user.dir") + System.getProperty("file.separator") + configuration.getDriverPath());
         }
     }
+
 }

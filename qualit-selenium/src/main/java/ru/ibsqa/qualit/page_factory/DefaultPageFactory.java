@@ -256,19 +256,19 @@ public class DefaultPageFactory implements IPageFactory {
     }
 
     protected String makeIsLoadedFields(MetaPage page) {
-        String method = "";
+        StringBuilder method = new StringBuilder();
         for (IMetaField field : page.getFields()) {
             if (field.isLoaded()) {
-                if (method.isEmpty())
-                    method = method + "getSeleniumField(\"" + field.getName() + "\").isDisplayed()";
-                else
-                    method = method + " && getSeleniumField(\"" + field.getName() + "\").isDisplayed()";
+                if (method.length() > 0) {
+                    method.append(" && ");
+                }
+                method.append("getSeleniumField(\"").append(field.getName()).append("\").waitToDisplayed()");
             }
         }
-        if (method.isEmpty()) {
-            method = "true";
+        if (method.length() == 0) {
+            method.append("true");
         }
-        return method;
+        return method.toString();
     }
 
     protected String makeFrameManager() {
@@ -340,7 +340,7 @@ public class DefaultPageFactory implements IPageFactory {
             ConstPool constpool = pageClass.getClassFile().getConstPool();
             AnnotationsAttribute attr = new AnnotationsAttribute(constpool, AnnotationsAttribute.visibleTag);
             Annotation annotation = new Annotation(Field.class.getCanonicalName(), constpool);
-            annotation.addMemberValue("names", new StringMemberValue(metaField.getName(), constpool));
+            annotation.addMemberValue("name", new StringMemberValue(metaField.getName(), constpool));
             annotation.addMemberValue("locator", new StringMemberValue(metaField.getLocator(), constpool));
             int index = constpool.addIntegerInfo(metaField.getWaitTimeOut());
             annotation.addMemberValue("waitTimeOut", new IntegerMemberValue(index, constpool));
@@ -399,12 +399,11 @@ public class DefaultPageFactory implements IPageFactory {
                 }
             }
 
-
             // Создать аннотацию для коллекции
             ConstPool constpool = pageClass.getClassFile().getConstPool();
             AnnotationsAttribute attr = new AnnotationsAttribute(constpool, AnnotationsAttribute.visibleTag);
             Annotation annotation = new Annotation(Field.class.getCanonicalName(), constpool);
-            annotation.addMemberValue("names", new StringMemberValue(metaCollection.getName(), constpool));
+            annotation.addMemberValue("name", new StringMemberValue(metaCollection.getName(), constpool));
             annotation.addMemberValue("locator", new StringMemberValue(metaCollection.getLocator(), constpool));
             int index = constpool.addIntegerInfo(metaCollection.getWaitTimeOut());
             annotation.addMemberValue("waitTimeOut", new IntegerMemberValue(index, constpool));
@@ -471,7 +470,7 @@ public class DefaultPageFactory implements IPageFactory {
                         .filter(field -> clazz.isAssignableFrom(field.getType()))
                         .map(field -> Arrays.stream(field.getAnnotations())
                                 .filter(annotation -> Field.class.isAssignableFrom(annotation.annotationType()))
-                                .map(annotation -> ((Field) annotation).names())
+                                .map(annotation -> ((Field) annotation).name())
                                 .findFirst().orElse(null)
                         )
                         .filter(Objects::nonNull)

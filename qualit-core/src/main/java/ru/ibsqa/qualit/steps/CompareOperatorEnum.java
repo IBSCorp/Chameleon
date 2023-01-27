@@ -153,9 +153,14 @@ public enum CompareOperatorEnum {
 
     public static double parseDouble(String value) {
         try {
-            return (Objects.isNull(value) || value.isEmpty()) ? 0d : Double.parseDouble(value);
+            if (Objects.isNull(value) || value.isEmpty()) {
+                return 0d;
+            }
+            if (value.endsWith("L") || value.endsWith("l")) {
+                return (double)Long.parseLong(value.substring(0, value.length() - 1));
+            }
+            return Double.parseDouble(value);
         } catch (NumberFormatException e) {
-            log.error(e.getMessage(), e);
             fail(message("numberFormatErrorMessage", value));
         }
         return 0d;

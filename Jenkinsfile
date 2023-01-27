@@ -1,13 +1,6 @@
 pipeline {
     agent { label 'QualIT-linux' }
     stages {
-        stage("Build info") {
-            steps {
-                script {
-                    currentBuild.description = env["Branch"]
-                }
-            }
-        }
         stage('Clean workspace') {
             steps{
                 cleanWs()

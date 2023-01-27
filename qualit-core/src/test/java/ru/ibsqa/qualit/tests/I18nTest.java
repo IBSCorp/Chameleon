@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class I18nTest {
 
     @Autowired
-    ILocaleManager localeManager;
+    private ILocaleManager localeManager;
 
     @Test
     public void l18nTest() {

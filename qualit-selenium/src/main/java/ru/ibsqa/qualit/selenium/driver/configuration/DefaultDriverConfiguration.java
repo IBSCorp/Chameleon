@@ -2,7 +2,7 @@ package ru.ibsqa.qualit.selenium.driver.configuration;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
 import lombok.*;
-import org.openqa.selenium.remote.DesiredCapabilities;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.ibsqa.qualit.i18n.ILocaleManager;
@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -27,71 +26,98 @@ public class DefaultDriverConfiguration implements IDriverConfiguration {
     private ILocaleManager localeManager;
 
     @Builder.Default
+    @Getter
+    @Setter
     private String applicationUrl = System.getProperty("applicationUrl", null);
 
     @Builder.Default
+    @Getter
+    @Setter
     private boolean closeDriverAfterTest = Boolean.parseBoolean(System.getProperty("closeDriverAfterTest", "true"));
 
     @Builder.Default
+    @Getter
+    @Setter
     private boolean connectToRunningApp = Boolean.parseBoolean(System.getProperty("connectToRunningApp", "false"));
 
     @Builder.Default
+    @Getter
+    @Setter
     private boolean advancedScreenshotMethod = Boolean.parseBoolean(System.getProperty("advancedScreenshotMethod", "false"));
 
     @Builder.Default
-    private boolean fullScreenshot = Boolean.parseBoolean(System.getProperty("advancedScreenshotMethod", "false"));
+    @Getter
+    @Setter
+    private boolean fullScreenshot = Boolean.parseBoolean(System.getProperty("fullScreenshot", "false"));
 
     @Builder.Default
+    @Getter
+    @Setter
     private ScreenshotConfiguration screenshotConfiguration = Enum.valueOf(ScreenshotConfiguration.class, System.getProperty("screenshotConfiguration", "FOR_FAILURES"));
 
     @Builder.Default
+    @Getter
+    @Setter
     private boolean maximizeWindow = Boolean.parseBoolean(System.getProperty("maximizeWindow", "true"));
 
     @Builder.Default
-    private int implicitlyWait = Integer.parseInt(System.getProperty("webdriver.timeouts.implicitlywait", "0"));
+    @Getter
+    @Setter
+    private int implicitlyWait = Integer.parseInt(System.getProperty("implicitlyWait", "0"));
 
     @Builder.Default
+    @Getter
+    @Setter
     private int defaultWaitTimeOut = Integer.parseInt(System.getProperty("defaultWaitTimeOut", "10"));
 
     @Builder.Default
+    @Getter
+    @Setter
     private boolean highlightElements = Boolean.parseBoolean(System.getProperty("highlightElements", "false"));
 
     @Builder.Default
+    @Setter
     private ISupportedDriver driverType = null;
 
-    @Builder.Default
-    private String driverPath = null;
+    @Override
+    public ISupportedDriver getDriverType() {
+        // Если тип драйвера не был проинициализирован, но используется (такое происходит при создании драйвера)
+        // то выдать ошибку
+        if (Objects.isNull(driverType)) {
+            throw new RuntimeException(localeManager.getMessage("driverTypeEmpty"));
+        }
+        return driverType;
+    }
 
     @Builder.Default
-    private DesiredCapabilities desiredCapabilities = null;
+    @Getter
+    @Setter
+    private String driverPath = System.getProperty("driverPath", null);
 
-    private List<IDriverConfigurationAppender> appenderList;
+    @Builder.Default
+    @Getter
+    @Setter
+    private Object options = null;
 
     @Autowired
-    private void collectDesiredCapabilitiesAppenderList(List<IDriverConfigurationAppender> appenderList) {
-        this.appenderList = appenderList;
-    }
+    private List<IDriverConfigurationAppender> appenderList;
 
     @PostConstruct
     private void postConstruct() {
         if (Objects.isNull(driverType)) {
             Optional<String> driverTypeProperty = Optional.ofNullable(System.getProperty("driverType"));
-            if (driverTypeProperty.isEmpty()) {
-                throw new RuntimeException(localeManager.getMessage("driverTypeEmpty"));
+            if (!driverTypeProperty.isEmpty() && !StringUtils.isEmpty(driverTypeProperty.get())) {
+                driverType = driverTypeProperty
+                        .map(this::findDriverTypeByName)
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        localeManager.getMessage(
+                                                "noSupportedDriverException",
+                                                driverTypeProperty.get()
+                                        )
+                                )
+                        );
             }
-            driverType = driverTypeProperty
-                            .map(this::findDriverTypeByName)
-                            .orElseThrow(() ->
-                                    new RuntimeException(
-                                            localeManager.getMessage(
-                                                    "noSupportedDriverException",
-                                                    driverTypeProperty.get()
-                                            )
-                                    )
-                            );
-        }
-        if (Objects.isNull(desiredCapabilities)) {
-            desiredCapabilities = new DesiredCapabilities();
         }
         appenderList.forEach(appender -> appender.appendToConfiguration(this));
     }
@@ -123,68 +149,5 @@ public class DefaultDriverConfiguration implements IDriverConfiguration {
             }
         }
     }
-//    @Getter
-//    @Setter
-//    private ISupportedDriver driverType;
-//
-//    @Getter
-//    @Setter
-//    private String driverPath;
-//
-//    @Getter
-//    @Setter
-//    private String applicationUrl;
-//
-//    @Getter
-//    @Setter
-//    private int implicitlyWait;
-//
-//    @Getter
-//    @Setter
-//    private int defaultWaitTimeOut;
-//
-//    public DefaultDriverConfiguration() {
-//        implicitlyWait = Integer.parseInt(System.getProperty("webdriver.timeouts.implicitlywait", "0"));
-//        defaultWaitTimeOut = 10;
-//    }
-//
-//    @Getter
-//    @Setter
-//    private boolean maximizeWindow = true;
-//
-//    @Getter
-//    @Setter
-//    private DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
-//
-//    @Getter
-//    @Setter
-//    private boolean connectToRunningApp = false;
-//
-//    @Getter
-//    @Setter
-//    private boolean closeDriverAfterTest = true;
-//
-//    @Getter
-//    @Setter
-//    private boolean advancedScreenshotMethod = false;
-//
-//    @Getter
-//    @Setter
-//    private boolean fullScreenshot = false;
-//
-//    @Getter
-//    @Setter
-//    private ScreenshotConfiguration screenshotConfiguration = FOR_FAILURES;
-//
-//	@Getter
-//	@Setter
-//	private boolean highlightElements = false;
-//
-//    @Override
-//    public void initDriver() {
-//        if (null != driverType) {
-//            driverType.initDriver(this);
-//        }
-//    }
 
 }

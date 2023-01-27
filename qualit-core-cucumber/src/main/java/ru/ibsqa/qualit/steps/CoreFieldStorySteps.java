@@ -59,7 +59,7 @@ public class CoreFieldStorySteps extends AbstractSteps {
             @Value CompareOperatorEnum operator,
             @Value String value) {
         flow(()->
-                fieldSteps.checkFieldValue(field, operator, value)
+                fieldSteps.checkFieldValue(field, Optional.ofNullable(operator).orElse(CompareOperatorEnum.EQUALS), value)
         );
     }
 

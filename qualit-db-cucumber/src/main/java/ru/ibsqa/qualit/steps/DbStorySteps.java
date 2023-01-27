@@ -17,6 +17,9 @@ public class DbStorySteps extends AbstractSteps {
     @Autowired
     private CollectionSteps collectionSteps;
 
+    @StepDescription(action = "Базы данных->Открыть подключение к БД"
+            , subAction = "Именованное подключение"
+            , parameters = {"dbName - наименование подключения", "connectionName - наименование соединения"})
     @Дано("^к БД \"([^\"]*)\" выполнено подключение \"([^\"]*)\"$")
     public void connect(String dbName, String connectionName) {
         flow(() ->
@@ -24,6 +27,9 @@ public class DbStorySteps extends AbstractSteps {
         );
     }
 
+    @StepDescription(action = "Базы данных->Открыть подключение к БД"
+            , subAction = "Безымянное подключение"
+            , parameters = {"connectionName - наименование соединения"})
     @Дано("^к БД выполнено подключение \"([^\"]*)\"$")
     public void connect(String connectionName) {
         flow(() ->
@@ -31,6 +37,9 @@ public class DbStorySteps extends AbstractSteps {
         );
     }
 
+    @StepDescription(action = "Базы данных->Открыть подключение к БД с параметрами"
+            , subAction = "Именованное подключение"
+            , parameters = {"dbName - наименование подключения", "connectionName - наименование соединения", "params - список параметров"})
     @Дано("^к БД \"([^\"]*)\" выполнено подключение \"([^\"]*)\" с параметрами:$")
     public void connect(String dbName, String connectionName, List<FieldValueTable> params) {
         flow(() ->
@@ -38,6 +47,9 @@ public class DbStorySteps extends AbstractSteps {
         );
     }
 
+    @StepDescription(action = "Базы данных->Открыть подключение к БД с параметрами"
+            , subAction = "Безымянное подключение"
+            , parameters = {"connectionName - наименование соединения", "params - список параметров"})
     @Дано("^к БД выполнено подключение \"([^\"]*)\" с параметрами:$")
     public void connect(String connectionName, List<FieldValueTable> params) {
         flow(() ->
@@ -45,6 +57,9 @@ public class DbStorySteps extends AbstractSteps {
         );
     }
 
+    @StepDescription(action = "Базы данных->Закрыть подключение к БД"
+            , subAction = "Именованное подключение"
+            , parameters = {"dbName - наименование подключения"})
     @Когда("^закрыто подключение к БД \"([^\"]*)\"$")
     public void close(String dbName) {
         flow(() ->
@@ -52,6 +67,8 @@ public class DbStorySteps extends AbstractSteps {
         );
     }
 
+    @StepDescription(action = "Базы данных->Закрыть подключение к БД"
+            , subAction = "Безымянное подключение")
     @Когда("^закрыто подключение к БД$")
     public void close() {
         flow(() ->
@@ -59,6 +76,9 @@ public class DbStorySteps extends AbstractSteps {
         );
     }
 
+    @StepDescription(action = "Базы данных->Выполнить запрос"
+            , subAction = "Именованное подключение"
+            , parameters = {"dbName - наименование подключения", "queryName - наименование запроса"})
     @Когда("^к БД \"([^\"]*)\" выполняется запрос \"([^\"]*)\"$")
     public void query(String dbName, String queryName) {
         flow(() ->
@@ -66,6 +86,9 @@ public class DbStorySteps extends AbstractSteps {
         );
     }
 
+    @StepDescription(action = "Базы данных->Выполнить запрос"
+            , subAction = "Безымянное подключение"
+            , parameters = {"queryName - наименование запроса"})
     @Когда("^к БД выполняется запрос \"([^\"]*)\"$")
     public void query(String queryName) {
         flow(() ->
@@ -73,6 +96,9 @@ public class DbStorySteps extends AbstractSteps {
         );
     }
 
+    @StepDescription(action = "Базы данных->Выполнить запрос и получить первую строку"
+            , subAction = "Именованное подключение"
+            , parameters = {"dbName - наименование подключения", "queryName - наименование запроса"})
     @Когда("^из БД \"([^\"]*)\" выбирается строка запросом \"([^\"]*)\"$")
     public void queryFirst(String dbName, String queryName) {
         flow(() -> {
@@ -81,6 +107,9 @@ public class DbStorySteps extends AbstractSteps {
         });
     }
 
+    @StepDescription(action = "Базы данных->Выполнить запрос и получить первую строку"
+            , subAction = "Безымянное подключение"
+            , parameters = {"queryName - наименование запроса"})
     @Когда("^из БД выбирается строка запросом \"([^\"]*)\"$")
     public void queryFirst(String queryName) {
         flow(() -> {
@@ -89,6 +118,9 @@ public class DbStorySteps extends AbstractSteps {
         });
     }
 
+    @StepDescription(action = "Базы данных->Выполнить запрос с параметрами"
+            , subAction = "Именованное подключение"
+            , parameters = {"dbName - наименование подключения", "queryName - наименование запроса", "params - список параметров"})
     @Когда("^к БД \"([^\"]*)\" выполняется запрос \"([^\"]*)\" c параметрами:$")
     public void query(String dbName, String queryName, List<FieldValueTable> params) {
         flow(() ->
@@ -96,6 +128,9 @@ public class DbStorySteps extends AbstractSteps {
         );
     }
 
+    @StepDescription(action = "Базы данных->Выполнить запрос с параметрами"
+            , subAction = "Безымянное подключение"
+            , parameters = {"queryName - наименование запроса", "params - список параметров"})
     @Когда("^к БД выполняется запрос \"([^\"]*)\" c параметрами:$")
     public void query(String queryName, List<FieldValueTable> params) {
         flow(() ->
@@ -103,6 +138,9 @@ public class DbStorySteps extends AbstractSteps {
         );
     }
 
+    @StepDescription(action = "Базы данных->Выполнить запрос с параметрами и получить первую строку"
+            , subAction = "Именованное подключение"
+            , parameters = {"dbName - наименование подключения", "queryName - наименование запроса", "params - список параметров"})
     @Когда("^из БД \"([^\"]*)\" выбирается строка запросом \"([^\"]*)\" c параметрами:$")
     public void queryFirst(String dbName, String queryName, List<FieldValueTable> params) {
         flow(() -> {
@@ -111,6 +149,9 @@ public class DbStorySteps extends AbstractSteps {
         });
     }
 
+    @StepDescription(action = "Базы данных->Выполнить запрос с параметрами и получить первую строку"
+            , subAction = "Безымянное подключение"
+            , parameters = {"queryName - наименование запроса", "params - список параметров"})
     @Когда("^из БД выбирается строка запросом \"([^\"]*)\" c параметрами:$")
     public void queryFirst(String queryName, List<FieldValueTable> params) {
         flow(() -> {
@@ -119,6 +160,9 @@ public class DbStorySteps extends AbstractSteps {
         });
     }
 
+    @StepDescription(action = "Базы данных->Сохранить изменения"
+            , subAction = "Именованное подключение"
+            , parameters = {"dbName - наименование подключения"})
     @Когда("^сохранить изменения в БД \"([^\"]*)\"$")
     public void commit(String dbName) {
         flow(() ->
@@ -126,6 +170,8 @@ public class DbStorySteps extends AbstractSteps {
         );
     }
 
+    @StepDescription(action = "Базы данных->Сохранить изменения"
+            , subAction = "Безымянное подключение")
     @Когда("^сохранить изменения в БД$")
     public void commit() {
         flow(() ->
@@ -133,6 +179,9 @@ public class DbStorySteps extends AbstractSteps {
         );
     }
 
+    @StepDescription(action = "Базы данных->Отменить изменения"
+            , subAction = "Именованное подключение"
+            , parameters = {"dbName - наименование подключения"})
     @Когда("^отменить изменения в БД \"([^\"]*)\"$")
     public void rollback(String dbName) {
         flow(() ->
@@ -140,6 +189,8 @@ public class DbStorySteps extends AbstractSteps {
         );
     }
 
+    @StepDescription(action = "Базы данных->Отменить изменения"
+            , subAction = "Безымянное подключение")
     @Когда("^отменить изменения в БД$")
     public void rollback() {
         flow(() ->

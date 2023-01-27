@@ -5,7 +5,7 @@
 
     <groupId>ru.ibsqa.qualit</groupId>
     <artifactId>qualit</artifactId>
-    <version>3.2.2-SNAPSHOT</version>
+    <version>3.3.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <modules>
@@ -132,7 +132,7 @@
     </distributionManagement>
 
     <properties>
-        <qualit.version>3.2.2-SNAPSHOT</qualit.version>
+        <qualit.version>3.3.0-SNAPSHOT</qualit.version>
 
         <encoding>UTF-8</encoding>
         <file.encoding>${encoding}</file.encoding>
@@ -142,31 +142,28 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
 
-        <allure-maven.version>2.10.0</allure-maven.version>
-        <allure.report.version>2.17.3</allure.report.version>
-        <appium.version>8.0.0</appium.version>
+        <allure-maven.version>2.12.0</allure-maven.version>
+        <allure.report.version>2.20.1</allure.report.version>
         <aspectj.version>1.9.9.1</aspectj.version>
         <dependency.locations.enabled>false</dependency.locations.enabled>
-        <fasterxml.jackson.version>2.13.2</fasterxml.jackson.version>
+        <fasterxml.jackson.version>2.14.0</fasterxml.jackson.version>
         <httpcomponents.version>4.5.13</httpcomponents.version>
         <jbehave.version>4.8.3</jbehave.version>
-        <jna-platform.version>5.11.0</jna-platform.version>
-        <junit-jupiter.version>5.8.2</junit-jupiter.version>
-        <junit.version>1.8.2</junit.version>
+        <jna-platform.version>5.12.1</jna-platform.version>
+        <junit-jupiter.version>5.9.1</junit-jupiter.version>
+        <junit.version>1.9.1</junit.version>
         <maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
-        <maven-project-info-reports-plugin.version>3.2.2</maven-project-info-reports-plugin.version>
-        <maven-surefire-plugin.version>3.0.0-M6</maven-surefire-plugin.version>
+        <maven-project-info-reports-plugin.version>3.4.1</maven-project-info-reports-plugin.version>
+        <maven-surefire-plugin.version>3.0.0-M7</maven-surefire-plugin.version>
         <projectlombok.version>1.18.24</projectlombok.version>
-        <rest-assured.version>5.0.1</rest-assured.version>
+        <rest-assured.version>5.2.0</rest-assured.version>
         <slf4j.binding.artifactId>slf4j-reload4j</slf4j.binding.artifactId>
         <slf4j.binding.groupId>org.slf4j</slf4j.binding.groupId>
-        <slf4j.binding.version>1.2.20</slf4j.binding.version>
-        <slf4j.version>1.7.36</slf4j.version>
+        <slf4j.version>2.0.3</slf4j.version>
 <!--        <sonar.moduleKey>${project.artifactId}</sonar.moduleKey>-->
 <!--        <sonar.projectKey>${project.artifactId}</sonar.projectKey>-->
 <!--        <sonar.projectName>${project.artifactId}</sonar.projectName>-->
-        <spring-framework.version>5.3.19</spring-framework.version>
-        <testit-api-client-java.version>1.0.8</testit-api-client-java.version>
+        <testit-api-client-java.version>1.0.9</testit-api-client-java.version>
     </properties>
 
     <!-- Прочитать про управление зависимостями:
@@ -205,15 +202,20 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>3.0.0-M6</version>
+                    <version>${maven-surefire-plugin.version}</version>
                     <configuration>
                         <reuseForks>true</reuseForks>
                         <forkCount>1</forkCount>
                         <!-- Activate the use of TCP to transmit events to the plugin -->
                         <forkNode implementation="org.apache.maven.plugin.surefire.extensions.SurefireForkNodeFactory"/>
-                        <argLine>-Dfile.encoding=${encoding} -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"</argLine>
+                        <argLine>
+                            -Dfile.encoding=${encoding}
+                            -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"
+                            --add-opens java.base/java.lang=ALL-UNNAMED
+                            --add-opens java.base/java.lang.reflect=ALL-UNNAMED
+                        </argLine>
                         <reportFormat>plain</reportFormat>
-                        <testFailureIgnore>true</testFailureIgnore>
+                        <testFailureIgnore>false</testFailureIgnore>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -273,7 +275,7 @@
             <plugin>
                 <groupId>com.github.ekryd.sortpom</groupId>
                 <artifactId>sortpom-maven-plugin</artifactId>
-                <version>3.0.1</version>
+                <version>3.2.0</version>
                 <configuration>
                     <createBackupFile>false</createBackupFile>
                     <predefinedSortOrder>custom_1</predefinedSortOrder>

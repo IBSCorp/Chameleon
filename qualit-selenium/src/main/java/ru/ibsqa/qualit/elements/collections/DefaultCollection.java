@@ -19,6 +19,7 @@ import java.util.List;
 public class DefaultCollection<PAGE extends IPageObject> extends AbstractCollection<PAGE> {
 
     @Override
+    @SuppressWarnings({"rawtypes","unchecked"})
     public ICollectionIterator<PAGE> iterator() {
         return new DefaultCollectionIterator(getCollectionName(), getWaitTimeOut(), getElementLocator(), getFrames(), getCollectionObjectClass());
     }

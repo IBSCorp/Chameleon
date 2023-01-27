@@ -10,16 +10,11 @@ import ru.ibsqa.qualit.selenium.driver.configuration.IDriverConfiguration;
 import ru.ibsqa.qualit.selenium.driver.exceptions.NoSupportedDriverException;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.service.local.AppiumDriverLocalService;
-import io.appium.java_client.service.local.AppiumServiceBuilder;
-import io.appium.java_client.service.local.flags.GeneralServerFlag;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.remote.DesiredCapabilities;
 
-import java.io.IOException;
 import java.lang.reflect.Constructor;
-import java.net.ServerSocket;
 import java.net.URL;
 
 @DriverFactory(priority = ConfigurationPriority.LOW)
@@ -42,7 +37,7 @@ public class AppiumDriverFactory extends AbstractDriverFactory<AppiumSupportedDr
         try {
             Class<? extends AppiumDriver> aClass = getConfiguration().getDriverType().getAsClass().asSubclass(AppiumDriver.class);
             Constructor<? extends AppiumDriver> constructor = aClass.getConstructor(URL.class, Capabilities.class);
-            driver = constructor.newInstance(new URL("http://127.0.0.1:4723/wd/hub"), getConfiguration().getDesiredCapabilities());
+            driver = constructor.newInstance(new URL("http://127.0.0.1:4723/wd/hub"), getConfiguration().getCapabilities());
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             throw new NoSupportedDriverException(ILocaleManager.message("noSupportedDriverException", getConfiguration().getDriverType().name()));
@@ -51,6 +46,7 @@ public class AppiumDriverFactory extends AbstractDriverFactory<AppiumSupportedDr
         return driver;
     }
 
+    /*
     private void initDriver() {
         int port = 4723;
         if(!checkIfServerIsRunning(port)) {
@@ -93,4 +89,5 @@ public class AppiumDriverFactory extends AbstractDriverFactory<AppiumSupportedDr
         }
         return isServerRunning;
     }
+    */
 }

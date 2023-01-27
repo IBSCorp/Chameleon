@@ -1,7 +1,6 @@
 package ru.ibsqa.qualit.steps;
 
 import ru.ibsqa.qualit.context.IContextExplorer;
-import ru.ibsqa.qualit.context.PickElementResult;
 import ru.ibsqa.qualit.elements.selenium.IFacadeSelenium;
 import ru.ibsqa.qualit.page_factory.pages.Page;
 import ru.ibsqa.qualit.selenium.enums.KeyEnum;
@@ -11,10 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-// TODO локализовать
 @Component
 public class SeleniumFieldSteps extends CoreFieldSteps {
 
@@ -47,18 +47,26 @@ public class SeleniumFieldSteps extends CoreFieldSteps {
         pageSteps.stepLoadedPage(page);
     }
 
-    @UIStep
-    @TestStep("значение подсказки для поля \"${fieldName}\" ${operator} \"${expected}\"")
-    public void checkFieldPlaceholder(String fieldName, CompareOperatorEnum operator, String expected) {
-        String actual = getSeleniumField(fieldName).getPlaceholder().trim().replaceAll("\u00A0", " ");
-        if (!operator.checkValue(actual, expected)) {
-            fail(operator.buildErrorMessage(message("checkFieldPlaceholder"), actual, expected));
-        }
-    }
-
     public void clickFieldAndPageLoaded(String fieldName, Page page) {
         clickField(fieldName);
         pageSteps.stepLoadedPage(page);
+    }
+
+    @UIStep
+    @TestStep("значение подсказки для поля \"${fieldName}\" ${operator} \"${expected}\"")
+    public void checkFieldPlaceholder(String fieldName, CompareOperatorEnum operator, String expected) {
+        IFacadeSelenium field = getSeleniumField(fieldName);
+        AtomicReference<String> actual = new AtomicReference<>();
+        boolean isChecked = waiting(
+                Duration.ofSeconds(field.getWaitTimeOut()),
+                () -> {
+                    actual.set(getSeleniumField(fieldName).getPlaceholder());
+                    return operator.checkValue(actual.get(), expected);
+                }
+        );
+        if (!isChecked) {
+            fail(operator.buildErrorMessage(message("checkFieldPlaceholder"), actual.get(), expected));
+        }
     }
 
     @UIStep
@@ -99,53 +107,102 @@ public class SeleniumFieldSteps extends CoreFieldSteps {
     @UIStep
     @TestStep("поле \"${fieldName}\" видимо")
     public void fieldIsDisplayed(String fieldName) {
-        boolean isDisplayed = getSeleniumField(fieldName).isDisplayed();
-        assertTrue(isDisplayed, "Поле " + fieldName + " не отображается на странице");
+        IFacadeSelenium field = getSeleniumField(fieldName);
+        boolean isDisplayed = waiting(
+                Duration.ofSeconds(field.getWaitTimeOut()),
+                field::isDisplayed
+        );
+        if (!isDisplayed) {
+            fail(message("fieldIsNotDisplayed", fieldName));
+        }
+    }
+
+    @UIStep
+    @TestStep("поле \"${fieldName}\" невидимо")
+    public void fieldIsNotDisplayed(String fieldName) {
+        IFacadeSelenium field = getSeleniumField(fieldName);
+        // При наличии поля ожидаем его невидимость
+        boolean isNotDisplayed = waiting(
+                Duration.ofSeconds(field.getWaitTimeOut()),
+                () -> {
+                    if (field.isAbsent()) { // Здесь происходит быстрая проверка отсутствия поля на странице
+                        return true;
+                    }
+                    return !field.isDisplayed();
+                }
+        );
+        if (!isNotDisplayed) {
+            fail(message("fieldIsDisplayed", fieldName));
+        }
     }
 
     @UIStep
     @TestStep("поле \"${fieldName}\" активно")
     public void fieldIsEnabled(String fieldName) {
-        boolean isEnabled = getSeleniumField(fieldName).isEnabled();
-        assertTrue(isEnabled, "Поле " + fieldName + " неактивно на странице");
+        IFacadeSelenium field = getSeleniumField(fieldName);
+        boolean isEnabled = waiting(
+                Duration.ofSeconds(field.getWaitTimeOut()),
+                field::isEnabled
+        );
+        if (!isEnabled) {
+            fail(message("fieldIsNotActive", fieldName));
+        }
     }
 
     @UIStep
     @TestStep("поле \"${fieldName}\" неактивно")
     public void fieldIsDisabled(String fieldName) {
-        boolean isEnabled = getSeleniumField(fieldName).isEnabled();
-        assertTrue(!isEnabled, "Поле " + fieldName + " активно на странице");
+        IFacadeSelenium field = getSeleniumField(fieldName);
+        boolean isNotEnabled = waiting(
+                Duration.ofSeconds(field.getWaitTimeOut()),
+                () -> !field.isEnabled()
+        );
+        if (!isNotEnabled) {
+            fail(message("fieldIsActive", fieldName));
+        }
     }
 
     @UIStep
     @TestStep("поле \"${fieldName}\" редактируемо")
     public void fieldIsEditable(String fieldName) {
-        boolean isEditable = getSeleniumField(fieldName).isEditable();
-        assertTrue(isEditable, "Field " + fieldName + " not editable");
+        IFacadeSelenium field = getSeleniumField(fieldName);
+        boolean isEditable = waiting(
+                Duration.ofSeconds(field.getWaitTimeOut()),
+                field::isEditable
+        );
+        if (!isEditable) {
+            fail(message("fieldIsNotEditable", fieldName));
+        }
     }
 
     @UIStep
     @TestStep("поле \"${fieldName}\" нередактируемо")
     public void fieldIsNotEditable(String fieldName) {
-        boolean isEditable = getSeleniumField(fieldName).isEditable();
-        assertFalse(isEditable, "Field " + fieldName + " editable");
-    }
-
-    @UIStep
-    @TestStep("поле \"${fieldName}\" отсутствует")
-    public void fieldIsNotExist(String fieldName) {
-        boolean isDisplayed = getSeleniumField(fieldName).isDisplayed();
-        assertFalse(isDisplayed, "Поле " + fieldName + " отображается на странице");
-    }
-
-    @UIStep
-    @TestStep("в поле \"${fieldName}\" значение ошибки ${operator} \"${errorMsg}\"")
-    public void checkFieldError(String fieldName, CompareOperatorEnum operator, String errorMsg) {
-        String actualError = getSeleniumField(fieldName).getErrorMsg();
-        if (!operator.checkValue(actualError, errorMsg)) {
-            fail(operator.buildErrorMessage(message("checkFieldError"), actualError, errorMsg));
+        IFacadeSelenium field = getSeleniumField(fieldName);
+        boolean isNotEditable = waiting(
+                Duration.ofSeconds(field.getWaitTimeOut()),
+                () -> !field.isEditable()
+        );
+        if (!isNotEditable) {
+            fail(message("fieldIsEditable", fieldName));
         }
-        //assertEquals(String.format("Сообщение об ошибке в поле [%s] не соответствует ожиданиям", fieldName), errorMsg, actualError);
+    }
+
+    @UIStep
+    @TestStep("в поле \"${fieldName}\" значение ошибки ${operator} \"${expected}\"")
+    public void checkFieldError(String fieldName, CompareOperatorEnum operator, String expected) {
+        IFacadeSelenium field = getSeleniumField(fieldName);
+        AtomicReference<String> actual = new AtomicReference<>();
+        boolean isChecked = waiting(
+                Duration.ofSeconds(field.getWaitTimeOut()),
+                () -> {
+                    actual.set(Optional.ofNullable(getSeleniumField(fieldName).getErrorMsg()).orElse(""));
+                    return operator.checkValue(actual.get(), expected);
+                }
+        );
+        if (!isChecked) {
+            fail(operator.buildErrorMessage(message("checkFieldError"), actual.get(), expected));
+        }
     }
 
     @UIStep
@@ -163,12 +220,17 @@ public class SeleniumFieldSteps extends CoreFieldSteps {
     @UIStep
     @TestStep("значение атрибута \"${attribute}\" поля \"${fieldName}\" ${operator} \"${expected}\"")
     public void checkFieldAttribute(String attribute, String fieldName, CompareOperatorEnum operator, String expected) {
-        String actual = getFieldAttribute(fieldName, attribute);
-        if (actual == null) {
-            actual = "";
-        }
-        if (!operator.checkValue(actual, expected)) {
-            fail(operator.buildErrorMessage(message("checkFieldAttribute", attribute), actual, expected));
+        IFacadeSelenium field = getSeleniumField(fieldName);
+        AtomicReference<String> actual = new AtomicReference<>();
+        boolean isChecked = waiting(
+                Duration.ofSeconds(field.getWaitTimeOut()),
+                () -> {
+                    actual.set(Optional.ofNullable(getSeleniumField(fieldName).getAttribute(attribute)).orElse(""));
+                    return operator.checkValue(actual.get(), expected);
+                }
+        );
+        if (!isChecked) {
+            fail(operator.buildErrorMessage(message("checkFieldAttribute", attribute), actual.get(), expected));
         }
     }
 
@@ -190,11 +252,9 @@ public class SeleniumFieldSteps extends CoreFieldSteps {
         getSeleniumField(fieldName).scrollIntoView();
     }
 
+    @SuppressWarnings("unchecked")
     public <T extends IFacadeSelenium> T getSeleniumField(String fieldName) {
-        PickElementResult<IFacadeSelenium, ?> pickElementResult = contextExplorer.pickElement(fieldName, IFacadeSelenium.class);
-        IFacadeSelenium field = pickElementResult.getElement();
-
-        return (T) field;
+        return (T)super.getField(fieldName, IFacadeSelenium.class);
     }
 
 }

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema
+        elementFormDefault="qualified"
+        xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        targetNamespace="http://qualit.ibs-qa.ru/internal/schema/modules">
+
+    <xs:element name="Modules" type="ModulesType"/>
+
+    <xs:complexType name="ModulesType">
+        <xs:choice maxOccurs="unbounded">
+            <xs:element name="Module" type="ModuleType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="ModuleGroup" type="ModuleGroupType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:choice>
+    </xs:complexType>
+
+    <xs:complexType name="ModuleType" mixed="true">
+        <xs:sequence maxOccurs="unbounded">
+            <xs:element name="Dependencies" type="DependenciesType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="NonEmptyType" use="required"/>
+        <xs:attribute name="label" type="NonEmptyType" use="required"/>
+        <xs:attribute name="always" type="xs:boolean"/>
+        <xs:attribute name="restricted" type="xs:boolean"/>
+        <xs:attribute name="message" type="NonEmptyType"/>
+    </xs:complexType>
+
+    <xs:complexType name="ModuleGroupType" mixed="true">
+        <xs:choice maxOccurs="unbounded">
+            <xs:element name="Module" type="ModuleType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="ModuleGroup" type="ModuleGroupType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:choice>
+        <xs:attribute name="label" type="NonEmptyType" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="DependenciesType" mixed="true">
+        <xs:choice maxOccurs="unbounded">
+            <xs:element name="Dependency" type="DependencyType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:choice>
+    </xs:complexType>
+
+    <xs:complexType name="DependencyType" mixed="true">
+        <xs:attribute name="artifactId" type="NonEmptyType" use="required"/>
+        <xs:attribute name="ifModule" type="xs:string"/>
+    </xs:complexType>
+
+    <xs:simpleType name="NonEmptyType">
+        <xs:restriction base="xs:string">
+            <xs:minLength value="1"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+</xs:schema>

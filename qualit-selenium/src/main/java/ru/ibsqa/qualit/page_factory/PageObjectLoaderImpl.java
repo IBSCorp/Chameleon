@@ -18,8 +18,6 @@ import ru.ibsqa.qualit.selenium.driver.WebDriverFacade;
 
 import java.lang.reflect.InvocationHandler;
 
-import static ru.ibsqa.qualit.page_factory.PageFactoryUtils.getElementNameAsString;
-
 @Component
 public class PageObjectLoaderImpl implements IPageObjectLoader {
 
@@ -30,21 +28,21 @@ public class PageObjectLoaderImpl implements IPageObjectLoader {
     private AbstractFieldDecorator fieldDecorator;
 
     @Override
-    public void load(IPageObject pageObject, SearchContext searchContext){
-        if (isClassBlock(pageObject)){//если для элементов этого класса надо создать родительский элемент
-            WebElementFacade blockElement = createBlockElement(pageObject,  searchContext);
+    public void load(IPageObject pageObject, SearchContext searchContext) {
+        if (isBlockHasLocator(pageObject)) { //если для элементов этого класса надо создать родительский элемент
+            WebElementFacade blockElement = createBlockElement(pageObject, searchContext);
             initElements(blockElement, pageObject);
-        }else {
+        } else {
             initElements(searchContext, pageObject);
         }
     }
 
-    private boolean isClassBlock(IPageObject pageObject){
+    private boolean isBlockHasLocator(IPageObject pageObject) {
         return (pageObject.getClass().isAnnotationPresent(Page.class)
                 && !pageObject.getClass().getAnnotation(Page.class).locator().isEmpty());
     }
 
-    private void initElements(SearchContext searchContext, IPageObject pageObject){
+    private void initElements(SearchContext searchContext, IPageObject pageObject) {
         fieldDecorator.setElementLocatorFactory(pageObject.getDriver().getElementLocatorFactory(searchContext));
         PageFactory.initElements(fieldDecorator, pageObject);
     }

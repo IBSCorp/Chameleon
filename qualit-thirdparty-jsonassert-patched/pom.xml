@@ -5,7 +5,7 @@
     <parent>
         <groupId>ru.ibsqa.qualit</groupId>
         <artifactId>qualit</artifactId>
-        <version>3.2.2-SNAPSHOT</version>
+        <version>3.3.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>qualit-thirdparty-jsonassert-patched</artifactId>
@@ -18,7 +18,7 @@
             <dependency>
                 <groupId>ru.ibsqa.qualit</groupId>
                 <artifactId>qualit-bom</artifactId>
-                <version>3.2.2-SNAPSHOT</version>
+                <version>3.3.0-SNAPSHOT</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -26,18 +26,18 @@
     </dependencyManagement>
 
     <dependencies>
+
         <dependency>
             <groupId>ru.ibsqa.qualit</groupId>
             <artifactId>qualit-core</artifactId>
         </dependency>
+
         <dependency>
-            <groupId>org.json</groupId>
-            <artifactId>json</artifactId>
+            <groupId>ru.ibsqa.qualit</groupId>
+            <artifactId>qualit-log</artifactId>
+            <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-        </dependency>
+
     </dependencies>
 
     <url>https://github.com/skyscreamer/JSONassert</url>

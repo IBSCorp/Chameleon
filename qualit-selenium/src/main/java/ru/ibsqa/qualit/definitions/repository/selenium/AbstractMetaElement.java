@@ -1,9 +1,8 @@
 package ru.ibsqa.qualit.definitions.repository.selenium;
 
+import ru.ibsqa.qualit.definitions.repository.ILocatorCreator;
 import ru.ibsqa.qualit.definitions.repository.IRepositoryElement;
 import ru.ibsqa.qualit.definitions.repository.IRepositoryManager;
-import ru.ibsqa.qualit.definitions.repository.ITemplateParamsResolver;
-import ru.ibsqa.qualit.definitions.repository.selenium.templates.MetaTemplate;
 import ru.ibsqa.qualit.utils.spring.SpringUtils;
 import lombok.Getter;
 import lombok.ToString;
@@ -13,6 +12,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -54,41 +54,32 @@ public abstract class AbstractMetaElement implements IRepositoryElement, IMetaEl
         return this.parent;
     }
 
-    public String getLocator(){
-        String tmlt = "";
-        if (null == locator){
-            if (null == template){
-                if (this instanceof IMetaField) {
-                    //TODO если не указали локатор и не найден в репозитории темплейтов, то выводить более информативное сообщение
-                    //fail("У элемента " + getName() + " не указан ни локатор, ни шаблон");
-                    tmlt = this.getClass().getSimpleName().replace("Meta", "");
-                } else {
-                    return null;
-                }
+    public String getLocator() {
+        if (Objects.nonNull(locator)) {
+            return locator;
+        }
+
+        String template = getTemplate();
+        if (Objects.isNull(getTemplate())) {
+            if (this instanceof IMetaField) {
+                template = this.getClass().getSimpleName().replace("Meta", "");
             } else {
-                tmlt = template;
-            }
-            try {
-                ITemplateParamsResolver templateParamsResolver = SpringUtils.getBean(ITemplateParamsResolver.class);
-                return String.format(getRepositoryManager().pickElement(tmlt, MetaTemplate.class).getLocator(), templateParamsResolver.getParams(name));
-            } catch (NoSuchElementException e) {
                 return null;
             }
         }
-        return locator;
+
+        try {
+            return SpringUtils.getBean(ILocatorCreator.class).createLocator(template, name);
+        } catch (NoSuchElementException e) {
+            return null;
+        }
+
     }
 
     void afterUnmarshal(Unmarshaller unmarshaller, Object parent) {
         if (parent instanceof AbstractMetaContainer){
             this.parent = (AbstractMetaContainer) parent;
         }
-    }
-
-    private IRepositoryManager getRepositoryManager(){
-        if (null == repositoryManager){
-            repositoryManager = SpringUtils.getBean(IRepositoryManager.class);
-        }
-        return repositoryManager;
     }
 
 }

@@ -1,41 +1,24 @@
 package ru.ibsqa.qualit.image.driver;
 
-
+import lombok.RequiredArgsConstructor;
 import org.openqa.selenium.WebDriver;
 import ru.ibsqa.qualit.selenium.driver.ISupportedDriver;
 import ru.ibsqa.qualit.selenium.driver.configuration.IDriverConfiguration;
 
-
+@RequiredArgsConstructor
 public enum ImageSupportedDriver implements ISupportedDriver {
 
     IMAGE_DRIVER(ImageDriver.class);
 
-    private final Class<? extends WebDriver> _class;
-    private final String _item;
+    private final Class<? extends WebDriver> driverClass;
 
-    ImageSupportedDriver(Class<? extends WebDriver> __class, String item) {
-        this._class = __class;
-        this._item = item;
-    }
-
-    ImageSupportedDriver(Class<? extends WebDriver> __class) {
-        this._class = __class;
-        this._item = null;
-    }
-
+    @Override
     public Class<? extends WebDriver> getAsClass() {
-        return _class;
+        return driverClass;
     }
 
-    public String getItem() {
-        return _item;
-    }
-
+    @Override
     public void initDriver(IDriverConfiguration configuration) {
-        switch (this) {
-            case IMAGE_DRIVER:
-                break;
-
-        }
     }
+
 }

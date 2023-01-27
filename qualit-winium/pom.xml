@@ -5,7 +5,7 @@
     <parent>
         <artifactId>qualit</artifactId>
         <groupId>ru.ibsqa.qualit</groupId>
-        <version>3.2.2-SNAPSHOT</version>
+        <version>3.3.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -16,7 +16,7 @@
             <dependency>
                 <groupId>ru.ibsqa.qualit</groupId>
                 <artifactId>qualit-bom</artifactId>
-                <version>3.2.2-SNAPSHOT</version>
+                <version>3.3.0-SNAPSHOT</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -24,27 +24,25 @@
     </dependencyManagement>
 
     <dependencies>
+
         <dependency>
             <groupId>ru.ibsqa.qualit</groupId>
             <artifactId>qualit-selenium</artifactId>
         </dependency>
+
         <dependency>
             <groupId>com.github.2gis.winium</groupId>
             <artifactId>winium-webdriver</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>ru.ibsqa.qualit</groupId>
+            <artifactId>qualit-log</artifactId>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>io.qameta.allure</groupId>
-                <artifactId>allure-maven</artifactId>
-                <configuration>
-                    <installDirectory>${project.basedir}/../.allure</installDirectory>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
     <reporting>
         <excludeDefaults>true</excludeDefaults>
     </reporting>

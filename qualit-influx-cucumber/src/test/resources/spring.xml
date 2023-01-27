@@ -14,9 +14,4 @@
 
     <import resource="config/influx.xml"/>
 
-    <!-- for ru.ibsqa.qualit.tests -->
-    <import resource="config/drivers.xml"/>
-    <import resource="config/repositories.xml"/>
-
-
 </beans>

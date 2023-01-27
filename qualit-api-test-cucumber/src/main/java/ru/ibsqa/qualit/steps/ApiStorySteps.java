@@ -50,7 +50,7 @@ public class ApiStorySteps extends AbstractSteps {
     }
 
     @Дано("^установлена схема авторизации \"(.*)\"$")
-    @StepDescription(action = "API->Действия->Установить схему авторизацию"
+    @StepDescription(action = "API->Действия->Установить схему авторизации"
             , subAction = "Установить схему авторизации"
             , parameters = {"credential - схема авторизации"})
     public void setAuth(String credential) {
@@ -60,7 +60,7 @@ public class ApiStorySteps extends AbstractSteps {
     }
 
     @Дано("^установлена спецификация прокси \"(.*)\"$")
-    @StepDescription(action = "API->Действия->Установить схему авторизацию"
+    @StepDescription(action = "API->Действия->Установить спецификацию прокси"
             , subAction = "Установить спецификацию прокси"
             , parameters = {"proxy - спецификация прокси"})
     public void setProxy(String proxy) {
@@ -104,8 +104,7 @@ public class ApiStorySteps extends AbstractSteps {
     @Дано("^создан запрос \"([^\"]*)\" с параметрами:$")
     @StepDescription(action = "API->Действия->Создать запрос"
             , subAction = "Создать запрос с параметрами"
-            , multiple = true
-            , parameters = {"requestName - наименование запроса", "params - наименование полей"})
+            , parameters = {"requestName - наименование запроса", "params - параметры"})
     @Context(type = ContextType.REQUEST, change = ContextChange.BEFORE, parameter = "requestName",  delete = ContextType.RESPONSE)
     public void createRequest(String requestName, @Write("field") @Value("value") List<FieldValueTable> params) {
         flow(() -> {
@@ -117,8 +116,7 @@ public class ApiStorySteps extends AbstractSteps {
     @Дано("^создан запрос на основе шаблона \"([^\"]*)\" с параметрами:$")
     @StepDescription(action = "API->Действия->Создать запрос на основе шаблона"
             , subAction = "Создать запрос на основе шаблона с параметрами"
-            , multiple = true
-            , parameters = {"template - наименование наименование шаблона",  "field - наименование полей"})
+            , parameters = {"template - наименование наименование шаблона",  "field - параметры"})
     public void createRequestFromTemplate(String template, List<FieldValueTable> params) {
         flow(() -> {
             apiSteps.createRequestFromTemplate(DataUtils.getDataAsString(template));
@@ -139,7 +137,7 @@ public class ApiStorySteps extends AbstractSteps {
     @Дано(value = "создан запрос \"([^\"]*)\" на основе шаблона \"([^\"]*)\" с параметрами:$")
     @StepDescription(action = "API->Действия->Создать запрос на основе шаблона"
             , subAction = "Создать запрос на основе шаблона"
-            , parameters = {"requestName - наименование запроса", "params - наименование полей"})
+            , parameters = {"requestName - наименование запроса", "params - параметры"})
     @Context(type = ContextType.REQUEST, change = ContextChange.BEFORE, parameter = "requestName", delete = ContextType.RESPONSE)
     public void createRequestFromTemplate(String requestName, String template, List<FieldValueTable> params) {
         flow(() -> {
@@ -202,7 +200,7 @@ public class ApiStorySteps extends AbstractSteps {
     @Тогда("^получен ответ с параметрами:$")
     @StepDescription(action = "API->Проверки->Проверить ответ"
             , subAction = "Получен ответ с параметрами"
-            , parameters = {"params - наименование полей"})
+            , parameters = {"params - параметры"})
     @Context(type = ContextType.RESPONSE, change = ContextChange.BEFORE)
     public void validateResponse(List<FieldValueTable> params) {
         flow(() -> {
@@ -225,7 +223,7 @@ public class ApiStorySteps extends AbstractSteps {
     @Тогда("^получен ответ \"([^\"]*)\" с параметрами:$")
     @StepDescription(action = "API->Проверки->Проверить ответ"
             , subAction = "Получен ответ с параметрами"
-            , parameters = {"responseName - наименование ответа", "params - наименование полей"})
+            , parameters = {"responseName - наименование ответа", "params - параметры"})
     @Context(type = ContextType.RESPONSE, change = ContextChange.BEFORE, parameter = "responseName")
     public void validateResponse(String responseName, List<FieldValueTable> params) {
         flow(() -> {

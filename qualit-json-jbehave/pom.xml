@@ -5,7 +5,7 @@
     <parent>
         <groupId>ru.ibsqa.qualit</groupId>
         <artifactId>qualit</artifactId>
-        <version>3.2.2-SNAPSHOT</version>
+        <version>3.3.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>qualit-json-jbehave</artifactId>
@@ -15,7 +15,7 @@
             <dependency>
                 <groupId>ru.ibsqa.qualit</groupId>
                 <artifactId>qualit-bom</artifactId>
-                <version>3.2.2-SNAPSHOT</version>
+                <version>3.3.0-SNAPSHOT</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -23,10 +23,12 @@
     </dependencyManagement>
 
     <dependencies>
+
         <dependency>
             <groupId>ru.ibsqa.qualit</groupId>
             <artifactId>qualit-core-jbehave</artifactId>
         </dependency>
+
         <dependency>
             <groupId>ru.ibsqa.qualit</groupId>
             <artifactId>qualit-data</artifactId>
@@ -36,28 +38,17 @@
             <groupId>org.jbehave</groupId>
             <artifactId>jbehave-core</artifactId>
         </dependency>
+
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-beans</artifactId>
+            <groupId>ru.ibsqa.qualit</groupId>
+            <artifactId>qualit-log</artifactId>
+            <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-        </dependency>
+
     </dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>io.qameta.allure</groupId>
-                <artifactId>allure-maven</artifactId>
-                <configuration>
-                    <installDirectory>${project.basedir}/../.allure</installDirectory>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
     <reporting>
         <excludeDefaults>true</excludeDefaults>
     </reporting>
+
 </project>

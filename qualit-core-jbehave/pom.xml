@@ -5,7 +5,7 @@
     <parent>
         <groupId>ru.ibsqa.qualit</groupId>
         <artifactId>qualit</artifactId>
-        <version>3.2.2-SNAPSHOT</version>
+        <version>3.3.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>qualit-core-jbehave</artifactId>
@@ -15,7 +15,7 @@
             <dependency>
                 <groupId>ru.ibsqa.qualit</groupId>
                 <artifactId>qualit-bom</artifactId>
-                <version>3.2.2-SNAPSHOT</version>
+                <version>3.3.0-SNAPSHOT</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -23,59 +23,37 @@
     </dependencyManagement>
 
     <dependencies>
+
         <dependency>
             <groupId>ru.ibsqa.qualit</groupId>
             <artifactId>qualit-core</artifactId>
         </dependency>
-        <!-- Используется за место javax.annotation:javax.annotation-api:1.3.2-->
-        <dependency>
-            <groupId>jakarta.annotation</groupId>
-            <artifactId>jakarta.annotation-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-        </dependency>
+
         <dependency>
             <groupId>org.jbehave</groupId>
             <artifactId>jbehave-core</artifactId>
         </dependency>
+
         <dependency>
             <groupId>org.jbehave</groupId>
             <artifactId>jbehave-spring</artifactId>
         </dependency>
-        <!-- Транзитивная зависимость. Если убрать, то Lombok не преобразует аннотации в исходном коде в
-             Java-операторы до того, как компилятор их обработает, исходный код не будет валидным кодом Java.-->
+
         <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
         </dependency>
+
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
+            <groupId>ru.ibsqa.qualit</groupId>
+            <artifactId>qualit-log</artifactId>
+            <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-beans</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-        </dependency>
+
     </dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>io.qameta.allure</groupId>
-                <artifactId>allure-maven</artifactId>
-                <configuration>
-                    <installDirectory>${project.basedir}/../.allure</installDirectory>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
     <reporting>
         <excludeDefaults>true</excludeDefaults>
     </reporting>
+
 </project>

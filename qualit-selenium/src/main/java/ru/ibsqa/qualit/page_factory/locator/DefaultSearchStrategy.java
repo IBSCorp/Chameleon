@@ -1,8 +1,10 @@
 package ru.ibsqa.qualit.page_factory.locator;
 
+import org.apache.commons.lang3.StringUtils;
 import ru.ibsqa.qualit.context.IContextExplorer;
 import ru.ibsqa.qualit.definitions.annotations.selenium.Collection;
 import ru.ibsqa.qualit.definitions.annotations.selenium.Field;
+import ru.ibsqa.qualit.definitions.repository.ILocatorCreator;
 import ru.ibsqa.qualit.evaluate.IEvaluateManager;
 import org.openqa.selenium.By;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,9 @@ public class DefaultSearchStrategy implements ISearchStrategy {
 
     @Autowired
     private IContextExplorer contextExplorer;
+
+    @Autowired
+    private ILocatorCreator locatorCreator;
 
     /**
      * Вычисления в локаторе
@@ -66,8 +71,19 @@ public class DefaultSearchStrategy implements ISearchStrategy {
 
     private String getLocatorStrValue(java.lang.reflect.Field field) {
         if (field.getAnnotation(Field.class) != null) {
-            return field.getAnnotation(Field.class).locator();
-        } else if (field.getAnnotation(Collection.class) != null){
+            String locator = field.getAnnotation(Field.class).locator();
+
+            if (StringUtils.isEmpty(locator)) {
+                String template = field.getAnnotation(Field.class).template();
+                if (StringUtils.isEmpty(template)) {
+                    template = field.getType().getSimpleName();
+                }
+                String name = field.getAnnotation(Field.class).name();
+                return locatorCreator.createLocator(template, name);
+            }
+
+            return locator;
+        } else if (field.getAnnotation(Collection.class) != null) {
             return field.getAnnotation(Collection.class).locator();
         }
         return null;

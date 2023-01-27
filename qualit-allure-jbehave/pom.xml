@@ -5,7 +5,7 @@
     <parent>
         <artifactId>qualit</artifactId>
         <groupId>ru.ibsqa.qualit</groupId>
-        <version>3.2.2-SNAPSHOT</version>
+        <version>3.3.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -16,7 +16,7 @@
             <dependency>
                 <groupId>ru.ibsqa.qualit</groupId>
                 <artifactId>qualit-bom</artifactId>
-                <version>3.2.2-SNAPSHOT</version>
+                <version>3.3.0-SNAPSHOT</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -24,6 +24,7 @@
     </dependencyManagement>
 
     <dependencies>
+
         <dependency>
             <groupId>ru.ibsqa.qualit</groupId>
             <artifactId>qualit-allure</artifactId>
@@ -39,6 +40,12 @@
             <artifactId>allure-junit4</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>ru.ibsqa.qualit</groupId>
+            <artifactId>qualit-log</artifactId>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -52,6 +59,7 @@
             </plugin>
         </plugins>
     </build>
+
     <reporting>
         <excludeDefaults>true</excludeDefaults>
     </reporting>

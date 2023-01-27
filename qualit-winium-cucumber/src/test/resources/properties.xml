@@ -1,0 +1,9 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<Properties xmlns="http://qualit.ibs-qa.ru/schema/properties">
+    <Text name="applicationUrl" label="Путь к приложению" environment="true" defaultValue="apps\Aero Calculator MMXI.exe"
+          description="Путь к приложению, которое будет открыто перед началом тестов."/>
+    <List name="driverType" label="Тип драйвера" environment="true" defaultValue="WINIUM" priority="2"
+          description="Выбирается тип драйвера для проведения тестов.">
+        <Item value="WINIUM"/>
+    </List>
+</Properties>

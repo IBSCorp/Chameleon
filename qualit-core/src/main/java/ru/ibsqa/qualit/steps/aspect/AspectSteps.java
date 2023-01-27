@@ -2,6 +2,7 @@ package ru.ibsqa.qualit.steps.aspect;
 
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 import ru.ibsqa.qualit.utils.spring.SpringUtils;
 
@@ -28,6 +29,11 @@ public class AspectSteps {
     }
 
     // ------------------------------------------- UI && TestSteps (Nested)  -------------------------------------------
+    @Around("anyMethod() && uiStep() && testStep()")
+    public Object stepUINestedAround(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
+        return stepListenerManager.stepAround(proceedingJoinPoint, StepType.builder().uiStep(true).build());
+    }
+
     @Before("anyMethod() && uiStep() && testStep()")
     public void stepUINestedBefore(JoinPoint joinPoint) {
         stepListenerManager.stepBefore(joinPoint, StepType.builder().uiStep(true).build());
@@ -51,6 +57,11 @@ public class AspectSteps {
     }
 
     // ------------------------------------------- TestSteps (Nested) --------------------------------------------------
+    @Around("anyMethod() && !uiStep() && testStep()")
+    public Object stepNonUINestedAround(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
+        return stepListenerManager.stepAround(proceedingJoinPoint, StepType.builder().build());
+    }
+
     @Before("anyMethod() && !uiStep() && testStep()")
     public void stepNonUINestedBefore(JoinPoint joinPoint) {
         stepListenerManager.stepBefore(joinPoint, StepType.builder().build());

@@ -11,6 +11,7 @@ import java.lang.reflect.Field;
 public class DefaultFieldExtractor implements IFieldExtractor {
 
     @Override
+    @SuppressWarnings("unchecked")
     public <FACADE extends IFacade> FACADE getField(IPageObject pageObject, String fieldName) {
         FACADE field = (FACADE)searchField(pageObject, fieldName);
         if (field == null){
@@ -22,7 +23,7 @@ public class DefaultFieldExtractor implements IFieldExtractor {
         //поиск в полях класса
         for (Field field: pageObject.getClass().getDeclaredFields()) {
             ru.ibsqa.qualit.definitions.annotations.selenium.Field annotation = field.getAnnotation(ru.ibsqa.qualit.definitions.annotations.selenium.Field.class);
-            if (annotation != null && annotation.names().equals(fieldName)){
+            if (annotation != null && annotation.name().equals(fieldName)){
                 return getFieldInstance(pageObject, field);
             }
         }
@@ -45,7 +46,8 @@ public class DefaultFieldExtractor implements IFieldExtractor {
         }
         return null;
     }
-    private <FACADE extends IFacade> FACADE  getFieldInstance(IPageObject pageObject, Field field){
+    @SuppressWarnings("unchecked")
+    private <FACADE extends IFacade> FACADE getFieldInstance(IPageObject pageObject, Field field){
         try {
             return (FACADE) field.get(pageObject);
         } catch (IllegalAccessException e) {

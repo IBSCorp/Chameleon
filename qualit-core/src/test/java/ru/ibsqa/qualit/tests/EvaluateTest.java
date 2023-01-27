@@ -14,7 +14,6 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 
 import static org.junit.jupiter.api.Assertions.*;
 
-
 @Slf4j
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration("classpath:spring.xml")
@@ -23,10 +22,10 @@ import static org.junit.jupiter.api.Assertions.*;
 public class EvaluateTest {
 
     @Autowired
-    IVariableStorage variableStorage;
+    private IVariableStorage variableStorage;
 
     @Autowired
-    IEvaluateManager evaluateManager;
+    private IEvaluateManager evaluateManager;
 
     @Test
     public void evaluateTest() {
@@ -94,7 +93,8 @@ public class EvaluateTest {
         assertEquals(0, variableStorage.getVariables(GLOBAL).size());
 
         log.info("--- Тест системных свойств");
-        assertEquals("55.0", evaluateManager.evalVariable("#{java.class.version}"));
+        System.setProperty("qualit.my.property", "MyValue");
+        assertEquals("MyValue", evaluateManager.evalVariable("#{qualit.my.property}"));
 
     }
 }

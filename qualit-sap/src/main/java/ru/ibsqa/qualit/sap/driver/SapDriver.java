@@ -30,6 +30,7 @@ public class SapDriver<T extends WebElement> extends WebDriverFacade implements 
 
     private ActiveXComponent SAPROTWr;
     private ActiveXComponent GUIApp;
+
     @Getter
     private ActiveXComponent session;
 
@@ -38,13 +39,12 @@ public class SapDriver<T extends WebElement> extends WebDriverFacade implements 
     private Variant ScriptEngine;
     private DesiredCapabilities mDesiredCapabilities;
     private final SapSearchBy searchBy = SpringUtils.getBean(SapSearchBy.class);
+
     @Getter
     protected SapDriverFactory driverFactory;
 
-
     @Getter
     private ActiveXComponent connection;
-
 
     public SapDriver(DesiredCapabilities desiredCapabilities) {
         if (!existSapLogon()){
@@ -111,7 +111,7 @@ public class SapDriver<T extends WebElement> extends WebDriverFacade implements 
             BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
             while ((line = input.readLine()) != null){
                 if (line.contains("saplogon.exe")){
-                    System.out.println("Найден процесс saplogon.exe");
+                    log.info("Найден процесс saplogon.exe");
                     return true;
                 }
             }
@@ -342,11 +342,6 @@ public class SapDriver<T extends WebElement> extends WebDriverFacade implements 
         @Override
         public Timeouts timeouts() {
             return new SapTimeouts();
-        }
-
-        @Override
-        public ImeHandler ime() {
-            return null;
         }
 
         @Override

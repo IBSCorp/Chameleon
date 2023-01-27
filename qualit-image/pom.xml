@@ -5,7 +5,7 @@
     <parent>
         <groupId>ru.ibsqa.qualit</groupId>
         <artifactId>qualit</artifactId>
-        <version>3.2.2-SNAPSHOT</version>
+        <version>3.3.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>qualit-image</artifactId>
@@ -15,7 +15,7 @@
             <dependency>
                 <groupId>ru.ibsqa.qualit</groupId>
                 <artifactId>qualit-bom</artifactId>
-                <version>3.2.2-SNAPSHOT</version>
+                <version>3.3.0-SNAPSHOT</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -23,52 +23,32 @@
     </dependencyManagement>
 
     <dependencies>
-        <dependency>
-            <groupId>ru.ibsqa.qualit</groupId>
-            <artifactId>qualit-core</artifactId>
-        </dependency>
+
         <dependency>
             <groupId>ru.ibsqa.qualit</groupId>
             <artifactId>qualit-selenium</artifactId>
         </dependency>
+
         <dependency>
             <groupId>io.rest-assured</groupId>
             <artifactId>rest-assured</artifactId>
         </dependency>
 
-        <!-- Транзитивная зависимость. Если убрать, то Lombok не преобразует аннотации в исходном коде в
-             Java-операторы до того, как компилятор их обработает, исходный код не будет валидным кодом Java.-->
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.seleniumhq.selenium</groupId>
-            <artifactId>selenium-java</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
         <dependency>
             <groupId>ru.yandex.qatools.ashot</groupId>
             <artifactId>ashot</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>ru.ibsqa.qualit</groupId>
+            <artifactId>qualit-log</artifactId>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>io.qameta.allure</groupId>
-                <artifactId>allure-maven</artifactId>
-                <configuration>
-                    <installDirectory>${project.basedir}/../.allure</installDirectory>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
     <reporting>
         <excludeDefaults>true</excludeDefaults>
     </reporting>
+
 </project>

@@ -15,7 +15,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 @Slf4j
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration("classpath:spring.xml")
@@ -24,7 +23,7 @@ import java.util.Map;
 public class SortTest {
 
     @Autowired
-    CollectionSteps collectionSteps;
+    private CollectionSteps collectionSteps;
 
     @Test
     public void checkSortTest() {

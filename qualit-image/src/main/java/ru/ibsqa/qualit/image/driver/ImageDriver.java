@@ -287,11 +287,6 @@ public class ImageDriver<T extends WebElement> extends WebDriverFacade {
         }
 
         @Override
-        public ImeHandler ime() {
-            return null;
-        }
-
-        @Override
         public ImageWindow window() {
             return new ImageWindow();
         }

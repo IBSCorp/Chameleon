@@ -1,9 +1,7 @@
 package ru.ibsqa.qualit.steps;
 
 import ru.ibsqa.qualit.context.*;
-import ru.ibsqa.qualit.elements.IFacade;
-import ru.ibsqa.qualit.elements.IFacadeCollection;
-import ru.ibsqa.qualit.elements.IFacadeReadable;
+import ru.ibsqa.qualit.elements.*;
 import ru.ibsqa.qualit.utils.waiting.WaitingUtils;
 import lombok.Builder;
 import lombok.Data;
@@ -13,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.text.*;
+import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -21,7 +20,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @Component
 @Slf4j
-// TODO i18n
 public class CollectionSteps extends AbstractSteps {
 
     @Autowired
@@ -32,8 +30,6 @@ public class CollectionSteps extends AbstractSteps {
 
     @Autowired
     private WaitingUtils waitingUtils;
-
-    private static final String ERROR_MESSAGE_PREFIX = "При проверке сортировки произошла ошибка: ";
 
     @Data
     @Builder
@@ -49,6 +45,7 @@ public class CollectionSteps extends AbstractSteps {
 
     @UIStep
     @TestStep("выбирается элемент коллекции \"${collectionName}\" с параметрами: \"${conditions}\"")
+    @SuppressWarnings("rawtypes")
     public void stepSetCollectionByConditions(String collectionName, List<FindCondition> conditions) {
         PickElementResult<IFacadeCollection, ?> pickElementResult = getCollection(collectionName);
         pickElementResult.getContextManager().setContextCollectionItem(searchItem(collectionName, conditions));
@@ -56,47 +53,94 @@ public class CollectionSteps extends AbstractSteps {
 
     @UIStep
     @TestStep("выбирается элемент коллекции \"${collectionName}\" с индексом \"${index}\"")
+    @SuppressWarnings("rawtypes")
     public void stepSetCollectionByIndex(String collectionName, int index) {
         PickElementResult<IFacadeCollection, ?> pickElementResult = getCollection(collectionName);
         pickElementResult.getContextManager().setContextCollectionItem(searchItemByIndex(collectionName, index));
     }
 
-    @UIStep
-    @TestStep("проверяется коллекция \"${collectionName}\", равно ли количество элементов \"${count}\"")
     public void stepCheckItemCount(String collectionName, int count) {
-        int actualCount = getItems(collectionName).size();
-        assertEquals (count, actualCount, "Количество элементов коллекции " + collectionName + " не соответствует ожидаемому");
+        stepCheckItemCount(collectionName, CompareOperatorEnum.EQUALS, count);
     }
 
+    @UIStep
+    @TestStep("проверяется коллекция \"${collectionName}\", что количество элементов ${operator} \"${count}\"")
+    public void stepCheckItemCount(String collectionName, CompareOperatorEnum operator, int count) {
+        IFacadeCollection<?> collection = getCollection(collectionName).getElement();
+        AtomicReference<String> actual = new AtomicReference<>();
+        boolean isChecked;
+        if (collection instanceof IFacadeWait) {
+            isChecked = waiting(
+                    Duration.ofSeconds(((IFacadeWait)collection).getWaitTimeOut()),
+                    () -> {
+                        actual.set(Integer.toString(getItems(collection, collectionName).size()));
+                        return operator.checkValue(actual.get(), Integer.toString(count));
+                    }
+            );
+        } else {
+            actual.set(Integer.toString(getItems(collection, collectionName).size()));
+            isChecked = operator.checkValue(actual.get(), Integer.toString(count));
+        }
+        if (!isChecked) {
+            fail(operator.buildErrorMessage(message("checkCollection"), actual.get(), Integer.toString(count)));
+        }
+    }
 
     @UIStep
     @TestStep("проверяется, что коллекция \"${collectionName}\" не пуста")
     public void stepCheckNotEmpty(String collectionName) {
-        int actualCount = getItems(collectionName).size();
-        assertNotEquals(0, actualCount, "Количество элементов коллекции " + collectionName + " равно нулю");
+        stepCheckItemCount(collectionName, CompareOperatorEnum.GREATER, 0);
+    }
+
+    public void stepCheckItemCount(String collectionName, int count, List<FindCondition> conditions) {
+        stepCheckItemCount(collectionName, CompareOperatorEnum.EQUALS, count);
     }
 
     @UIStep
-    @TestStep("проверяется коллекция \"${collectionName}\", равно ли количество элементов \"${count}\" с параметрами: \"${conditions}\"")
-    public void stepCheckItemCount(String collectionName, int count, List<FindCondition> conditions) {
-        int actualCount = getItems(collectionName, conditions, false).size();
-        assertEquals(count, actualCount, "Количество элементов коллекции " + collectionName + " не соответствует ожидаемому");
+    @TestStep("проверяется коллекция \"${collectionName}\", что количество элементов ${operator} \"${count}\" с параметрами: \"${conditions}\"")
+    public void stepCheckItemCount(String collectionName, CompareOperatorEnum operator, int count, List<FindCondition> conditions) {
+        IFacadeCollection<?> collection = getCollection(collectionName).getElement();
+        AtomicReference<String> actual = new AtomicReference<>();
+        boolean isChecked;
+        if (collection instanceof IFacadeWait) {
+            isChecked = waiting(
+                    Duration.ofSeconds(((IFacadeWait)collection).getWaitTimeOut()),
+                    () -> {
+                        try {
+                            actual.set(Integer.toString(getItems(collection, collectionName, conditions, false).size()));
+                            return operator.checkValue(actual.get(), Integer.toString(count));
+                        } catch (InvokeFieldException ignore) {
+                            return false;
+                        }
+                    }
+            );
+        } else {
+            actual.set(Integer.toString(getItems(collection, collectionName, conditions, false).size()));
+            isChecked = operator.checkValue(actual.get(), Integer.toString(count));
+        }
+        if (!isChecked) {
+            fail(operator.buildErrorMessage(message("checkCollection"), actual.get(), Integer.toString(count)));
+        }
     }
 
     @UIStep
     @TestStep("получить элемент коллекции \"${collectionName}\" с индексом \"${index}\"")
+    @SuppressWarnings("unchecked")
     public <CONTEXT extends IContextObject> CONTEXT searchItemByIndex(String collectionName, int index) {
         IFacadeCollection<CONTEXT> collection = getCollection(collectionName).getElement();
 
-        Iterator<CONTEXT> iter = collection.iterator();
-        int i = 0;
-        while (iter.hasNext()) {
-            CONTEXT item = iter.next();
-            if (i == index) {
-                return item;
+        long startTime = System.currentTimeMillis();
+        do {
+            Iterator<CONTEXT> iter = collection.iterator();
+            int i = 0;
+            while (iter.hasNext()) {
+                CONTEXT item = iter.next();
+                if (i == index) {
+                    return item;
+                }
+                i++;
             }
-            i++;
-        }
+        } while (collection instanceof IFacadeWait && (System.currentTimeMillis()<(startTime+((IFacadeWait) collection).getWaitTimeOut()*1000)));
 
         fail(message("collectionNoItemByIndexErrorMessage", collectionName, index));
         return null;
@@ -104,21 +148,33 @@ public class CollectionSteps extends AbstractSteps {
 
     @UIStep
     @TestStep("получить элемент коллекции \"${collectionName}\" с параметрами: \"${conditions}\"")
+    @SuppressWarnings("unchecked")
     public <CONTEXT extends IContextObject> CONTEXT searchItem(String collectionName, List<FindCondition> conditions) {
-        List<CONTEXT> found = getItems(collectionName, conditions, true);
-        if (0 == found.size()) {
-            fail(message("CollectionItemNotFoundAssertMessage", collectionName, conditions.toString()));
-        }
-        return found.get(0);
+        IFacadeCollection<CONTEXT> collection = getCollection(collectionName).getElement();
+
+        long startTime = System.currentTimeMillis();
+        do {
+            try {
+                List<CONTEXT> found = getItems(collectionName, conditions, true);
+                if (found.size() > 0) {
+                    return found.get(0);
+                }
+            } catch (InvokeFieldException ignore) {
+            }
+        } while (collection instanceof IFacadeWait && (System.currentTimeMillis()<(startTime+((IFacadeWait) collection).getWaitTimeOut()*1000)));
+
+        fail(message("CollectionItemNotFoundAssertMessage", collectionName, conditions.toString()));
+        return null;
     }
 
     @UIStep
     @TestStep("ожидается элемент коллекции \"${collectionName}\" в течение \"${sec}\" сек с параметрами: \"${conditions}\"")
+    @SuppressWarnings("rawtypes")
     public void waitCollectionByConditions(String collectionName, int sec, List<FindCondition> conditions) {
         PickElementResult<IFacadeCollection, ?> pickElementResult = this.getCollection(collectionName);
         IContextObject contextObject = waitObjectInCollectionByConditions(collectionName, sec, conditions);
         if (Objects.isNull(contextObject)) {
-            fail(this.message("CollectionItemNotFoundAssertMessage", new Object[]{collectionName, conditions.toString()}));
+            fail(message("CollectionItemNotFoundAssertMessage", collectionName, conditions.toString()));
         } else {
             pickElementResult.getContextManager().setContextCollectionItem(contextObject);
         }
@@ -127,11 +183,15 @@ public class CollectionSteps extends AbstractSteps {
     public IContextObject waitObjectInCollectionByConditions(String collectionName, int sec, List<FindCondition> conditions) {
         AtomicReference<IContextObject> contextObject = new AtomicReference<>();
         if (waitingUtils.waiting(sec * 1000, () -> {
-            List<IContextObject> contextObjects = getItems(collectionName, conditions);
-            if (contextObjects.size() > 0) {
-                contextObject.set(contextObjects.get(0));
-                return true;
-            } else {
+            try {
+                List<IContextObject> contextObjects = getItems(collectionName, conditions);
+                if (contextObjects.size() > 0) {
+                    contextObject.set(contextObjects.get(0));
+                    return true;
+                } else {
+                    return false;
+                }
+            } catch (InvokeFieldException ignore) {
                 return false;
             }
         })) {
@@ -151,18 +211,19 @@ public class CollectionSteps extends AbstractSteps {
                 return false;
             }
         })) {
-            fail(String.format("Не появились элементы коллекции [%s] в течение [%s]", collectionName, sec));
+            fail(message("CollectionItemsNotFoundAssertMessage", collectionName));
         }
     }
 
     /**
      * Поиск коллекции по имени
      *
-     * @param collectionName
+     * @param collectionName - имя коллекции
      * @param <CONTEXT>
      * @return
      */
-    public <CONTEXT extends IContextObject> PickElementResult<IFacadeCollection, ?> getCollection(String collectionName) {
+    @SuppressWarnings("rawtypes")
+    public <CONTEXT extends IContextObject> PickElementResult<IFacadeCollection, CONTEXT> getCollection(String collectionName) {
         return contextExplorer.pickElement(collectionName, IFacadeCollection.class);
     }
 
@@ -173,17 +234,24 @@ public class CollectionSteps extends AbstractSteps {
      * @param <CONTEXT>
      * @return
      */
+    @SuppressWarnings("unchecked")
+    public <CONTEXT extends IContextObject> List<CONTEXT> getItems(String collectionName) {
+        return getItems(getCollection(collectionName).getElement(), collectionName);
+    }
+
+    /**
+     * Получение всех элементов коллекции
+     *
+     * @param collection - коллекция
+     * @param <CONTEXT>
+     * @return
+     */
     @UIStep
     @TestStep("получить элементы коллекции \"${collectionName}\"")
-    public <CONTEXT extends IContextObject> List<CONTEXT> getItems(String collectionName) {
-
-        IFacadeCollection<CONTEXT> collection = getCollection(collectionName).getElement();
-
+    public <CONTEXT extends IContextObject> List<CONTEXT> getItems(IFacadeCollection<CONTEXT> collection, String collectionName) {
         List<CONTEXT> result = new ArrayList<>();
 
-        collection.forEach(item -> {
-            result.add(item);
-        });
+        collection.forEach(result::add);
 
         return result;
     }
@@ -209,9 +277,35 @@ public class CollectionSteps extends AbstractSteps {
      * @param <CONTEXT>
      * @return
      */
+    @SuppressWarnings("unchecked")
     public <CONTEXT extends IContextObject> List<CONTEXT> getItems(String collectionName, List<FindCondition> conditions, boolean onlyFirst) {
+        return getItems(getCollection(collectionName).getElement(), collectionName, conditions, onlyFirst);
+    }
 
-        IFacadeCollection<CONTEXT> collection = getCollection(collectionName).getElement();
+    /**
+     * Получение элементов коллекции с параметрами
+     *
+     * @param collection     - коллекция
+     * @param conditions     - условия поиска
+     * @param <CONTEXT>
+     * @return
+     */
+    public <CONTEXT extends IContextObject> List<CONTEXT> getItems(IFacadeCollection<CONTEXT> collection, String collectionName, List<FindCondition> conditions) {
+        return getItems(collection, collectionName, conditions, false);
+    }
+
+    /**
+     * Получение элементов коллекции с параметрами
+     *
+     * @param collection     - коллекция
+     * @param conditions     - условия поиска
+     * @param onlyFirst      - если true, то прекратить поиск после обнаружения первого элемента
+     * @param <CONTEXT>
+     * @return
+     */
+    @UIStep
+    @TestStep("получить элементы коллекции \"${collectionName}\" с параметрами \"${conditions}\"")
+    public <CONTEXT extends IContextObject> List<CONTEXT> getItems(IFacadeCollection<CONTEXT> collection, String collectionName, List<FindCondition> conditions, boolean onlyFirst) {
 
         List<CONTEXT> result = new ArrayList<>();
 
@@ -280,10 +374,15 @@ public class CollectionSteps extends AbstractSteps {
         return row;
     }
 
+    private static String getCollectionSortError(String message) {
+        return message("collectionSortErrorPrefix", message);
+    }
+
     /**
      * Класс, описывающий условия проверки сортировки по одному полю
      */
     @Data
+    @SuppressWarnings("rawtypes")
     public static class SortParams {
 
         private Class clazz = null;
@@ -295,13 +394,11 @@ public class CollectionSteps extends AbstractSteps {
 
         public void check() {
             if (null == clazz) {
-                fail(ERROR_MESSAGE_PREFIX + " не указан тип или задан неверно");
-                return;
+                fail(getCollectionSortError(message("collectionSortParamTypeWrong")));
             }
 
             if (null == pattern && (Date.class == clazz || Double.class == clazz || Long.class == clazz)) {
-                fail(ERROR_MESSAGE_PREFIX + " не указан шаблон");
-                return;
+                fail(getCollectionSortError(message("collectionSortParamTemplateWrong")));
             }
         }
 
@@ -327,38 +424,38 @@ public class CollectionSteps extends AbstractSteps {
         }
 
         private Date getDate(String s) {
-            if (null == s | s.isEmpty()) {
+            if (null == s || s.isEmpty()) {
                 return null;
             }
             try {
                 return getDateFormat().parse(s);
             } catch (ParseException e) {
-                fail(ERROR_MESSAGE_PREFIX + " значение \"" + s + "\" не является датой");
+                fail(getCollectionSortError(message("collectionSortParamTypeDateWrong", s)));
                 return null;
             }
         }
 
         private Double getDouble(String s) {
-            if (null == s | s.isEmpty()) {
+            if (null == s || s.isEmpty()) {
                 return null;
             }
             Double d = null;
             try {
                 return getDecimalFormat().parse(s).doubleValue();
             } catch (ParseException e) {
-                fail(ERROR_MESSAGE_PREFIX + " значение \"" + s + "\" не является вещественным числом");
+                fail(getCollectionSortError(message("collectionSortParamTypeDecimalWrong", s)));
                 return null;
             }
         }
 
         private Long getLong(String s) {
-            if (null == s | s.isEmpty()) {
+            if (null == s || s.isEmpty()) {
                 return null;
             }
             try {
                 return getDecimalFormat().parse(s).longValue();
             } catch (ParseException e) {
-                fail(ERROR_MESSAGE_PREFIX + " значение \"" + s + "\" не является целым числом");
+                fail(getCollectionSortError(message("collectionSortParamTypeIntegerWrong", s)));
                 return null;
             }
         }
@@ -372,11 +469,8 @@ public class CollectionSteps extends AbstractSteps {
 
         /**
          * Сравнение двух значений с учетом параметров
-         *
-         * @param s1
-         * @param s2
-         * @return
          */
+        @SuppressWarnings({"unchecked","rawtypes"})
         public int compare(String s1, String s2) {
 
             Comparable c1 = null;
@@ -396,9 +490,11 @@ public class CollectionSteps extends AbstractSteps {
                 c2 = getString(s2);
             }
 
-            if (c1 == null && c2 != null) {
+            if (c1 == null && c2 == null) {
+                return 0;
+            } else if (c1 == null) {
                 return -1;
-            } else if (c1 != null && c2 == null) {
+            } else if (c2 == null) {
                 return 1;
             } else {
                 return (desc ? -1 : 1) * c1.compareTo(c2);
@@ -409,12 +505,11 @@ public class CollectionSteps extends AbstractSteps {
     /**
      * Проверка сортировки коллекции
      *
-     * @param collectionName имя коллекции для вывода сообщения
-     * @param array          - массив значений
-     * @param sortParamsMap  - параметры проверки сортировки
+     * @param array         - массив значений
+     * @param sortParamsMap - параметры проверки сортировки
+     * @return true, если коллекция отсортирована
      */
-    public void checkSortArray(String collectionName, List<Map<String, String>> array, Map<String, SortParams> sortParamsMap) {
-
+    private boolean checkSortArray(List<Map<String, String>> array, Map<String, SortParams> sortParamsMap) {
         try {
             array.stream().reduce((last, curr) -> {
                 if (compare(last, curr, sortParamsMap) > 0) {
@@ -422,10 +517,22 @@ public class CollectionSteps extends AbstractSteps {
                 }
                 return curr;
             });
+            return true;
         } catch (UnsupportedOperationException ex) {
-            fail(String.format("Коллекция \"%s\" не отсортирована", collectionName));
+            return false;
         }
+    }
 
+    /**
+     * Проверка сортировки коллекции
+     * @param collectionName имя коллекции для вывода сообщения
+     * @param array          - массив значений
+     * @param sortParamsMap  - параметры проверки сортировки
+     */
+    public void checkSortArray(String collectionName, List<Map<String, String>> array, Map<String, SortParams> sortParamsMap) {
+        if (!checkSortArray(array, sortParamsMap)) {
+            fail(message("collectionNotSorted", collectionName));
+        }
     }
 
     /**
@@ -448,50 +555,56 @@ public class CollectionSteps extends AbstractSteps {
     /**
      * Общая функция проверки сортировки
      *
-     * @param collectionName
-     * @param conditions
+     * @param collectionName - имя коллекции
+     * @param conditions - условия
      */
+    @SuppressWarnings("unchecked")
     private void checkSortedInternal(String collectionName, List<Pair<String, String>> conditions) {
 
         Map<String, SortParams> sortParamsMap = new HashMap<>();
         SortParams sortParams = null;
-        String groupField = null;
+        AtomicReference<String> groupField = new AtomicReference<>();
 
         for (Pair<String, String> entry : conditions) {
 
             String conditionField = entry.getKey();
-            String contitionValue = entry.getValue();
+            String conditionValue = entry.getValue();
 
-            if (conditionField.equalsIgnoreCase("Поле")) {
+            if (conditionField.equalsIgnoreCase(message("collectionSortParamField"))) {
                 if (null != sortParams) {
                     sortParams.check();
                 }
                 sortParams = new SortParams();
-                sortParamsMap.put(contitionValue, sortParams);
-            } else if (conditionField.equalsIgnoreCase("тип")) {
-                if (contitionValue.equalsIgnoreCase("строка")) {
-                    sortParams.setClazz(String.class);
-                } else if (contitionValue.equalsIgnoreCase("целое")) {
-                    sortParams.setClazz(Long.class);
-                } else if (contitionValue.equalsIgnoreCase("вещественное")) {
-                    sortParams.setClazz(Double.class);
-                } else if (contitionValue.equalsIgnoreCase("дата")) {
-                    sortParams.setClazz(Date.class);
+                sortParamsMap.put(conditionValue, sortParams);
+            } else {
+                if (null == sortParams) {
+                    fail(message("collectionSortParamFieldWrong"));
                 }
-            } else if (conditionField.equalsIgnoreCase("шаблон")) {
-                sortParams.setPattern(contitionValue);
-            } else if (conditionField.equalsIgnoreCase("разделитель дробной части")) {
-                sortParams.setDecimalSeparator(contitionValue.charAt(0));
-            } else if (conditionField.equalsIgnoreCase("разделитель групп")) {
-                sortParams.setGroupingSeparator(contitionValue.charAt(0));
-            } else if (conditionField.equalsIgnoreCase("порядок сортировки")) {
-                if (contitionValue.equalsIgnoreCase("по убыванию")) {
-                    sortParams.setDesc(true);
+                if (conditionField.equalsIgnoreCase(message("collectionSortParamType"))) {
+                    if (conditionValue.equalsIgnoreCase(message("collectionSortParamTypeString"))) {
+                        sortParams.setClazz(String.class);
+                    } else if (conditionValue.equalsIgnoreCase(message("collectionSortParamTypeInteger"))) {
+                        sortParams.setClazz(Long.class);
+                    } else if (conditionValue.equalsIgnoreCase(message("collectionSortParamTypeDecimal"))) {
+                        sortParams.setClazz(Double.class);
+                    } else if (conditionValue.equalsIgnoreCase(message("collectionSortParamTypeDate"))) {
+                        sortParams.setClazz(Date.class);
+                    }
+                } else if (conditionField.equalsIgnoreCase(message("collectionSortParamTemplate"))) {
+                    sortParams.setPattern(conditionValue);
+                } else if (conditionField.equalsIgnoreCase(message("collectionSortParamDecimalDelimeter"))) {
+                    sortParams.setDecimalSeparator(conditionValue.charAt(0));
+                } else if (conditionField.equalsIgnoreCase(message("collectionSortParamGroupDelimeter"))) {
+                    sortParams.setGroupingSeparator(conditionValue.charAt(0));
+                } else if (conditionField.equalsIgnoreCase(message("collectionSortParamOrder"))) {
+                    if (conditionValue.equalsIgnoreCase(message("collectionSortParamOrderDesc"))) {
+                        sortParams.setDesc(true);
+                    }
+                } else if (conditionField.equalsIgnoreCase(message("collectionSortParamOrderIgnoreCase"))) {
+                    sortParams.setIgnoreCase(Boolean.parseBoolean(conditionValue));
+                } else if (conditionField.equalsIgnoreCase(message("collectionSortParamGroupField"))) {
+                    groupField.set(conditionValue);
                 }
-            } else if (conditionField.equalsIgnoreCase("без учета заглавных букв")) {
-                sortParams.setIgnoreCase(Boolean.parseBoolean(contitionValue));
-            } else if (conditionField.equalsIgnoreCase("поле группировки")) {
-                groupField = contitionValue;
             }
 
         }
@@ -499,42 +612,55 @@ public class CollectionSteps extends AbstractSteps {
             sortParams.check();
         }
 
-        final List<IContextObject> items = this.getItems(collectionName);
+        final IFacadeCollection<IContextObject> collection = getCollection(collectionName).getElement();
 
-        if (null == groupField) {
-            // Получить значения из коллекции
-            List<Map<String, String>> array = items.stream()
-                    .map(item -> getRow(item, sortParamsMap))
-                    .collect(Collectors.toList());
-
-            checkSortArray(collectionName, array, sortParamsMap);
-
-        } else {
-
-            // Разбить проверяемую коллекцию на круппы
-            String finalGroupField = groupField;
-            Map<String, List<Map<String, String>>> groups = items.stream()
-                    .collect(
-                            Collectors.groupingBy(
-                                    item -> {
-                                        IFacadeReadable elItem = ((IContextObject) item).getField(finalGroupField);
-                                        return elItem.getFieldValue();
-                                    },
-                                    Collectors.mapping(
-                                            item -> getRow(item, sortParamsMap), Collectors.toList()
-                                    )
-                            )
-                    );
-
-            groups.values().forEach(list ->
-                    checkSortArray(
-                            collectionName,
-                            list,
-                            sortParamsMap)
+        boolean isChecked;
+        if (collection instanceof IFacadeWait) {
+            isChecked = waiting(
+                    Duration.ofSeconds(((IFacadeWait)collection).getWaitTimeOut()),
+                    () -> waitForSortedInternal(sortParamsMap, groupField.get(), this.getItems(collection, collectionName))
             );
-
+        } else {
+            isChecked = waitForSortedInternal(sortParamsMap, groupField.get(), this.getItems(collection, collectionName));
         }
 
+        if (!isChecked) {
+            fail(message("collectionNotSorted", collectionName));
+        }
+    }
+
+    private boolean waitForSortedInternal(Map<String, SortParams> sortParamsMap, String groupField, List<IContextObject> items) {
+        try {
+            if (null == groupField) {
+                // Получить значения из коллекции
+                List<Map<String, String>> array = items.stream()
+                        .map(item -> getRow(item, sortParamsMap))
+                        .collect(Collectors.toList());
+
+                return checkSortArray(array, sortParamsMap);
+            } else {
+                // Разбить проверяемую коллекцию на группы
+                Map<String, List<Map<String, String>>> groups = items.stream()
+                        .collect(
+                                Collectors.groupingBy(
+                                        item -> {
+                                            IFacadeReadable elItem = ((IContextObject) item).getField(groupField);
+                                            return elItem.getFieldValue();
+                                        },
+                                        Collectors.mapping(
+                                                item -> getRow(item, sortParamsMap), Collectors.toList()
+                                        )
+                                )
+                        );
+
+                // Проверить каждую группу на сортировку
+                return groups.values().stream().allMatch(list ->
+                        checkSortArray(list, sortParamsMap)
+                );
+            }
+        } catch (InvokeFieldException ignore) {
+            return false;
+        }
     }
 
 
@@ -547,10 +673,8 @@ public class CollectionSteps extends AbstractSteps {
     @UIStep
     @TestStep("проверяется коллекция \"${collectionName}\", отсортирована ли по полю \"${field}\" с параметрами: \"${conditions}\"")
     public void checkSorted(String collectionName, String field, List<Pair<String, String>> conditions) {
-
-        conditions.add(0, Pair.of("Поле", field));
+        conditions.add(0, Pair.of(message("collectionSortParamField"), field));
         checkSortedInternal(collectionName, conditions);
-
     }
 
 }

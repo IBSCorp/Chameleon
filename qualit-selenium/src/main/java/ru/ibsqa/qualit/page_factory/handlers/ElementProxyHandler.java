@@ -6,55 +6,51 @@ import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.support.pagefactory.ElementLocator;
 import org.openqa.selenium.support.pagefactory.internal.LocatingElementHandler;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.time.Clock;
 import java.time.Instant;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static ru.ibsqa.qualit.elements.selenium.WebElementFacade.UNKNOWN_WEB_ELEMENT;
+
 /**
- * InvocationHandler элемента страницы (кроме коллекций)
+ * InvocationHandler элемента страницы
  */
 @Slf4j
-public class ElementProxyHandler extends LocatingElementHandler {
-
-    private final java.time.Duration timeOutInSeconds;
-    private final int waitTimeOut;
-
-    private final Clock clock;
-
-    private final String name;
+public class ElementProxyHandler extends AbstractElementHandler {
 
     private final String[] frames;
+    private final boolean collectionElement;
 
     public ElementProxyHandler(ElementLocator locator, String name, int waitTimeOut) {
-        super(locator);
-        this.name = name;
-        this.frames = new String[0];
-        this.clock = Clock.systemDefaultZone();
-        this.timeOutInSeconds = java.time.Duration.ofSeconds(60);
-        this.waitTimeOut = waitTimeOut;
+        this(locator, name, waitTimeOut, new String[0], false);
     }
 
-    public ElementProxyHandler(ElementLocator locator, String name, int waitTimeOut, String[] frames) {
-        super(locator);
-        this.name = name;
+    public ElementProxyHandler(ElementLocator locator, String name, int waitTimeOut, String[] frames, boolean collectionElement) {
+        super(locator, name, waitTimeOut);
         this.frames = frames;
-        this.clock = Clock.systemDefaultZone();
-        this.timeOutInSeconds = java.time.Duration.ofSeconds(60);
-        this.waitTimeOut = waitTimeOut;
+        this.collectionElement = collectionElement;
     }
 
     @Override
     public Object invoke(Object o, Method method, Object[] objects) throws Throwable {
         if ("toString".equals(method.getName())) {
-            return name;
+            return getName();
         }
         IFrameManager.elementFrames(frames);
-        log.debug(String.format("getField(\"%s\").%s(%s)", name, method.getName(), Objects.isNull(objects) ? "" : Stream.of(objects).map(Object::toString).collect(Collectors.joining(", "))));
+        log.debug(String.format("getField(\"%s\").%s(%s)", getName(), method.getName(), Objects.isNull(objects) ? "" : Stream.of(objects).map(Object::toString).collect(Collectors.joining(", "))));
 
-        Instant end = clock.instant().plus(this.timeOutInSeconds);
+        // В этом блоке производится быстрая проверка отсутствия поля на странице
+        if (method.getName().equals("equals") && UNKNOWN_WEB_ELEMENT.equals(objects[0])) {
+            Field field = LocatingElementHandler.class.getDeclaredField("locator");
+            field.setAccessible(true);
+            ElementLocator elementLocator = (ElementLocator)field.get(this);
+            return elementLocator.findElements().size() == 0;
+        }
+
+        Instant start = getCurrent();
 
         StaleElementReferenceException lastException;
         do {
@@ -64,15 +60,8 @@ public class ElementProxyHandler extends LocatingElementHandler {
                 lastException = e;
                 this.waitFor();
             }
-        } while (end.isBefore(clock.instant()));
-        throw lastException;
+        } while (!collectionElement && inTimeout(start));
+        return throwInvokeFieldException(lastException);
     }
 
-    protected long sleepFor() {
-        return 500L;
-    }
-
-    private void waitFor() throws InterruptedException {
-        Thread.sleep(this.sleepFor());
-    }
 }

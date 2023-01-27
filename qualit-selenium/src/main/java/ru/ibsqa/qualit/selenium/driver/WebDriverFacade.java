@@ -1,31 +1,28 @@
 package ru.ibsqa.qualit.selenium.driver;
 
+import org.openqa.selenium.interactions.*;
 import ru.ibsqa.qualit.page_factory.locator.AbstractElementLocatorFactory;
 import ru.ibsqa.qualit.selenium.driver.configuration.IDriverConfiguration;
 import ru.ibsqa.qualit.utils.spring.SpringUtils;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.openqa.selenium.*;
-import org.openqa.selenium.interactions.HasInputDevices;
-import org.openqa.selenium.interactions.Keyboard;
-import org.openqa.selenium.interactions.Mouse;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
-public class WebDriverFacade implements WebDriver, TakesScreenshot, HasInputDevices, JavascriptExecutor, HasCapabilities {
+public class WebDriverFacade implements WebDriver, TakesScreenshot, JavascriptExecutor, HasCapabilities, Interactive {
 
     @Getter @Setter
     private boolean defaultDriver;
 
-    @Setter(AccessLevel.PROTECTED)
-    protected WebDriver wrappedDriver;
+    // Значение реального драйвера изолированное для конкретного потока
+    private ThreadLocal<WebDriver> threadWrappedDriver = new ThreadLocal<>();
+    // Полный список всех реальных драйверов (используется только в методе quit)
+    private final List<WebDriver> allWrappedDrivers = new ArrayList<>();
 
     @Getter
     protected IDriverFactory driverFactory;
@@ -60,11 +57,9 @@ public class WebDriverFacade implements WebDriver, TakesScreenshot, HasInputDevi
         return Objects.nonNull(getConfiguration()) && getConfiguration().isCloseDriverAfterTest();
     }
 
-
     @Autowired
     @Getter
     private AbstractElementLocatorFactory elementLocatorFactory;
-
 
     public AbstractElementLocatorFactory getElementLocatorFactory(SearchContext searchContext) {
         if (null == searchContext) {
@@ -85,12 +80,27 @@ public class WebDriverFacade implements WebDriver, TakesScreenshot, HasInputDevi
         return SpringUtils.getBeanName(this);
     }
 
+    protected WebDriver getPureWrappedDriver() {
+        return threadWrappedDriver.get();
+    }
 
-    public WebDriver getWrappedDriver(){
-        if (wrappedDriver == null) {
+    public WebDriver getWrappedDriver() {
+        if (Objects.isNull(threadWrappedDriver.get())) {
             setWrappedDriver(newProxyDriver());
         }
-        return wrappedDriver;
+        return getPureWrappedDriver();
+    }
+
+    protected void setWrappedDriver(WebDriver webDriver) {
+        if (Objects.nonNull(webDriver)) {
+            threadWrappedDriver.set(webDriver);
+            if (!allWrappedDrivers.contains(webDriver)) {
+                allWrappedDrivers.add(webDriver);
+            }
+        } else {
+            threadWrappedDriver.remove();
+            allWrappedDrivers.remove(webDriver);
+        }
     }
 
     private void setImplicitlyWait(WebDriver webDriver, int implicitlyWait) {
@@ -104,10 +114,10 @@ public class WebDriverFacade implements WebDriver, TakesScreenshot, HasInputDevi
     }
 
     public void switchToDefaultContent() {
-        if (framesSupport && Objects.nonNull(wrappedDriver)) {
+        if (framesSupport && Objects.nonNull(getPureWrappedDriver())) {
             try {
-                if (Objects.nonNull(wrappedDriver.switchTo())) {
-                    wrappedDriver.switchTo().defaultContent();
+                if (Objects.nonNull(getPureWrappedDriver().switchTo())) {
+                    getPureWrappedDriver().switchTo().defaultContent();
                 }
             } catch (org.openqa.selenium.UnsupportedCommandException e) {
                 framesSupport = false;
@@ -127,9 +137,9 @@ public class WebDriverFacade implements WebDriver, TakesScreenshot, HasInputDevi
 
     public void setImplicitlyWait(int seconds) {
         implicitlyWait = seconds;
-        if (wrappedDriver != null) {
-            //wrappedDriver.manage().timeouts().implicitlyWait(implicitlyWait, TimeUnit.SECONDS);
-            setImplicitlyWait(wrappedDriver, implicitlyWait);
+        if (Objects.nonNull(getPureWrappedDriver())) {
+            //getWrappedDriver().manage().timeouts().implicitlyWait(implicitlyWait, TimeUnit.SECONDS);
+            setImplicitlyWait(getPureWrappedDriver(), implicitlyWait);
         }
     }
 
@@ -193,9 +203,10 @@ public class WebDriverFacade implements WebDriver, TakesScreenshot, HasInputDevi
 
     @Override
     public void quit() {
-        if (null != wrappedDriver && isCloseDriverAfterTest()) {
-            getWrappedDriver().quit();
-            wrappedDriver = null;
+        if (allWrappedDrivers.size()>0 && isCloseDriverAfterTest()) {
+            allWrappedDrivers.forEach(WebDriver::quit);
+            allWrappedDrivers.clear();
+            threadWrappedDriver = new ThreadLocal<>();
         }
     }
 
@@ -243,17 +254,17 @@ public class WebDriverFacade implements WebDriver, TakesScreenshot, HasInputDevi
         return ((TakesScreenshot) getWrappedDriver()).getScreenshotAs(outputType);
     }
 
-    @Override
-    public Keyboard getKeyboard() {
-        return ((HasInputDevices) getWrappedDriver()).getKeyboard();
-    }
-
-    @Override
-    public Mouse getMouse() {
-        return ((HasInputDevices) getWrappedDriver()).getMouse();
-    }
-
     public void showBrowser(){
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void perform(Collection<Sequence> actions) {
+        ((Interactive) getWrappedDriver()).perform(actions);
+    }
+
+    @Override
+    public void resetInputState() {
+        ((Interactive) getWrappedDriver()).resetInputState();
     }
 }

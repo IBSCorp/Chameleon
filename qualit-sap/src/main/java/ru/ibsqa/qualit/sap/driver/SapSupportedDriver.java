@@ -1,42 +1,24 @@
 package ru.ibsqa.qualit.sap.driver;
 
-
+import lombok.AllArgsConstructor;
 import org.openqa.selenium.WebDriver;
 import ru.ibsqa.qualit.selenium.driver.ISupportedDriver;
 import ru.ibsqa.qualit.selenium.driver.configuration.IDriverConfiguration;
 
-
+@AllArgsConstructor
 public enum SapSupportedDriver implements ISupportedDriver {
 
     SAP(SapDriver.class);
 
-    private final Class<? extends WebDriver> _class;
-    private final String _item;
+    private final Class<? extends WebDriver> driverClass;
 
-    SapSupportedDriver(Class<? extends WebDriver> __class, String item) {
-        this._class = __class;
-        this._item = item;
-    }
-
-    SapSupportedDriver(Class<? extends WebDriver> __class) {
-        this._class = __class;
-        this._item = null;
-    }
-
+    @Override
     public Class<? extends WebDriver> getAsClass() {
-        return _class;
+        return driverClass;
     }
 
-    public String getItem() {
-        return _item;
-    }
-
+    @Override
     public void initDriver(IDriverConfiguration configuration) {
-        switch (this) {
-            case SAP:
-                System.setProperty(com.jacob.com.LibraryLoader.JACOB_DLL_PATH, System.getProperty("user.dir") + "\\" + configuration.getDriverPath());
-                break;
-
-        }
+        System.setProperty(com.jacob.com.LibraryLoader.JACOB_DLL_PATH, System.getProperty("user.dir") + "\\" + configuration.getDriverPath());
     }
 }

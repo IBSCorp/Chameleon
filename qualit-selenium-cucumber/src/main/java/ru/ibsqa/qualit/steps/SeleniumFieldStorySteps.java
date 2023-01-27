@@ -10,7 +10,6 @@ import ru.ibsqa.qualit.steps.roles.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import io.cucumber.java.ru.Когда;
 import io.cucumber.java.ru.Тогда;
-import ru.ibsqa.qualit.steps.roles.*;
 
 import java.util.List;
 
@@ -64,11 +63,27 @@ public class SeleniumFieldStorySteps extends AbstractSteps {
         });
     }
 
+    @DebugPluginAction
+    @StepDescription(action = "UI->Элементы->Действия->Нажать на элемент"
+            , subAction = "Двойное нажатие на элемент"
+            , parameters = {"fieldName - наименование поля"})
+    @Когда("^выполнено двойное нажатие на \"([^\"]*)\"$")
+    public void stepDoubleClickField(
+            @Mouse String fieldName
+    ) {
+        flow(()-> {
+            if (fieldName.isEmpty()) {
+                return;
+            }
+            fieldSteps.doubleClickField(fieldName);
+        });
+    }
+
     @StepDescription(action = "UI->Элементы->Действия->Нажать на элемент"
             , subAction = "Нажать на элемент n раз"
             , parameters = {"fieldName - наименование поля", "amount - количество раз, которое требуется нажать на поле"}
             , expertView = true)
-    @Когда("^выполнено нажатие на \"([^\"]*)\" \"([^\"]*)\" раз$")
+    @Когда("^выполнено нажатие на \"([^\"]*)\" \"([^\"]*)\" раза?$")
     public void stepClickFieldNTimes(
             @Mouse String fieldName, @Value String amount
     ) {
@@ -76,7 +91,11 @@ public class SeleniumFieldStorySteps extends AbstractSteps {
             if (fieldName.isEmpty()) {
                 return;
             }
-            for (int i = 0; i < Integer.parseInt(amount); i++) {
+            int count = Integer.parseInt(amount);
+            if (count<1) {
+                return;
+            }
+            for (int i = 0; i < count; i++) {
                 fieldSteps.clickField(fieldName);
             }
         });
@@ -93,6 +112,20 @@ public class SeleniumFieldStorySteps extends AbstractSteps {
     ) {
         flow(()->
                 fieldSteps.checkFieldPlaceholder(fieldName, operator, expected)
+        );
+    }
+
+    @StepDescription(action = "UI->Элементы->Проверки->Проверить ошибку в поле"
+            , parameters = {"fieldName - наименование поля", "operator - оператор сравнения", "expected - ожидаемая ошибка"}
+            , expertView = true)
+    @Тогда("^значение ошибки в поле \"([^\"]*)\" (равно|не равно|содержит значение|не содержит значение|начинается с|не начинается с|оканчивается на|не оканчивается на|соответствует|не соответствует|равно игнорируя регистр|не равно игнорируя регистр|равно игнорируя пробелы|не равно игнорируя пробелы|по длине равно|по длине не равно|по длине больше|по длине не меньше|по длине меньше|по длине не больше|больше|больше или равно|меньше|меньше или равно) \"([^\"]*)\"$")
+    public void stepCheckFieldError(
+            @Visible String fieldName,
+            @Value CompareOperatorEnum operator,
+            @Value String expected
+    ) {
+        flow(()->
+                fieldSteps.checkFieldError(fieldName, operator, expected)
         );
     }
 
@@ -157,7 +190,7 @@ public class SeleniumFieldStorySteps extends AbstractSteps {
             @Exists String fieldName
     ) {
         flow(()->
-                fieldSteps.fieldIsNotExist(fieldName)
+                fieldSteps.fieldIsNotDisplayed(fieldName)
         );
     }
 
@@ -398,7 +431,7 @@ public class SeleniumFieldStorySteps extends AbstractSteps {
         });
     }
 
-    @StepDescription(action = "UI->Условия->Если поле присутствует, то"
+    @StepDescription(action = "Условия->Если поле присутствует, то"
             , parameters = {"fieldName - наименование поля"}
             , expertView = true)
     @Когда("^присутствует поле \"([^\"]*)\", выполнять следующие шаги:$")
@@ -411,7 +444,7 @@ public class SeleniumFieldStorySteps extends AbstractSteps {
         }
     }
 
-    @StepDescription(action = "UI->Условия->Если поле отсутствует, то"
+    @StepDescription(action = "Условия->Если поле отсутствует, то"
             , parameters = {"fieldName - наименование поля"}
             , expertView = true)
     @Когда("^отсутствует поле \"([^\"]*)\", выполнять следующие шаги:$")

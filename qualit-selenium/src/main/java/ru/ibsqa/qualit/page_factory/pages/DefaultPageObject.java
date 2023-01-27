@@ -1,10 +1,12 @@
 package ru.ibsqa.qualit.page_factory.pages;
 
+import org.junit.jupiter.api.Assertions;
 import ru.ibsqa.qualit.definitions.annotations.selenium.Page;
 import ru.ibsqa.qualit.elements.IFacade;
 import ru.ibsqa.qualit.elements.IFacadeExportToJson;
 import ru.ibsqa.qualit.elements.IFacadeReadable;
 import ru.ibsqa.qualit.elements.selenium.WebElementFacade;
+import ru.ibsqa.qualit.i18n.ILocaleManager;
 import ru.ibsqa.qualit.page_factory.IPageFactory;
 import ru.ibsqa.qualit.page_factory.IPageObjectLoader;
 import ru.ibsqa.qualit.page_factory.locator.IFrameManager;
@@ -62,6 +64,8 @@ public abstract class DefaultPageObject implements IPageObject {
     @Override
     public void loadPage() {
         contextManagerSelenium.setCurrentPage(this);
+        switchFrames();
+        Assertions.assertTrue(this.isLoaded(), ILocaleManager.message("pageNotLoadedAssertMessage", this));
     }
 
     public WebDriverFacade getDriver() {
@@ -77,44 +81,44 @@ public abstract class DefaultPageObject implements IPageObject {
 
     @Override
     public void initElements(SearchContext searchContext) {
-        pageObjectLoader.load(this,searchContext);
+        pageObjectLoader.load(this, searchContext);
     }
 
-    public DefaultPageObject(SearchContext searchContext){
-        initElements(searchContext);
-    }
+//    public DefaultPageObject(SearchContext searchContext){
+//        initElements(searchContext);
+//    }
 
-    public DefaultPageObject(){
+    public DefaultPageObject() {
         SearchContext searchContext = null;
         //TODO сделать работу с локатором страницы
-/*        Page aPage = this.getClass().getAnnotation(Page.class);
-        if (null != aPage) {
-            String locator = aPage.locator();
-            int waitTimeOut = aPage.waitTimeOut();
-            if (null != locator && !locator.isEmpty()) {
-                final By by = searchStrategy.getLocator(locator);
-                final WebDriver driver = getDriver();
-                if (waitTimeOut>=0) {
-                    final Wait<WebDriver> wait = new WebDriverWait(driver, waitTimeOut);
-                    searchContext = wait.until(ExpectedConditions.presenceOfElementLocated(by));
-                } else {
-                    try {
-                        searchContext = driver.findElement(by);
-                    }catch (NoSuchElementException e){
-                        fail("Не найден элемент по локатору: " + locator);
-                    }
-
-                }
-            }
-        }*/
+//        Page aPage = this.getClass().getAnnotation(Page.class);
+//        if (null != aPage) {
+//            String locator = aPage.locator();
+//            int waitTimeOut = aPage.waitTimeOut();
+//            if (null != locator && !locator.isEmpty()) {
+//                final By by = searchStrategy.getLocator(locator);
+//                final WebDriver driver = getDriver();
+//                if (waitTimeOut>=0) {
+//                    final Wait<WebDriver> wait = new WebDriverWait(driver, waitTimeOut);
+//                    searchContext = wait.until(ExpectedConditions.presenceOfElementLocated(by));
+//                } else {
+//                    try {
+//                        searchContext = driver.findElement(by);
+//                    }catch (NoSuchElementException e){
+//                        fail("Не найден элемент по локатору: " + locator);
+//                    }
+//
+//                }
+//            }
+//        }
         initElements(searchContext);
     }
 
-    public DefaultPageObject(boolean initElements) {
-        if (initElements) {
-            initElements(null);
-        }
-    }
+//    public DefaultPageObject(boolean initElements) {
+//        if (initElements) {
+//            initElements(null);
+//        }
+//    }
 
     @Override
     public <FACADE extends IFacade> FACADE getField(String fieldName) {
@@ -148,7 +152,7 @@ public abstract class DefaultPageObject implements IPageObject {
             robot.setAutoDelay(250);
             robot.keyPress(key.getValue());
             robot.keyRelease(key.getValue());
-        }catch (Exception e){}
+        } catch (Exception e){}
     }
 
     @Override

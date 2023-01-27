@@ -32,7 +32,7 @@ public class ApiAuthenticationImpl implements IApiAuthentication {
                 case FORM:
                     return RestAssured.form(credential.getUser(), credential.getPassword());
                 case CSRF:
-                    return RestAssured.form(credential.getUser(), credential.getPassword(), FormAuthConfig.formAuthConfig().withAutoDetectionOfCsrf());
+                    return RestAssured.form(credential.getUser(), credential.getPassword(), FormAuthConfig.formAuthConfig().withAdditionalField(credential.getCsrfFieldName()));
                 case OAUTH2:
                     return RestAssured.oauth2(credential.getToken());
             }
@@ -57,7 +57,7 @@ public class ApiAuthenticationImpl implements IApiAuthentication {
                 case FORM:
                     return authenticationSpecification.form(credential.getUser(), credential.getPassword());
                 case CSRF:
-                    return authenticationSpecification.form(credential.getUser(), credential.getPassword(), FormAuthConfig.formAuthConfig().withAutoDetectionOfCsrf());
+                    return authenticationSpecification.form(credential.getUser(), credential.getPassword(), FormAuthConfig.formAuthConfig().withAdditionalField(credential.getCsrfFieldName()));
                 case OAUTH2:
                     return authenticationSpecification.oauth2(credential.getToken());
             }

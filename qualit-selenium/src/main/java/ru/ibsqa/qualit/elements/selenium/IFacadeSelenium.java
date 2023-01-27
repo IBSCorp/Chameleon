@@ -1,9 +1,6 @@
 package ru.ibsqa.qualit.elements.selenium;
 
-import ru.ibsqa.qualit.elements.IFacadeClearable;
-import ru.ibsqa.qualit.elements.IFacadeMappedByMeta;
-import ru.ibsqa.qualit.elements.IFacadeReadable;
-import ru.ibsqa.qualit.elements.IFacadeWritable;
+import ru.ibsqa.qualit.elements.*;
 import ru.ibsqa.qualit.selenium.driver.WebDriverFacade;
 import ru.ibsqa.qualit.selenium.enums.KeyEnum;
 import org.openqa.selenium.WebElement;
@@ -11,7 +8,7 @@ import org.openqa.selenium.WrapsElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.interactions.Locatable;
 
-public interface IFacadeSelenium extends IFacadeReadable, IFacadeWritable, IFacadeClearable, WebElement, WrapsElement, Locatable, IFacadeMappedByMeta {
+public interface IFacadeSelenium extends IFacadeReadable, IFacadeWait, IFacadeAbsent, IFacadeWritable, IFacadeClearable, WebElement, WrapsElement, Locatable, IFacadeMappedByMeta {
 
     @Override
     default void setFieldValue(String value) {
@@ -38,12 +35,7 @@ public interface IFacadeSelenium extends IFacadeReadable, IFacadeWritable, IFaca
 
     @Override
     default boolean isFieldExists() {
-        try {
-            getWrappedElement().isDisplayed();
-        } catch (Exception e) {
-            return false;
-        }
-        return true;
+        return isDisplayed();
     }
 
     String getPlaceholder();
@@ -56,6 +48,20 @@ public interface IFacadeSelenium extends IFacadeReadable, IFacadeWritable, IFaca
 
     boolean isEditable();
 
+    // Быстрая проверка отсутствия поля
+    default boolean isAbsent() {
+        return false;
+    }
+
+    // Имплементирован для классических selenium элементов, см. WebElementFacade
+    default int getWaitTimeOut() { return 0;}
+
+    // Имплементирован для классических selenium элементов, см. WebElementFacade
+    default boolean waitToDisplayed() {
+        return isDisplayed();
+    }
+
+    // Требует кастомной имплементации
     String getErrorMsg();
 
     String getLabel();
@@ -126,11 +132,13 @@ public interface IFacadeSelenium extends IFacadeReadable, IFacadeWritable, IFaca
      * @param element   элемент
      */
     static void rightClick(WebDriverFacade webDriver, WebElement element) {
-        webDriver.executeScript(
-                "var evt = document.createEvent('MouseEvents');"
-                        + "var RIGHT_CLICK_BUTTON_CODE = 2;"
-                        + "evt.initMouseEvent('contextmenu', true, true, window, 1, 0, 0, 0, 0, false, false, false, false, RIGHT_CLICK_BUTTON_CODE, null);"
-                        + "arguments[0].dispatchEvent(evt);", element);
+        Actions builder = new Actions(webDriver);
+        builder.contextClick(element).build().perform();
+//        webDriver.executeScript(
+//                "var evt = document.createEvent('MouseEvents');"
+//                        + "var RIGHT_CLICK_BUTTON_CODE = 2;"
+//                        + "evt.initMouseEvent('contextmenu', true, true, window, 1, 0, 0, 0, 0, false, false, false, false, RIGHT_CLICK_BUTTON_CODE, null);"
+//                        + "arguments[0].dispatchEvent(evt);", element);
     }
 
     /**

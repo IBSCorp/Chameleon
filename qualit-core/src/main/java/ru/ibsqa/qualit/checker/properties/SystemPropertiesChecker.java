@@ -64,7 +64,9 @@ public class SystemPropertiesChecker implements IStartChecker {
                 visibleProperty.validate(validateResult, systemProperties.getProperty(e.getName()));
             } else {
                 val hiddenProperty = (MetaHidden)e;
-                systemProperties.put(hiddenProperty.getName(), hiddenProperty.getDefaultValue());
+                if (StringUtils.isNoneEmpty(hiddenProperty.getDefaultValue())) {
+                    systemProperties.put(hiddenProperty.getName(), hiddenProperty.getDefaultValue());
+                }
             }
         }
         if (!validateResult.isValid()) {

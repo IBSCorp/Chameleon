@@ -14,7 +14,7 @@ public class DefaultCollectionExtractor implements ICollectionExtractor {
     @Override
     public Iterable<? extends IPageObject> getField(IPageObject pageObject, String fieldName) {
         Iterable<? extends IPageObject> field = searchField(pageObject, fieldName);
-        if (field == null){
+        if (field == null) {
             field = searchFieldFromBlocks(pageObject, fieldName);
         }
         return field;
@@ -24,7 +24,7 @@ public class DefaultCollectionExtractor implements ICollectionExtractor {
         //поиск в полях класса
         for (Field field: pageObject.getClass().getDeclaredFields()) {
             if (isCollection(field)){
-                if (field.getAnnotation(ru.ibsqa.qualit.definitions.annotations.selenium.Field.class).names().equals(fieldName)){
+                if (field.getAnnotation(ru.ibsqa.qualit.definitions.annotations.selenium.Field.class).name().equals(fieldName)){
                     return getFieldInstance(pageObject, field);
                 }
             }

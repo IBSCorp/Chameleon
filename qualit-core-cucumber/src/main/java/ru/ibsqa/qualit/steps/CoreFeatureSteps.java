@@ -111,7 +111,8 @@ public class CoreFeatureSteps extends AbstractSteps {
         List<Envelope> envelopes = (List<Envelope>) feature.getParseEvents();
         GherkinDocument gherkinDocument = envelopes.stream()
                 .map(Envelope::getGherkinDocument)
-                .filter(Objects::nonNull)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
                 .findFirst()
                 .orElseThrow();
 

@@ -11,6 +11,7 @@ import ru.ibsqa.qualit.page_factory.PageFactoryUtils;
 import ru.ibsqa.qualit.page_factory.ProxyFactory;
 import ru.ibsqa.qualit.page_factory.handlers.ElementListProxyHandler;
 import ru.ibsqa.qualit.page_factory.handlers.ElementProxyHandler;
+import ru.ibsqa.qualit.page_factory.pages.ICollectionItemObject;
 import ru.ibsqa.qualit.page_factory.pages.IPageObject;
 
 import java.lang.reflect.Field;
@@ -28,7 +29,8 @@ public class DefaultDecorateExecutor extends AbstractDecorateExecutor implements
                 locator,
                 PageFactoryUtils.getElementNameAsString(field),
                 PageFactoryUtils.getElementWaitTimeOut(field),
-                PageFactoryUtils.getElementFrames(field)
+                PageFactoryUtils.getElementFrames(field),
+                ICollectionItemObject.class.isAssignableFrom(field.getDeclaringClass())
         );
         WebElement elementToWrap = ProxyFactory.createWebElementProxy(loader, handler);
         return PageFactoryUtils.createElement(

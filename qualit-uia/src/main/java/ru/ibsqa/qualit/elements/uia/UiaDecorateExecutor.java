@@ -22,6 +22,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Proxy;
 import java.util.List;
+import java.util.Objects;
 
 @Component
 public class UiaDecorateExecutor extends AbstractDecorateExecutor implements IDecorateExecutor {
@@ -82,18 +83,23 @@ public class UiaDecorateExecutor extends AbstractDecorateExecutor implements IDe
     }
 
     @SuppressWarnings("unchecked")
-    private static <T extends IUiaElement> T createUiaElement(Class<?> elementClass, IUiaElement elementToWrap, String elementName, int waitTimeOut, String driverId) {
-        try {
-            return (T) PageFactoryUtils.newInstance(
-                    elementClass,
-                    elementToWrap,
-                    elementName,
-                    waitTimeOut,
-                    driverId
-            );
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            throw new ElementCreationError(e);
+    private static <T extends IUiaElement> T createUiaElement(Class<?> elementClass, IUiaElement elementToWrap, String elementName, int waitTimeout, String driverId) {
+//        try {
+//            return (T) PageFactoryUtils.newInstance(
+//                    elementClass,
+//                    elementToWrap,
+//                    elementName,
+//                    waitTimeOut,
+//                    driverId
+//            );
+//        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+//            throw new ElementCreationError(e);
+//        }
+        WebElementFacade instance = (WebElementFacade) PageFactoryUtils.newInstance(elementClass);
+        if (Objects.nonNull(instance)) {
+            instance.pushArguments(elementToWrap, elementName, waitTimeout, driverId);
         }
+        return (T)instance;
     }
 
     private static <T extends WebElement> IUiaElement createUiaElementProxy(ClassLoader loader, InvocationHandler handler) {

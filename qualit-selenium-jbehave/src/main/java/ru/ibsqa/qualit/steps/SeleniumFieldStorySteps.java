@@ -100,7 +100,7 @@ public class SeleniumFieldStorySteps extends AbstractSteps {
     @Then("{ссылка|кнопка} \"$fieldName\" отсутствует")
     public void stepFieldIsNotExist(Variable fieldName){
         flow(()->
-                fieldSteps.fieldIsNotExist(fieldName.getValue())
+                fieldSteps.fieldIsNotDisplayed(fieldName.getValue())
         );
     }
 
@@ -109,7 +109,7 @@ public class SeleniumFieldStorySteps extends AbstractSteps {
         flow(()-> {
             for (Map<String, String> row : fields.getRows()) {
                 String field = evalVariable(row.get("field"));
-                fieldSteps.fieldIsNotExist(field);
+                fieldSteps.fieldIsNotDisplayed(field);
             }
         });
     }

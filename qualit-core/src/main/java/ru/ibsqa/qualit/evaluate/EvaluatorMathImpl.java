@@ -26,7 +26,7 @@ public class EvaluatorMathImpl extends AbstractEvaluator {
 
     @Override
     protected String getExpressionPattern() {
-        return "[\\d\\.,\\(\\)\\s+\\-*\\/]+";
+        return "[\\dL\\.,\\(\\)\\s+\\-*\\/]+";
     }
 
     @Override
@@ -42,7 +42,7 @@ public class EvaluatorMathImpl extends AbstractEvaluator {
             interpreter.eval("result = " + mathExpression);
             value = String.valueOf(interpreter.get("result"));
         } catch (EvalError e) {
-            log.error(e.getMessage(), e);
+            throw new AssertionError(localeManager.getMessage("evalErrorMessage", mathExpression), e);
         }
         if (commaSeparator.isEmpty())
             return value;

@@ -2,21 +2,23 @@ package ru.ibsqa.qualit.elements.collections;
 
 import ru.ibsqa.qualit.elements.IFacadeCollection;
 import ru.ibsqa.qualit.elements.IFacadeMappedByMeta;
+import ru.ibsqa.qualit.elements.IFacadeWait;
 import ru.ibsqa.qualit.page_factory.pages.IPageObject;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.openqa.selenium.support.pagefactory.ElementLocator;
+import ru.ibsqa.qualit.selenium.driver.IDriverManager;
+import ru.ibsqa.qualit.utils.spring.SpringUtils;
 
 import java.util.Iterator;
 
-public abstract class AbstractCollection<PAGE extends IPageObject> implements IFacadeCollection<PAGE>, IFacadeMappedByMeta {
+public abstract class AbstractCollection<PAGE extends IPageObject> implements IFacadeCollection<PAGE>, IFacadeMappedByMeta, IFacadeWait {
 
     @Getter(AccessLevel.PUBLIC)
     private String collectionName;
 
-    @Getter(AccessLevel.PUBLIC)
     private int waitTimeOut;
 
     @Getter(AccessLevel.PROTECTED)
@@ -48,6 +50,14 @@ public abstract class AbstractCollection<PAGE extends IPageObject> implements IF
             jsonArray.put(page.exportToJson());
         }
         return jsonArray;
+    }
+
+    @Override
+    public int getWaitTimeOut() {
+        if (waitTimeOut>=0) {
+            return waitTimeOut;
+        }
+        return SpringUtils.getBean(IDriverManager.class).getLastDriver().getDefaultWaitTimeOut();
     }
 
 }

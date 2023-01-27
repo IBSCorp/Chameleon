@@ -53,7 +53,7 @@ public class ImageElement implements IFacadeSelenium {
 		this.driver = driver;
 		long start1 = System.currentTimeMillis();
 		InputStream screen = createActualImage(subImage);
-		System.out.println("сняли скрин" + (System.currentTimeMillis() - start1));
+		log.info("сняли скрин" + (System.currentTimeMillis() - start1));
 		long maxWaitTime = System.currentTimeMillis() + driver.getImplicitlyWait() * 1000;
 		do {
 			log.info("Поиск -  " + subImage);
@@ -62,7 +62,7 @@ public class ImageElement implements IFacadeSelenium {
                     .multiPart("image", System.currentTimeMillis() + ".png", screen)
                     .multiPart("sub_image", new File(subImage.split(";")[0]))
                     .post(getDriver().getConfiguration().getDriverPath()).prettyPrint();
-		//	System.out.println("конец запроса" + (System.currentTimeMillis() - start));
+		//	log.info("конец запроса" + (System.currentTimeMillis() - start));
 			if (((ArrayList) JsonPath.from(response).get()).size() > 0) {
 				this.x1 = JsonPath.from(response).get("pos_x1[0]");
 				this.x2 = JsonPath.from(response).get("pos_x2[0]");

@@ -1,33 +1,22 @@
 package ru.ibsqa.qualit.selenium.driver;
 
+import lombok.RequiredArgsConstructor;
+import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.winium.StoreAppsOptions;
 import org.openqa.selenium.winium.WiniumDriver;
 import ru.ibsqa.qualit.selenium.driver.configuration.IDriverConfiguration;
 
+@RequiredArgsConstructor
 public enum WiniumSupportedDriver implements ISupportedDriver {
 
     WINIUM(WiniumDriver.class);
 
-    private final Class<? extends WebDriver> _class;
-    private final String _item;
-
-    WiniumSupportedDriver(Class<? extends WebDriver> __class, String item) {
-        this._class = __class;
-        this._item = item;
-    }
-
-    WiniumSupportedDriver(Class<? extends WebDriver> __class) {
-        this._class = __class;
-        this._item = null;
-    }
+    private final Class<? extends WebDriver> driverClass;
 
     @Override
     public Class<? extends WebDriver> getAsClass() {
-        return _class;
-    }
-
-    public String getItem() {
-        return _item;
+        return driverClass;
     }
 
     @Override

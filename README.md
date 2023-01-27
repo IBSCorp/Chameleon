@@ -1,9 +1,4 @@
-для того чтобы опубликовать проект в репозитории необходимо выполнить команду: mvn clean deploy -DskipTests
-
-для запуска тестов mvn clean install -pl example-selenium-cucumber -am -DforkCount=0 -U
-
-сборка без тестов одного модуля: mvn clean install -pl qualit-selenium -DskipTests
-
-сборка без тестов всего проекта: mvn clean install -DskipTests
-
-mvn clean install -pl example-selenium-cucumber -am
+QualIT является библиотекой, разработанной на языке Java, которая может быть подключена к проекту с помощью средства автоматизации сборки. Решение позволит значительно ускорить процесс проведения функционального тестирования, привлечь тестировщиков, выполняющих ручное тестирование, к процессу создания автоматизированных тестов. Поддержка решения также предусмотрена силами тестировщиков, не имеющих навыков программирования, что позволит значительно расширить количество проектов по автоматизации и приведет к повышению качества используемого ПО.
+ * [Документация](https://docs.appline.ru/s/cahgriref9uhhnfr4mug/qualit)
+ * [Примеры](https://gitlab.appline.ru/qualit/examples)
+ * [Репозиторий](https://nexus.appline.ru/#browse/browse:qualit-snapshots)

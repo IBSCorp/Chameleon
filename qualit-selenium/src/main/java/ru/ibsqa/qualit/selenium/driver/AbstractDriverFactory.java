@@ -8,9 +8,6 @@ import lombok.NoArgsConstructor;
 import org.openqa.selenium.WebDriver;
 import ru.ibsqa.qualit.selenium.driver.configuration.IDriverConfigurationProvider;
 
-import javax.annotation.PostConstruct;
-import java.util.Objects;
-
 @NoArgsConstructor
 public abstract class AbstractDriverFactory<T extends ISupportedDriver> implements IDriverFactory {
 
@@ -20,16 +17,15 @@ public abstract class AbstractDriverFactory<T extends ISupportedDriver> implemen
     @Autowired
     private IDriverConfigurationProvider driverConfigurationProvider;
 
-    @PostConstruct
-    private void init() {
-        if (Objects.isNull(configuration)) {
-            configuration = driverConfigurationProvider.getConfiguration();
-        }
-    }
-
     public AbstractDriverFactory(IDriverConfiguration configuration) {
         this.configuration = configuration;
     }
 
     public abstract WebDriver newInstance(String driverId);
+
+    public WebDriver newInstance(String driverId, IDriverConfiguration configuration) {
+        this.configuration = configuration;
+        return newInstance(driverId);
+    }
+
 }

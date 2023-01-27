@@ -1,7 +1,0 @@
-<?xml version = "1.0" encoding = "UTF-8"?>
-<properties>
-    <property label="Максимизировать окно" name="maximizeWindow" defaultValue="true" type="checkbox"/>
-    <property label="Отображать лог на экране" name="showLog" defaultValue="false" type="checkbox"/>
-    <property label="Отправлять данные в Influx" name="influx.enabled" defaultValue="false" type="checkbox"/>
-    <property label="Не закрывать открытые формы" name="app.keep.forms" defaultValue="false" type="checkbox"/>
-</properties>

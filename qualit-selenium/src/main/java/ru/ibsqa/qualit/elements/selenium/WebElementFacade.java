@@ -58,11 +58,12 @@ public abstract class WebElementFacade implements IFacadeSelenium {
             robot.setAutoDelay(250);
             robot.keyPress(key.getValue());
             robot.keyRelease(key.getValue());
-        } catch (Exception e) {
+        } catch (Exception ignore) {
         }
     }
 
     public void doubleClick() {
+        wait.until(ExpectedConditions.elementToBeClickable(getWrappedElement()));
         Actions action = new Actions(getDriver());
         action.doubleClick(getWrappedElement()).perform();
     }
@@ -74,11 +75,12 @@ public abstract class WebElementFacade implements IFacadeSelenium {
 
     @Override
     public String getPlaceholder() {
-        return getAttribute("placeholder");
+        return getAttribute("placeholder").trim().replaceAll("\u00A0", " ");
     }
 
     @Override
     public void click() {
+        wait.until(ExpectedConditions.elementToBeClickable(getWrappedElement()));
         getWrappedElement().click();
     }
 
@@ -118,6 +120,11 @@ public abstract class WebElementFacade implements IFacadeSelenium {
     }
 
     @Override
+    public boolean isAbsent() {
+        return getWrappedElement().equals(UNKNOWN_WEB_ELEMENT);
+    }
+
+    @Override
     public String getText() {
         String text = getWrappedElement().getText();
         if (text.isEmpty() && getWrappedElement().getAttribute("value") != null) {
@@ -138,11 +145,31 @@ public abstract class WebElementFacade implements IFacadeSelenium {
 
     @Override
     public boolean isDisplayed() {
+// Ожидание выполняется в шагах checkFieldExists, checkFieldNotExists, fieldIsNotDisplayed, fieldIsDisplayed и в методе waitToDisplayed
+// Данный метод начиная с версии 3.3 возвращает моментальное значение видимости поля
+//        try {
+//            if (getWrappedElement().isDisplayed()) return true;
+//            wait.until(ExpectedConditions.visibilityOf(getWrappedElement()));
+//            return getWrappedElement().isDisplayed();
+//        } catch (Exception e) {
+//            log.debug(e.getMessage(), e);
+//            return false;
+//        }
+        try {
+            return getWrappedElement().isDisplayed();
+        } catch (WebDriverException e) {
+            log.debug(e.getMessage(), e);
+            return false;
+        }
+    }
+
+    @Override
+    public boolean waitToDisplayed() {
         try {
             if (getWrappedElement().isDisplayed()) return true;
             wait.until(ExpectedConditions.visibilityOf(getWrappedElement()));
             return getWrappedElement().isDisplayed();
-        } catch (Exception e) {
+        } catch (WebDriverException e) {
             log.debug(e.getMessage(), e);
             return false;
         }
@@ -204,14 +231,16 @@ public abstract class WebElementFacade implements IFacadeSelenium {
     @Override
     public boolean isEditable() {
         try {
-            getWrappedElement().isEnabled();
+            return getWrappedElement().isEnabled();
         } catch (NoSuchElementException ignored) {
             return false;
         }
-        return true;
     }
 
     public boolean exists() {
+        if (isAbsent()) { // Здесь происходит быстрая проверка отсутствия поля на странице
+            return false;
+        }
         try {
             getWrappedElement().isDisplayed();
         } catch (NoSuchElementException ignored) {
@@ -219,4 +248,92 @@ public abstract class WebElementFacade implements IFacadeSelenium {
         }
         return true;
     }
+
+
+    public final static WebElement UNKNOWN_WEB_ELEMENT = new WebElement() {
+        @Override
+        public void click() {
+
+        }
+
+        @Override
+        public void submit() {
+
+        }
+
+        @Override
+        public void sendKeys(CharSequence... keysToSend) {
+
+        }
+
+        @Override
+        public void clear() {
+
+        }
+
+        @Override
+        public String getTagName() {
+            return null;
+        }
+
+        @Override
+        public String getAttribute(String name) {
+            return null;
+        }
+
+        @Override
+        public boolean isSelected() {
+            return false;
+        }
+
+        @Override
+        public boolean isEnabled() {
+            return false;
+        }
+
+        @Override
+        public String getText() {
+            return null;
+        }
+
+        @Override
+        public List<WebElement> findElements(By by) {
+            return null;
+        }
+
+        @Override
+        public WebElement findElement(By by) {
+            return null;
+        }
+
+        @Override
+        public boolean isDisplayed() {
+            return false;
+        }
+
+        @Override
+        public Point getLocation() {
+            return null;
+        }
+
+        @Override
+        public Dimension getSize() {
+            return null;
+        }
+
+        @Override
+        public Rectangle getRect() {
+            return null;
+        }
+
+        @Override
+        public String getCssValue(String propertyName) {
+            return null;
+        }
+
+        @Override
+        public <X> X getScreenshotAs(OutputType<X> target) throws WebDriverException {
+            return null;
+        }
+    };
 }

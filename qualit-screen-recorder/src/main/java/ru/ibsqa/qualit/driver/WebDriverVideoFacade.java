@@ -16,6 +16,7 @@ import ru.ibsqa.qualit.selenium.driver.WebDriverFacade;
 
 import java.io.File;
 import java.lang.reflect.Field;
+import java.util.Objects;
 
 public class WebDriverVideoFacade extends WebDriverFacade implements TakeVideo {
 
@@ -35,7 +36,7 @@ public class WebDriverVideoFacade extends WebDriverFacade implements TakeVideo {
     }
     @Override
     public WebDriver getWrappedDriver(){
-        if (wrappedDriver == null) {
+        if (Objects.isNull(super.getPureWrappedDriver())) {
             WebDriver wrappedDriver = super.getWrappedDriver();
             if (wrappedDriver instanceof EventFiringWebDriver) {
                 wrappedDriver = ((EventFiringWebDriver) wrappedDriver).getWrappedDriver();
@@ -49,11 +50,10 @@ public class WebDriverVideoFacade extends WebDriverFacade implements TakeVideo {
                 WinProcessSteps winProcessSteps = SpringUtils.getBean(WinProcessSteps.class);
                 long pidDriver = winProcessSteps.getPidByPort(port);
                 this.browserPid = winProcessSteps.getParentPid(pidDriver, driverName);
-
             }
         }
 
-        return wrappedDriver;
+        return super.getPureWrappedDriver();
     }
 
     @Override

@@ -1,5 +1,60 @@
 # Версия 3.x.x
 
+## 3.3.0-SNAPSHOT (released 27.01.2023)
+* Обновление Spring Framework до версии 5.3.24
+* Обновление Cucumber до версии 7.9.0
+* Обновление Selenium до версии 4.6.0 (изменения в конструкторах драйверов - DesiredCapabilities больше не поддерживаются)
+* В конфигурации драйверов методы set/getDesiredCapabilities заменены на set/getOptions
+* Обновление Appium до версии 8.2.0
+* Обновление webdrivermanager до версии 5.3.1
+* Актуализированы проектные тесты
+* Убрана поддержка браузера OPERA
+* Добавлена поддержка [свободных конфигураций web-драйверов](https://docs.appline.ru/s/cahgriref9uhhnfr4mug/qualit/d/cahh0sref9uhhnfr4n1g/biblioteka-modulej?currentPageId=cdvl8u3ef9uhhnfr6d9g)
+* Добавлен функционал [Soft Assert](https://docs.appline.ru/s/cahgriref9uhhnfr4mug/qualit/d/cahh0sref9uhhnfr4n1g/biblioteka-modulej?currentPageId=cf059rref9uhhnfr6el0)
+* Добавлена аннотация [@HiddenStep](https://docs.appline.ru/s/cahgriref9uhhnfr4mug/qualit/d/cbmeatbef9uhhnfr4ti0/kastomizaciya-biblioteki-modulej?currentPageId=cbmefqbef9uhhnfr4tlg)
+* Добавлены шаги для работы с alert-ами - AlertSteps
+* IFacadeSelenium в методе isFieldExists() теперь не анализируется отсутствие поля на странице, при отсутствии поля будет ошибка, для проверки отсутствия поля используйте метод isAbsent()
+* ElementLocatorImpl:
+    * в методе findElements() таймаут теперь не применяется, при поиске отдельного элемента findElement() таймаут продолжает применяться
+* В WaitingUtils добавлен вариант ожидания в произвольных единицах времени
+* Во все классы шагов (наследующие AbstractSteps) добавлен служебный метод waiting(...), помогающий реализовать ожидание состояния; методы, реаилизующие интернационализацию сделаны статическими, при ожидании действие выполняется как минимум 1 раз
+* в классах ElementProxyHandler и ElementBlockProxyHandler:
+    * общий функционал вынесен в AbstractElementHandler
+    * учитывается ожидание по умолчанию, если у элемента не указано конкретное время
+    * для полей коллекции не производится ожидание пропадания исключения StaleElementReferenceException (ожидание выполняется в слое шагов)
+    * добавлен InvokeFieldException для проброса ошибок работы с элементами (например StaleElementReferenceException) в модули core, абстрагированные от конкретной имплементации полей
+    * исправлена проблема при выполнении ожидания пропадания исключения StaleElementReferenceException
+    * задержка между циклами сокращена 500 -> 200 мс
+* WebElementFacade:
+    * метод isDisplayed() теперь не выполняет ожидание и возвращает моментальное значение видимости поля
+    * новый метод waitToDisplayed() выполняет ожидание и теперь именно он используется при анализе загрузки страницы
+    * добавлен метод isAbsent(), он возвращает признак отсутствия поля на странице не выполняя ожидание и без учета невидимости поля
+    * добавлены индикативные интерфейсы фасадов - IFacadeWait и IFacadeAbsent
+* CoreFieldSteps, добавлено ожидание состояния в рамках таймаута элемента в следующих шагах (новое поведение применяется не для всех полей, а только в том случае, если поле поддерживает таймаут):
+    * checkFieldValue
+    * checkFieldExists
+    * checkFieldNotExists
+* SeleniumFieldSteps, добавлено ожидание состояния в рамках таймаута элемента в следующих шагах:
+    * fieldIsDisplayed, данный метод работает аналогично checkFieldExists
+    * fieldIsNotExist переименовано в fieldIsNotDisplayed, данный метод работает аналогично checkFieldNotExists
+    * fieldIsEnabled
+    * fieldIsDisabled
+    * checkFieldPlaceholder
+    * fieldIsEditable
+    * fieldIsNotEditable
+    * checkFieldError
+    * checkFieldAttribute
+* CollectionSteps, добавлено ожидание состояния в рамках таймаута в следующих шагах:
+    * stepCheckItemCount
+    * searchItemByIndex
+    * searchItem
+    * checkSorted
+* а также:
+    * в шагах проверки количества элементов коллекции добавлена поддержка всего спектра операций сравнения, что расширяет универсальность этих шагов
+    * методах getItems добавлены варианты для работы с ранее найденной коллекцией, а не только самостоятельный поиск по имени
+* Исправлены шаги выполняющие двойной и правый клик мышью
+* Дополнены [примеры](https://gitlab.appline.ru/qualit/examples)
+
 ## 3.2.1-SNAPSHOT (released 16.11.2022)
 * В шагах работы с коллекциями добавлена поддержка  сравнения с пустыми значениями
 

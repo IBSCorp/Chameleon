@@ -8,6 +8,7 @@ import ru.ibsqa.qualit.utils.aspect.AspectUtils;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Component
@@ -26,7 +27,7 @@ public class StepInformerCucumberImpl extends AbstractStepInformer {
                     a = a.substring(0, a.length() - 1);
                 }
                 for (val param : AspectUtils.getParamsList(joinPoint)) {
-                    a = a.replaceFirst("\\([^)]+\\)", Objects.toString(param.getValue()));
+                    a = a.replaceFirst("\\([^)]+\\)", Matcher.quoteReplacement(Objects.toString(param.getValue())));
                 }
                 return a;
             });

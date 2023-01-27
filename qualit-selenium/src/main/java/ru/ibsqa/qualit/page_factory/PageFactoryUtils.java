@@ -14,6 +14,7 @@ import org.openqa.selenium.support.pagefactory.ElementLocator;
 
 import java.lang.reflect.*;
 import java.util.List;
+import java.util.Objects;
 
 import static org.apache.commons.lang3.reflect.ConstructorUtils.invokeConstructor;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -25,13 +26,14 @@ public class PageFactoryUtils {
         return !field.getType().isAssignableFrom(List.class) && isElement(field.getType());
     }
 
-    public static boolean isBlock(Field field){
+    public static boolean isBlock(Field field) {
         return IPageObject.class.isAssignableFrom(field.getType());
     }
 
     public static boolean isCollection(Field field) {
         return IFacadeCollection.class.isAssignableFrom(field.getType()) && ICollectionItemObject.class.isAssignableFrom(getGenericParameterClass(field));
     }
+
     public static boolean isList(Field field) {
         return field.getType().isAssignableFrom(List.class) && WebElementFacade.class.isAssignableFrom(getGenericParameterClass(field));
     }
@@ -40,6 +42,7 @@ public class PageFactoryUtils {
         return WebElementFacade.class.isAssignableFrom(clazz);
     }
 
+    @SuppressWarnings("rawtypes")
     public static Class getGenericParameterClass(Field field) {
         Type genericType = field.getGenericType();
         return (Class) ((ParameterizedType) genericType).getActualTypeArguments()[0];
@@ -47,44 +50,41 @@ public class PageFactoryUtils {
 
     public static <T extends WebElementFacade> T createElement(Class<T> elementClass, WebElement elementToWrap,
                                                                String elementName, int waitTimeOut, String driverId) {
-//        try {
-//            T instance = newInstance(elementClass, elementToWrap, elementName, waitTimeOut, driverId);
-//            return instance;
-//        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException
-//                | InvocationTargetException e) {
-//            throw new ElementCreationError(e);
-//        }
-
         T instance = newInstance(elementClass);
-        instance.pushArguments(elementToWrap, elementName, waitTimeOut, driverId);
+        if (Objects.nonNull(instance)) {
+            instance.pushArguments(elementToWrap, elementName, waitTimeOut, driverId);
+        }
         return instance;
     }
 
-    public static <T extends AbstractCollection> T createCollection(Class<T> collectionClass, String collectionName, int waitTimeOut, ElementLocator elementLocator, String[] frames, Class<?> collectionObjectClass) {
-//        try {
-//            T instance = newInstance(collectionClass, collectionName, waitTimeOut, elementLocator, frames, collectionObjectClass);
-//            return instance;
-//        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException
-//                | InvocationTargetException e) {
-//            throw new ElementCreationError(e);
-//        }
-
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public static <T extends AbstractCollection> T createCollection(
+            Class<T> collectionClass,
+            String collectionName,
+            int waitTimeOut,
+            ElementLocator elementLocator,
+            String[] frames,
+            Class<?> collectionObjectClass
+    ) {
         T instance = newInstance(collectionClass);
-        instance.pushArguments(collectionName, waitTimeOut, elementLocator, frames, collectionObjectClass);
+        if (Objects.nonNull(instance)) {
+            instance.pushArguments(collectionName, waitTimeOut, elementLocator, frames, collectionObjectClass);
+        }
         return instance;
     }
 
-    public static <T> T newInstance(Class<T> clazz, Object... args) throws IllegalAccessException,
-            InstantiationException, NoSuchMethodException, InvocationTargetException {
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public static <T> T newInstance(Class<T> clazz, Object... args)
+            throws IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
         if (clazz.isMemberClass() && !Modifier.isStatic(clazz.getModifiers())) {
             Class outerClass = clazz.getDeclaringClass();
-            Object outerObject = outerClass.newInstance();
+            Object outerObject = outerClass.getConstructor().newInstance();
             return invokeConstructor(clazz, Lists.asList(outerObject, args).toArray());
         }
         return invokeConstructor(clazz, args);
     }
 
-    public static <T> T newInstance(Class<T> clazz){
+    public static <T> T newInstance(Class<T> clazz) {
         try {
             return invokeConstructor(clazz);
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
@@ -94,7 +94,8 @@ public class PageFactoryUtils {
         return null;
     }
 
-    public static String getElementNameAsString(Class clazz){
+    @SuppressWarnings("rawtypes")
+    public static String getElementNameAsString(Class clazz) {
         if(clazz.isAnnotationPresent(Page.class)){
             Page page = (Page) clazz.getAnnotation(Page.class);
             return ArrayUtils.toString(page);
@@ -102,10 +103,10 @@ public class PageFactoryUtils {
         return "";
     }
 
-    public static String getElementNameAsString(Field field){
+    public static String getElementNameAsString(Field field) {
         ru.ibsqa.qualit.definitions.annotations.selenium.Field element =
                 field.getAnnotation(ru.ibsqa.qualit.definitions.annotations.selenium.Field.class);
-        return element.names();
+        return element.name();
     }
 
     public static String[] getElementFrames(Field field) {
@@ -120,6 +121,7 @@ public class PageFactoryUtils {
         return element.waitTimeOut();
     }
 
+    @SuppressWarnings("rawtypes")
     public static int getPageWaitTimeOut(Class clazz) {
         if (clazz.isAnnotationPresent(Page.class)) {
             Page page = (Page) clazz.getAnnotation(Page.class);

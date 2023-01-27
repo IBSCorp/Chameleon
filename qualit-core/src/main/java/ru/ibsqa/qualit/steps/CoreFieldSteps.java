@@ -2,14 +2,14 @@ package ru.ibsqa.qualit.steps;
 
 import ru.ibsqa.qualit.context.IContextExplorer;
 import ru.ibsqa.qualit.context.PickElementResult;
-import ru.ibsqa.qualit.elements.IFacadeClearable;
-import ru.ibsqa.qualit.elements.IFacadeReadable;
-import ru.ibsqa.qualit.elements.IFacadeWritable;
+import ru.ibsqa.qualit.elements.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
+import java.time.Duration;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -23,28 +23,28 @@ public class CoreFieldSteps extends AbstractSteps {
     @Autowired
     private CoreUtilSteps utilSteps;
 
-
     @UIStep
     @TestStep("поле \"${fieldName}\" заполняется значением \"${value}\"")
     public void fillField(String fieldName, String value) {
-        PickElementResult<IFacadeWritable, ?> pickElementResult = contextExplorer.pickElement(fieldName, IFacadeWritable.class);
-        IFacadeWritable field = pickElementResult.getElement();
+        IFacadeWritable field = getField(fieldName, IFacadeWritable.class);
         field.setFieldValue(value);
+    }
+
+    public String getFieldValue(String fieldName) {
+        IFacadeReadable field = getField(fieldName, IFacadeReadable.class);
+        return getFieldValue(field, fieldName);
     }
 
     @UIStep
     @TestStep("получено значение поля \"${fieldName}\"")
-    public String getFieldValue(String fieldName) {
-        PickElementResult<IFacadeReadable, ?> pickElementResult = contextExplorer.pickElement(fieldName, IFacadeReadable.class);
-        IFacadeReadable field = pickElementResult.getElement();
+    private String getFieldValue(IFacadeReadable field, String fieldName) {
         return Optional.ofNullable(field.getFieldValue()).map(v -> v.trim().replaceAll("\u00A0", " ")).orElse(null);
     }
 
     @UIStep
     @TestStep("поле \"${fieldName}\" очищено")
     public void clearField(String fieldName) {
-        PickElementResult<IFacadeWritable, ?> pickElementResult = contextExplorer.pickElement(fieldName, IFacadeWritable.class);
-        IFacadeWritable field = pickElementResult.getElement();
+        IFacadeWritable field = getField(fieldName, IFacadeWritable.class);
         if (field instanceof IFacadeClearable) {
             ((IFacadeClearable) field).clearFieldValue();
         } else {
@@ -55,26 +55,69 @@ public class CoreFieldSteps extends AbstractSteps {
     @UIStep
     @TestStep("значение поля \"${fieldName}\" ${operator} \"${expected}\"")
     public void checkFieldValue(String fieldName, CompareOperatorEnum operator, String expected) {
-        String actual = getFieldValue(fieldName);
-        if (!operator.checkValue(actual, expected)) {
-            fail(operator.buildErrorMessage(message("checkField"), actual, expected));
+        IFacadeReadable field = getField(fieldName, IFacadeReadable.class);
+        AtomicReference<String> actual = new AtomicReference<>();
+        boolean isChecked;
+        if (field instanceof IFacadeWait) {
+            isChecked = waiting(
+                    Duration.ofSeconds(((IFacadeWait)field).getWaitTimeOut()),
+                    () -> {
+                        actual.set(getFieldValue(field, fieldName));
+                        return operator.checkValue(actual.get(), expected);
+                    }
+            );
+        } else {
+            isChecked = operator.checkValue(getFieldValue(field, fieldName), expected);
+        }
+        if (!isChecked) {
+            fail(operator.buildErrorMessage(message("checkField"), actual.get(), expected));
         }
     }
 
     @UIStep
     @TestStep("поле \"${fieldName}\" присутствует")
     public void checkFieldExists(String fieldName) {
-        PickElementResult<IFacadeReadable, ?> pickElementResult = contextExplorer.pickElement(fieldName, IFacadeReadable.class);
-        IFacadeReadable field = pickElementResult.getElement();
-        assertTrue(field.isFieldExists(), message("fieldNotExistsAssertMessage", fieldName));
+        IFacadeReadable field = getField(fieldName, IFacadeReadable.class);
+        boolean fieldExists;
+        if (field instanceof IFacadeWait) {
+            fieldExists = waiting(
+                    Duration.ofSeconds(((IFacadeWait) field).getWaitTimeOut()),
+                    field::isFieldExists
+            );
+        } else {
+            fieldExists = field.isFieldExists();
+        }
+        if (!fieldExists) {
+            fail(message("fieldNotExistsAssertMessage", fieldName));
+        }
     }
 
     @UIStep
     @TestStep("поле \"${fieldName}\" отсутствует")
     public void checkFieldNotExists(String fieldName) {
-        PickElementResult<IFacadeReadable, ?> pickElementResult = contextExplorer.pickElement(fieldName, IFacadeReadable.class);
-        IFacadeReadable field = pickElementResult.getElement();
-        assertFalse(field.isFieldExists(), message("fieldExistsAssertMessage", fieldName));
+        IFacadeReadable field = getField(fieldName, IFacadeReadable.class);
+        boolean fieldNotExists;
+        if (field instanceof IFacadeWait) {
+            fieldNotExists = waiting(
+                    Duration.ofSeconds(((IFacadeWait) field).getWaitTimeOut()),
+                    () -> {
+                        if (field instanceof IFacadeAbsent && ((IFacadeAbsent) field).isAbsent()) {
+                            return true;
+                        }
+                        return !field.isFieldExists();
+                    }
+            );
+        } else {
+            fieldNotExists = !field.isFieldExists();
+        }
+        if (!fieldNotExists) {
+            fail(message("fieldExistsAssertMessage", fieldName));
+        }
+    }
+
+    public <FACADE extends IFacade> FACADE getField(String fieldName, Class<FACADE> facade) {
+        PickElementResult<FACADE, ?> pickElementResult = contextExplorer.pickElement(fieldName, facade);
+        return pickElementResult.getElement();
     }
 
 }

@@ -11,7 +11,7 @@ public class FlowStorySteps extends AbstractSteps {
     @Autowired
     private CoreFieldSteps fieldSteps;
 
-    @StepDescription(action = "UI->Условия->Если значение поля равно, то"
+    @StepDescription(action = "Условия->Если значение поля равно, то"
             , parameters = {"fieldName - наименование поля", "operator - оператор сравнения", "value - проверяемое значение"}
             , expertView = true)
     @Когда("^значение поля \"([^\"]*)\" (равно|не равно|содержит значение|не содержит значение|начинается с|не начинается с|оканчивается на|не оканчивается на|соответствует|не соответствует|равно игнорируя регистр|не равно игнорируя регистр|равно игнорируя пробелы|не равно игнорируя пробелы|по длине равно|по длине не равно|по длине больше|по длине не меньше|по длине меньше|по длине не больше|больше|больше или равно|меньше|меньше или равно) \"([^\"]*)\", выполнять следующие шаги:$")
@@ -26,7 +26,7 @@ public class FlowStorySteps extends AbstractSteps {
         }
     }
 
-    @StepDescription(action = "UI->Условия->Если значение выражения равно, то"
+    @StepDescription(action = "Условия->Если значение выражения равно, то"
             , parameters = {"expression - вычисляемое выражение", "operator - оператор сравнения", "value - проверяемое значение"}
             , expertView = true)
     @Когда("^значение выражения \"([^\"]*)\" (равно|не равно|содержит значение|не содержит значение|начинается с|не начинается с|оканчивается на|не оканчивается на|соответствует|не соответствует|равно игнорируя регистр|не равно игнорируя регистр|равно игнорируя пробелы|не равно игнорируя пробелы|по длине равно|по длине не равно|по длине больше|по длине не меньше|по длине меньше|по длине не больше|больше|больше или равно|меньше|меньше или равно) \"([^\"]*)\", выполнять следующие шаги:$")
@@ -42,7 +42,7 @@ public class FlowStorySteps extends AbstractSteps {
     }
 
     /*
-    @StepDescription(action = "UI->Условия->Если значение поля равно, то"
+    @StepDescription(action = "Условия->Если значение поля равно, то"
             , parameters = {"fieldName - наименование поля", "value - проверяемое значение"}
             , expertView = true)
     @Когда("^значение поля \"([^\"]*)\" равно \"([^\"]*)\", выполнять следующие шаги:$")
@@ -55,7 +55,7 @@ public class FlowStorySteps extends AbstractSteps {
         getStepFlow().createBlock(actual.equals(expected));
     }
 
-    @StepDescription(action = "UI->Условия->Если значение поля не равно, то"
+    @StepDescription(action = "Условия->Если значение поля не равно, то"
             , parameters = {"fieldName - наименование поля", "value - проверяемое значение"}
             , expertView = true)
     @Когда("^значение поля \"([^\"]*)\" не равно \"([^\"]*)\", выполнять следующие шаги:$")
@@ -68,7 +68,7 @@ public class FlowStorySteps extends AbstractSteps {
         getStepFlow().createBlock(!actual.equals(expected));
     }
 
-    @StepDescription(action = "UI->Условия->Если значение выражения равно, то"
+    @StepDescription(action = "Условия->Если значение выражения равно, то"
             , parameters = {"expression - вычисляемое выражение", "value - проверяемое значение"}
             , expertView = true)
     @Когда("^значение выражения \"([^\"]*)\" равно \"([^\"]*)\", выполнять следующие шаги:$")
@@ -81,7 +81,7 @@ public class FlowStorySteps extends AbstractSteps {
         getStepFlow().createBlock(actual.equals(expected));
     }
 
-    @StepDescription(action = "UI->Условия->Если значение выражения не равно, то"
+    @StepDescription(action = "Условия->Если значение выражения не равно, то"
             , parameters = {"expression - вычисляемое выражение", "value - проверяемое значение"}
             , expertView = true)
     @Когда("^значение выражения \"([^\"]*)\" не равно \"([^\"]*)\", выполнять следующие шаги:$")
@@ -94,13 +94,13 @@ public class FlowStorySteps extends AbstractSteps {
     }
     */
 
-    @StepDescription(action = "UI->Условия->Иначе выполнить", expertView = true)
+    @StepDescription(action = "Условия->Иначе выполнить", expertView = true)
     @Тогда("^иначе, выполнять следующие шаги:$")
     public void elseFlow() {
         getStepFlow().inverseBlock();
     }
 
-    @StepDescription(action = "UI->Условия->Конец условия", expertView = true)
+    @StepDescription(action = "Условия->Конец условия", expertView = true)
     @Тогда("^конец условия$")
     public void endIfFlow() {
         getStepFlow().completeBlock();

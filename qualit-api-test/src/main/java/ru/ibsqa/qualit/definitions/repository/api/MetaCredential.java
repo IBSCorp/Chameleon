@@ -34,6 +34,10 @@ public class MetaCredential implements IRepositoryElement, INamedRepositoryEleme
 
     @Getter
     @XmlAttribute
+    private String csrfFieldName;
+
+    @Getter
+    @XmlAttribute
     private AuthenticationEnum authentication;
 
     @Getter

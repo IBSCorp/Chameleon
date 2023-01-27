@@ -1,13 +1,18 @@
 package ru.ibsqa.qualit.steps;
 
+import org.springframework.lang.NonNull;
 import ru.ibsqa.qualit.evaluate.IEvaluateManager;
 import ru.ibsqa.qualit.i18n.ILocaleManager;
 import ru.ibsqa.qualit.storage.IVariableStorage;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.ibsqa.qualit.utils.spring.SpringUtils;
+import ru.ibsqa.qualit.utils.waiting.WaitingUtils;
 
+import java.time.Duration;
 import java.util.Locale;
+import java.util.function.Supplier;
 
 public abstract class AbstractSteps {
 
@@ -20,12 +25,18 @@ public abstract class AbstractSteps {
     private IVariableStorage variableStorage;
 
     @Getter(AccessLevel.PROTECTED)
-    @Autowired
-    private ILocaleManager localeManager;
+    private final static ILocaleManager localeManager = SpringUtils.getBean(ILocaleManager.class);
 
     @Getter(AccessLevel.PROTECTED)
     @Autowired
     private IStepFlow stepFlow;
+
+    @Autowired
+    private WaitingUtils waitingUtils;
+
+    protected boolean waiting(@NonNull Duration timeout, @NonNull Supplier<Boolean> supplier) {
+        return waitingUtils.waiting(timeout, supplier);
+    }
 
     protected void flow(Runnable stepAction) {
         stepFlow.checkStepFlow(stepAction);
@@ -35,29 +46,30 @@ public abstract class AbstractSteps {
         return evaluateManager.evalVariable(param);
     }
 
+    @TestStep("в переменной \"${name}\" установлено значение \"${value}\"")
     protected void setVariable(String name, Object value) {
         variableStorage.setVariable(name, value);
     }
 
-    protected String message(String messageName) {
+    protected static String message(String messageName) {
         return localeManager.getMessage(messageName);
     }
 
-    protected String message(String messageName, Object ... arguments) {
+    protected static String message(String messageName, Object ... arguments) {
         return localeManager.getMessage(messageName, arguments);
     }
 
-    protected String message(String messageName, Locale locale)  {
+    protected static String message(String messageName, Locale locale)  {
         return localeManager.getMessage(messageName, locale);
     }
 
-    protected String message(String messageName, Locale locale, Object ... arguments)  {
+    protected static String message(String messageName, Locale locale, Object ... arguments)  {
         return localeManager.getMessage(messageName, locale, arguments);
     }
 
     public String prepareValue(String value) {
         if (null != value) {
-            return value.replace(" ", "").replace(" ", "");
+            return value.replace(" ", "");
         }
         return null;
     }

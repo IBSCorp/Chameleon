@@ -5,17 +5,17 @@ import ru.ibsqa.qualit.page_factory.pages.ICollectionItemObject;
 import org.openqa.selenium.SearchContext;
 
 public class SapCollectionObject extends DefaultPageObject implements ICollectionItemObject {
-    public SapCollectionObject(SearchContext searchContext) {
-        super(searchContext);
-    }
-
+//    public SapCollectionObject(SearchContext searchContext) {
+//        super(searchContext);
+//    }
+//
     public SapCollectionObject() {
         super();
     }
-
-    public SapCollectionObject(boolean initElements) {
-        super(initElements);
-    }
+//
+//    public SapCollectionObject(boolean initElements) {
+//        super(initElements);
+//    }
 
     @Override
     public void beforePageLoaded() {

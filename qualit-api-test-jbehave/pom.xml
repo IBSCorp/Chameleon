@@ -5,7 +5,7 @@
     <parent>
         <groupId>ru.ibsqa.qualit</groupId>
         <artifactId>qualit</artifactId>
-        <version>3.2.2-SNAPSHOT</version>
+        <version>3.3.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>qualit-api-test-jbehave</artifactId>
@@ -15,7 +15,7 @@
             <dependency>
                 <groupId>ru.ibsqa.qualit</groupId>
                 <artifactId>qualit-bom</artifactId>
-                <version>3.2.2-SNAPSHOT</version>
+                <version>3.3.0-SNAPSHOT</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -23,69 +23,35 @@
     </dependencyManagement>
 
     <dependencies>
-        <dependency>
-            <groupId>ru.ibsqa.qualit</groupId>
-            <artifactId>qualit-api-test</artifactId>
-        </dependency>
+
         <dependency>
             <groupId>ru.ibsqa.qualit</groupId>
             <artifactId>qualit-core</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>ru.ibsqa.qualit</groupId>
+            <artifactId>qualit-api-test</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>ru.ibsqa.qualit</groupId>
             <artifactId>qualit-core-jbehave</artifactId>
         </dependency>
+
         <dependency>
             <groupId>ru.ibsqa.qualit</groupId>
             <artifactId>qualit-json-jbehave</artifactId>
         </dependency>
 
-        <!-- Транзитивная зависимость. Если убрать, то перестанет в лог выводиться сообщения, использует файл
-             log4j.properties для настроек.-->
         <dependency>
             <groupId>ru.ibsqa.qualit</groupId>
             <artifactId>qualit-log</artifactId>
             <scope>test</scope>
         </dependency>
 
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.aspectj</groupId>
-            <artifactId>aspectjweaver</artifactId>
-        </dependency>
-
-        <!-- Транзитивная зависимость. Если убрать, то Lombok не преобразует аннотации в исходном коде в
-             Java-операторы до того, как компилятор их обработает, исходный код не будет валидным кодом Java.-->
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-test</artifactId>
-        </dependency>
     </dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>io.qameta.allure</groupId>
-                <artifactId>allure-maven</artifactId>
-                <configuration>
-                    <installDirectory>${project.basedir}/../.allure</installDirectory>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
     <reporting>
         <excludeDefaults>true</excludeDefaults>
     </reporting>

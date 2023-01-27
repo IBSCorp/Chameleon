@@ -310,6 +310,7 @@
         <xs:attribute name="user" type="xs:string"/>
         <xs:attribute name="password" type="xs:string"/>
         <xs:attribute name="token" type="xs:string"/>
+        <xs:attribute name="csrfFieldName" type="xs:string"/>
         <xs:attribute name="authentication" type="AuthenticationList" use="required"/>
     </xs:complexType>
 

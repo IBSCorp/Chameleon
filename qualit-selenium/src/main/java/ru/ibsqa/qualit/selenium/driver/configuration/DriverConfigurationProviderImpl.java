@@ -18,7 +18,7 @@ public class DriverConfigurationProviderImpl implements IDriverConfigurationProv
     @Override
     public IDriverConfiguration getConfiguration() {
         if (configurations.size() > 1) {
-            throw new RuntimeException("Too many driver configurations (see IDriverConfiguration beans)");
+            return null;
         }
         // Вернуть или явно указанную конфигурацию или единственную в контексте
         return configurations.size() == 1

@@ -5,7 +5,7 @@
     <parent>
         <artifactId>qualit</artifactId>
         <groupId>ru.ibsqa.qualit</groupId>
-        <version>3.2.2-SNAPSHOT</version>
+        <version>3.3.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <packaging>pom</packaging>
@@ -13,217 +13,261 @@
     <artifactId>qualit-bom</artifactId>
 
     <dependencyManagement>
+
         <dependencies>
+
             <dependency>
                 <groupId>ru.ibsqa.qualit</groupId>
                 <artifactId>qualit-allure</artifactId>
                 <version>${qualit.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>ru.ibsqa.qualit</groupId>
                 <artifactId>qualit-allure-cucumber</artifactId>
                 <version>${qualit.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>ru.ibsqa.qualit</groupId>
                 <artifactId>qualit-allure-jbehave</artifactId>
                 <version>${qualit.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>ru.ibsqa.qualit</groupId>
                 <artifactId>qualit-api-test</artifactId>
                 <version>${qualit.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>ru.ibsqa.qualit</groupId>
                 <artifactId>qualit-api-test-cucumber</artifactId>
                 <version>${qualit.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>ru.ibsqa.qualit</groupId>
                 <artifactId>qualit-api-test-jbehave</artifactId>
                 <version>${qualit.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>ru.ibsqa.qualit</groupId>
                 <artifactId>qualit-appium</artifactId>
                 <version>${qualit.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>ru.ibsqa.qualit</groupId>
                 <artifactId>qualit-browser-utils</artifactId>
                 <version>${qualit.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>ru.ibsqa.qualit</groupId>
                 <artifactId>qualit-core</artifactId>
                 <version>${qualit.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>ru.ibsqa.qualit</groupId>
                 <artifactId>qualit-core-cucumber</artifactId>
                 <version>${qualit.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>ru.ibsqa.qualit</groupId>
                 <artifactId>qualit-core-jbehave</artifactId>
                 <version>${qualit.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>ru.ibsqa.qualit</groupId>
                 <artifactId>qualit-data</artifactId>
                 <version>${qualit.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>ru.ibsqa.qualit</groupId>
                 <artifactId>qualit-db</artifactId>
                 <version>${qualit.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>ru.ibsqa.qualit</groupId>
                 <artifactId>qualit-db-cucumber</artifactId>
                 <version>${qualit.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>ru.ibsqa.qualit</groupId>
                 <artifactId>qualit-db-jbehave</artifactId>
                 <version>${qualit.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>ru.ibsqa.qualit</groupId>
                 <artifactId>qualit-image</artifactId>
                 <version>${qualit.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>ru.ibsqa.qualit</groupId>
                 <artifactId>qualit-influx</artifactId>
                 <version>${qualit.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>ru.ibsqa.qualit</groupId>
                 <artifactId>qualit-influx-cucumber</artifactId>
                 <version>${qualit.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>ru.ibsqa.qualit</groupId>
                 <artifactId>qualit-json-cucumber</artifactId>
                 <version>${qualit.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>ru.ibsqa.qualit</groupId>
                 <artifactId>qualit-json-jbehave</artifactId>
                 <version>${qualit.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>ru.ibsqa.qualit</groupId>
                 <artifactId>qualit-log</artifactId>
                 <version>${qualit.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>ru.ibsqa.qualit</groupId>
                 <artifactId>qualit-sap</artifactId>
                 <version>${qualit.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>ru.ibsqa.qualit</groupId>
                 <artifactId>qualit-sap-cucumber</artifactId>
                 <version>${qualit.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>ru.ibsqa.qualit</groupId>
                 <artifactId>qualit-screen-recorder</artifactId>
                 <version>${qualit.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>ru.ibsqa.qualit</groupId>
                 <artifactId>qualit-selenium</artifactId>
                 <version>${qualit.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>ru.ibsqa.qualit</groupId>
                 <artifactId>qualit-selenium-cucumber</artifactId>
                 <version>${qualit.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>ru.ibsqa.qualit</groupId>
                 <artifactId>qualit-selenium-jbehave</artifactId>
                 <version>${qualit.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>ru.ibsqa.qualit</groupId>
                 <artifactId>qualit-soap</artifactId>
                 <version>${qualit.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>ru.ibsqa.qualit</groupId>
                 <artifactId>qualit-soap-cucumber</artifactId>
                 <version>${qualit.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>ru.ibsqa.qualit</groupId>
                 <artifactId>qualit-jira-jbehave</artifactId>
                 <version>${qualit.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>ru.ibsqa.qualit</groupId>
                 <artifactId>qualit-thirdparty-jsonassert-patched</artifactId>
                 <version>${qualit.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>ru.ibsqa.qualit</groupId>
                 <artifactId>qualit-testit</artifactId>
                 <version>${qualit.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>ru.ibsqa.qualit</groupId>
                 <artifactId>qualit-testit-cucumber</artifactId>
                 <version>${qualit.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>ru.ibsqa.qualit</groupId>
                 <artifactId>qualit-uia</artifactId>
                 <version>${qualit.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>ru.ibsqa.qualit</groupId>
                 <artifactId>qualit-uia-cucumber</artifactId>
                 <version>${qualit.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>ru.ibsqa.qualit</groupId>
                 <artifactId>qualit-web</artifactId>
                 <version>${qualit.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>ru.ibsqa.qualit</groupId>
                 <artifactId>qualit-web-cucumber</artifactId>
                 <version>${qualit.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>ru.ibsqa.qualit</groupId>
                 <artifactId>qualit-web-jbehave</artifactId>
                 <version>${qualit.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>ru.ibsqa.qualit</groupId>
                 <artifactId>qualit-windows</artifactId>
                 <version>${qualit.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>ru.ibsqa.qualit</groupId>
                 <artifactId>qualit-windows-cucumber</artifactId>
                 <version>${qualit.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>ru.ibsqa.qualit</groupId>
                 <artifactId>qualit-windows-jbehave</artifactId>
                 <version>${qualit.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>ru.ibsqa.qualit</groupId>
                 <artifactId>qualit-winium</artifactId>
                 <version>${qualit.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>ru.ibsqa.qualit</groupId>
                 <artifactId>qualit-winium-cucumber</artifactId>
@@ -241,20 +285,29 @@
                 <artifactId>aspectjweaver</artifactId>
                 <version>${aspectj.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>org.seleniumhq.selenium</groupId>
                 <artifactId>selenium-java</artifactId>
-                <version>4.1.3</version>
+                <version>4.6.0</version>
             </dependency>
+
+            <dependency>
+                <groupId>org.seleniumhq.selenium</groupId>
+                <artifactId>selenium-remote-driver</artifactId>
+                <version>4.6.0</version>
+            </dependency>
+
             <dependency>
                 <groupId>io.appium</groupId>
                 <artifactId>java-client</artifactId>
-                <version>8.0.0</version>
+                <version>8.2.0</version>
             </dependency>
+
             <dependency>
                 <groupId>io.github.bonigarcia</groupId>
                 <artifactId>webdrivermanager</artifactId>
-                <version>5.2.0</version>
+                <version>5.3.1</version>
             </dependency>
 
             <dependency>
@@ -262,31 +315,31 @@
                 <artifactId>lombok</artifactId>
                 <version>1.18.24</version>
             </dependency>
+
             <dependency>
-                <groupId>org.slf4j</groupId>
+                <groupId>${slf4j.binding.groupId}</groupId>
                 <artifactId>slf4j-api</artifactId>
                 <version>${slf4j.version}</version>
             </dependency>
-            <dependency>
-                <groupId>ch.qos.reload4j</groupId>
-                <artifactId>reload4j</artifactId>
-                <version>${slf4j.binding.version}</version>
-            </dependency>
+
             <dependency>
                 <groupId>${slf4j.binding.groupId}</groupId>
                 <artifactId>${slf4j.binding.artifactId}</artifactId>
                 <version>${slf4j.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>
                 <version>2.11.0</version>
             </dependency>
+
             <dependency>
                 <groupId>io.qameta.allure</groupId>
                 <artifactId>allure-java-commons</artifactId>
                 <version>${allure.report.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>io.qameta.allure</groupId>
                 <artifactId>allure-junit5</artifactId>
@@ -299,6 +352,7 @@
                 <artifactId>allure-junit4</artifactId>
                 <version>${allure.report.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
@@ -310,104 +364,124 @@
                 <artifactId>allure-cucumber7-jvm</artifactId>
                 <version>${allure.report.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>ru.yandex.qatools.ashot</groupId>
                 <artifactId>ashot</artifactId>
                 <version>1.5.4</version>
             </dependency>
+
             <!-- Используется за место javax.annotation:javax.annotation-api:1.3.2-->
             <dependency>
                 <groupId>jakarta.annotation</groupId>
                 <artifactId>jakarta.annotation-api</artifactId>
                 <version>1.3.5</version>
             </dependency>
+
             <!-- Используется за место javax.xml.bind-->
             <dependency>
                 <groupId>jakarta.xml.bind</groupId>
                 <artifactId>jakarta.xml.bind-api</artifactId>
                 <version>2.3.3</version>
             </dependency>
+
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-core</artifactId>
                 <version>${fasterxml.jackson.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
                 <version>${fasterxml.jackson.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-annotations</artifactId>
                 <version>${fasterxml.jackson.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>org.json</groupId>
                 <artifactId>json</artifactId>
-                <version>20220320</version>
+                <version>20220924</version>
             </dependency>
+
             <!-- JAXB Implementation, нельзя поднимать версию выше 3.0, так как там переезд в другой namespace -->
             <dependency>
                 <groupId>com.sun.xml.bind</groupId>
                 <artifactId>jaxb-impl</artifactId>
-                <version>2.3.6</version>
+                <version>2.3.7</version>
             </dependency>
+
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
                 <version>3.12.0</version>
             </dependency>
+
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-text</artifactId>
-                <version>1.9</version>
+                <version>1.10.0</version>
             </dependency>
+
             <dependency>
-                <groupId>org.beanshell</groupId>
+                <groupId>org.apache-extras.beanshell</groupId>
                 <artifactId>bsh</artifactId>
-                <version>2.0b5</version>
+                <version>2.0b6</version>
             </dependency>
+
             <dependency>
                 <groupId>org.hamcrest</groupId>
                 <artifactId>hamcrest</artifactId>
                 <version>2.2</version>
             </dependency>
+
             <dependency>
                 <groupId>org.javassist</groupId>
                 <artifactId>javassist</artifactId>
-                <version>3.28.0-GA</version>
+                <version>3.29.2-GA</version>
             </dependency>
+
             <dependency>
                 <groupId>org.jbehave</groupId>
                 <artifactId>jbehave-core</artifactId>
                 <version>${jbehave.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>org.jbehave</groupId>
                 <artifactId>jbehave-spring</artifactId>
                 <version>${jbehave.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>io.rest-assured</groupId>
                 <artifactId>rest-assured</artifactId>
                 <version>${rest-assured.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>io.rest-assured</groupId>
                 <artifactId>rest-assured-common</artifactId>
                 <version>${rest-assured.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>io.rest-assured</groupId>
                 <artifactId>json-path</artifactId>
                 <version>${rest-assured.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>io.rest-assured</groupId>
                 <artifactId>xml-path</artifactId>
                 <version>${rest-assured.version}</version>
             </dependency>
+
             <dependency><!--TODO отказаться в пользу io.rest-assured json-path-->
                 <groupId>com.jayway.jsonpath</groupId>
                 <artifactId>json-path</artifactId>
@@ -419,51 +493,61 @@
                 <artifactId>winium-webdriver</artifactId>
                 <version>0.1.0-1</version>
             </dependency>
+
             <dependency>
                 <groupId>net.java.dev.jna</groupId>
                 <artifactId>jna</artifactId>
                 <version>${jna-platform.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>net.java.dev.jna</groupId>
                 <artifactId>jna-platform</artifactId>
                 <version>${jna-platform.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>com.github.fge</groupId>
                 <artifactId>json-schema-validator</artifactId>
                 <version>2.2.6</version>
             </dependency>
+
             <dependency>
                 <groupId>com.github.fge</groupId>
                 <artifactId>msg-simple</artifactId>
                 <version>1.1</version>
             </dependency>
+
             <dependency>
                 <groupId>com.h2database</groupId>
                 <artifactId>h2</artifactId>
-                <version>2.1.210</version>
+                <version>2.1.214</version>
             </dependency>
+
             <dependency>
                 <groupId>org.influxdb</groupId>
                 <artifactId>influxdb-java</artifactId>
-                <version>2.22</version>
+                <version>2.23</version>
             </dependency>
+
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>httpclient</artifactId>
                 <version>${httpcomponents.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>httpmime</artifactId>
                 <version>${httpcomponents.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>com.hynnet</groupId>
                 <artifactId>jacob</artifactId>
                 <version>1.18</version>
             </dependency>
+
             <dependency>
                 <groupId>de.openkeyword</groupId>
                 <artifactId>autoit</artifactId>
@@ -475,66 +559,81 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+
             <dependency>
                 <groupId>com.github.stephenc.monte</groupId>
                 <artifactId>monte-screen-recorder</artifactId>
                 <version>0.7.7.0</version>
             </dependency>
+
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>31.1-jre</version>
             </dependency>
+
             <dependency>
                 <groupId>com.predic8</groupId>
                 <artifactId>soa-model-core</artifactId>
-                <version>1.6.4</version>
+                <version>2.0.1</version>
             </dependency>
+
             <dependency>
                 <groupId>com.github.mmarquee</groupId>
                 <artifactId>ui-automation</artifactId>
                 <version>0.7.0</version>
             </dependency>
 
-
             <!-- Пример: https://github.com/junit-team/junit5-samples/blob/r5.8.2/junit5-jupiter-starter-maven/pom.xml -->
             <dependency>
                 <groupId>org.junit</groupId>
                 <artifactId>junit-bom</artifactId>
-                <version>5.8.2</version>
+                <version>${junit-jupiter.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+
             <!-- Пример: https://github.com/cucumber/cucumber-java-skeleton/blob/main/pom.xml -->
             <dependency>
                 <groupId>io.cucumber</groupId>
                 <artifactId>cucumber-bom</artifactId>
-                <version>7.2.3</version>
+                <version>7.9.0</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-framework-bom</artifactId>
-                <version>5.3.19</version>
+                <version>5.3.24</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+
             <dependency>
-                <groupId>org.codehaus.groovy</groupId>
+                <groupId>org.apache.groovy</groupId>
                 <artifactId>groovy-bom</artifactId>
-                <version>3.0.10</version>
+                <version>4.0.6</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+
             <dependency>
                 <groupId>io.netty</groupId>
                 <artifactId>netty-bom</artifactId>
-                <version>4.1.75.Final</version>
+                <version>4.1.85.Final</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+
+            <dependency>
+                <groupId>io.qameta.allure</groupId>
+                <artifactId>allure-maven</artifactId>
+                <version>${allure-maven.version}</version>
+            </dependency>
+
         </dependencies>
+
     </dependencyManagement>
 
     <build>
@@ -552,13 +651,18 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>3.0.0-M6</version>
+                    <version>3.0.0-M7</version>
                     <configuration>
                         <reuseForks>true</reuseForks>
                         <forkCount>1</forkCount>
                         <!-- Activate the use of TCP to transmit events to the plugin -->
                         <forkNode implementation="org.apache.maven.plugin.surefire.extensions.SurefireForkNodeFactory"/>
-                        <argLine>-Dfile.encoding=${encoding} -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"</argLine>
+                        <argLine>
+                            -Dfile.encoding=${encoding}
+                            -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"
+                            --add-opens java.base/java.lang=ALL-UNNAMED
+                            --add-opens java.base/java.lang.reflect=ALL-UNNAMED
+                        </argLine>
                         <reportFormat>plain</reportFormat>
                         <testFailureIgnore>true</testFailureIgnore>
                     </configuration>

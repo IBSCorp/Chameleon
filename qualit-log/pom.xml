@@ -5,7 +5,7 @@
     <parent>
         <groupId>ru.ibsqa.qualit</groupId>
         <artifactId>qualit</artifactId>
-        <version>3.2.2-SNAPSHOT</version>
+        <version>3.3.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>qualit-log</artifactId>
@@ -15,7 +15,7 @@
             <dependency>
                 <groupId>ru.ibsqa.qualit</groupId>
                 <artifactId>qualit-bom</artifactId>
-                <version>3.2.2-SNAPSHOT</version>
+                <version>3.3.0-SNAPSHOT</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -23,55 +23,21 @@
     </dependencyManagement>
 
     <dependencies>
-        <dependency>
-            <groupId>ch.qos.reload4j</groupId>
-            <artifactId>reload4j</artifactId>
-        </dependency>
-        <!-- Транзитивная зависимость. Если убрать, то не будут определяться классы из пакетов ru.ibsqa.qualit -->
+
         <dependency>
             <groupId>ru.ibsqa.qualit</groupId>
             <artifactId>qualit-core</artifactId>
         </dependency>
-        <!-- Используется за место javax.annotation:javax.annotation-api:1.3.2-->
-        <dependency>
-            <groupId>jakarta.annotation</groupId>
-            <artifactId>jakarta.annotation-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.aspectj</groupId>
-            <artifactId>aspectjweaver</artifactId>
-        </dependency>
-        <!-- Транзитивная зависимость. Если убрать, то Lombok не преобразует аннотации в исходном коде в
-             Java-операторы до того, как компилятор их обработает, исходный код не будет валидным кодом Java.-->
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-        </dependency>
-        <!-- Транзитивная зависимость. Если убрать, то перестанет в лог выводиться сообщения, использует файл
-                     log4j.properties для настроек. Замена slf4j-log4j, по причине уязвимостей-->
+
         <dependency>
             <groupId>${slf4j.binding.groupId}</groupId>
             <artifactId>${slf4j.binding.artifactId}</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-beans</artifactId>
-        </dependency>
 
     </dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>io.qameta.allure</groupId>
-                <artifactId>allure-maven</artifactId>
-                <configuration>
-                    <installDirectory>${project.basedir}/../.allure</installDirectory>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
     <reporting>
         <excludeDefaults>true</excludeDefaults>
     </reporting>
+
 </project>

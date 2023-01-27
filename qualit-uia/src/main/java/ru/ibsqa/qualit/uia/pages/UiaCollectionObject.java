@@ -6,17 +6,17 @@ import org.openqa.selenium.SearchContext;
 
 public class UiaCollectionObject extends DefaultPageObject implements ICollectionItemObject {
 
-    public UiaCollectionObject(SearchContext searchContext) {
-        super(searchContext);
-    }
-
+//    public UiaCollectionObject(SearchContext searchContext) {
+//        super(searchContext);
+//    }
+//
     public UiaCollectionObject() {
         super();
     }
-
-    public UiaCollectionObject(boolean initElements) {
-        super(initElements);
-    }
+//
+//    public UiaCollectionObject(boolean initElements) {
+//        super(initElements);
+//    }
 
     @Override
     public void beforePageLoaded() {

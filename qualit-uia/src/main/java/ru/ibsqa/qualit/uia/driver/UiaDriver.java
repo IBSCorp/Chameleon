@@ -373,11 +373,6 @@ public class UiaDriver<T extends WebElement> extends WebDriverFacade implements 
         }
 
         @Override
-        public ImeHandler ime() {
-            return null;
-        }
-
-        @Override
         public UiaWindow window() {
             return new UiaWindow();
         }

@@ -91,21 +91,7 @@ public class ContextExplorerImpl implements IContextExplorer {
 
         // Отделить имя поля и параметры
         name = fieldNameResolver.resolveParams(name);
-//        resetPickElementScope();
-//        Matcher matcher = paramsPattern.matcher(name);
-//        if (matcher.matches()) {
-//            name = matcher.group("name").trim();
-//            // Запятая разделитель параметров, то только если ей не предшествует символ \
-//            List<String> variables = Arrays.asList(matcher.group("variables").split("(?<!\\\\),"));
-//            for (String expression : variables) {
-//                expression = expression.replace("\\,", ",");
-//                String[] pair = expression.split("=>");
-//                if (pair.length < 2) {
-//                    throwSearchElementException(localeManager.checkValue("paramValueErrorMessage", pair[0], fullPathName));
-//                }
-//                pickElementScope.setVariable(pair[0].trim(),evaluateManager.evalVariable(pair[1].trim()));
-//            }
-//        }
+
         // Отделить имя контекста
         String context = null;
         Matcher matcher = contextPattern.matcher(name);

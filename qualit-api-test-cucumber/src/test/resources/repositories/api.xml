@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ApiGears xmlns="http://qualit.ibs-qa.ru/schema/api">
+    <Endpoint name="Сброс тестовых данных" path="api/data/reset">
+        <Request name="Сбросить" method="POST" contentType="JSON"/>
+        <Response name="Сброс выполнен успешно" contentType="JSON" statusCode="200 OK (хорошо)">
+            <Cookie>
+                <FieldString name="Сессия" locator="JSESSIONID"/>
+            </Cookie>
+        </Response>
+    </Endpoint>
+    <Endpoint name="Список товаров" path="api/food">
+        <Request name="Запросить список" method="GET" contentType="JSON">
+            <Cookie>
+                <FieldString name="Сессия" locator="JSESSIONID"/>
+            </Cookie>
+        </Request>
+        <Response name="Получить список" contentType="JSON" statusCode="200 OK (хорошо)">
+            <Body>
+                <FieldString locator="$.length()" name="Количество записей"/>
+            </Body>
+            <Cookie>
+                <FieldString name="Сессия" locator="JSESSIONID"/>
+            </Cookie>
+        </Response>
+        <Request name="Добавить товар" method="POST" contentType="JSON" template="classpath:templates/Товар.json">
+            <Body>
+                <FieldString name="Наименование" locator="$.name"/>
+                <FieldString name="Тип" locator="$.type"/>
+                <FieldBoolean name="Экзотический" locator="$.exotic"/>
+            </Body>
+            <Cookie>
+                <FieldString name="Сессия" locator="JSESSIONID"/>
+            </Cookie>
+        </Request>
+        <Response name="Товар добавлен" contentType="JSON" statusCode="200 OK (хорошо)">
+            <Cookie>
+                <FieldString locator="JSESSIONID" name="Сессия"/>
+            </Cookie>
+        </Response>
+    </Endpoint>
+</ApiGears>

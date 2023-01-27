@@ -11,7 +11,4 @@
        default-lazy-init="true">
 
     <context:component-scan base-package="ru.ibsqa.qualit"/>
-
-    <import resource="config/drivers.xml"/>
-
 </beans>

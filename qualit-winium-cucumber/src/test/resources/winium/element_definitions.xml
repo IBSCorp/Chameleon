@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Pages>
-    <Page name="Калькулятор" locator="/*[@AutomationId='mainWindow' and @Name='Calculator']">
-        <WinStaticText name="Заголовок" locator="./*[@AutomationId='TitleBar' and @Name='Calculator']" isLoaded="true"/>
-        <WinButton name="Кнопка" locator="./*[@ClassName='Button' and @Name='#{текст}']"/>
-        <WinStaticText name="Табло" locator="./*[@AutomationId='tb1']"/>
-    </Page>
-</Pages>

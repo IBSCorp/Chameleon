@@ -14,13 +14,13 @@ import java.sql.*;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
-
 @Slf4j
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration("classpath:spring.xml")
 @TestExecutionListeners(inheritListeners = false, listeners =
         {DependencyInjectionTestExecutionListener.class})
 public class H2Test {
+
     @Test
     public void dbTest() throws SQLException {
         insertWithStatement();

@@ -20,7 +20,7 @@ public class DefaultDriverManager implements IDriverManager {
     @Autowired
     private ILocaleManager localeManager;
 
-    private WebDriverFacade lastDriver;
+    private final ThreadLocal<WebDriverFacade> lastDriver = new ThreadLocal<>();
 
     @Setter
     private String currentDefaultDriverId;
@@ -42,11 +42,11 @@ public class DefaultDriverManager implements IDriverManager {
     @Override
     public WebDriverFacade getDriver(String driverId) {
         if (null == driverId || driverId.isEmpty()) {
-            lastDriver = getDefaultDriver();
-            return lastDriver;
+            lastDriver.set(getDefaultDriver());
+            return lastDriver.get();
         }
-        lastDriver = (WebDriverFacade) appContext.getBean(driverId);
-        return lastDriver;
+        lastDriver.set((WebDriverFacade) appContext.getBean(driverId));
+        return lastDriver.get();
     }
 
     /**
@@ -56,7 +56,7 @@ public class DefaultDriverManager implements IDriverManager {
      */
     @Override
     public WebDriverFacade getLastDriver(){
-        if (lastDriver == null) {
+        if (lastDriver.get() == null) {
             if (drivers.size() == 1) {
                 return drivers.get(0);
             } else {
@@ -66,7 +66,7 @@ public class DefaultDriverManager implements IDriverManager {
                         .orElse(null);
             }
         }
-        return lastDriver;
+        return lastDriver.get();
     }
 
     @Override
@@ -79,7 +79,7 @@ public class DefaultDriverManager implements IDriverManager {
 
     @Override
     public void closeAllDrivers() {
-        drivers.forEach(driver -> driver.quit());
+        drivers.forEach(WebDriverFacade::quit);
     }
 
     @Override

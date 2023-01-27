@@ -4,6 +4,7 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
 
+@Deprecated
 public class SoftAssert{
     public static <T> void softAssertThat(T actual, Matcher<? super T> matcher) {
         softAssertThat("", actual, matcher);

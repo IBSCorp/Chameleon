@@ -18,8 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.fail;
-
 public class CollectionStorySteps extends AbstractSteps implements ICollectionUtils {
 
     @Autowired
@@ -64,7 +62,6 @@ public class CollectionStorySteps extends AbstractSteps implements ICollectionUt
         );
     }
 
-
     @StepDescription(action = "UI->Коллекции->Отсутствует элемент коллекции"
             , parameters = {"collectionName - наименование коллекции", "conditions - параметры элемента"})
     @Тогда("^отсутствует элемент коллекции \"([^\"]*)\" с параметрами:$")
@@ -74,26 +71,22 @@ public class CollectionStorySteps extends AbstractSteps implements ICollectionUt
             @Read("field") @Value({"operator", "value"}) List<FieldOperatorValueTable> conditions
     ) {
         flow(()-> {
-            try {
-                collectionSteps.searchItem(collectionName, parseConditions(conditions));
-            } catch (AssertionError e) {
-                return;
-            }
-            fail(message("elementExistsAssertMessage"));
+            collectionSteps.stepCheckItemCount(collectionName, CompareOperatorEnum.EQUALS, 0, parseConditions(conditions));
         });
     }
 
     @StepDescription(action = "UI->Коллекции->Количество элементов коллекции равно"
             , parameters = {"collectionName - наименование коллекции", "count - ожидаемое количество элементов"})
-    @Тогда("^количество элементов коллекции \"([^\"]*)\" равно \"([^\"]*)\"$")
+    @Тогда("^количество элементов коллекции \"([^\"]*)\" (равно|не равно|содержит значение|не содержит значение|начинается с|не начинается с|оканчивается на|не оканчивается на|соответствует|не соответствует|равно игнорируя регистр|не равно игнорируя регистр|равно игнорируя пробелы|не равно игнорируя пробелы|по длине равно|по длине не равно|по длине больше|по длине не меньше|по длине меньше|по длине не больше|больше|больше или равно|меньше|меньше или равно|раньше или равно|позже или равно|позже|раньше) \"([^\"]*)\"$")
     @Context(type = ContextType.COLLECTION, change = ContextChange.USE, parameter = "collectionName", onlyStepContext = true)
     public void stepCheckItemCount(
             @Collection String collectionName,
+            @Value CompareOperatorEnum operator,
             @Value String count
     ) {
         flow(()-> {
             int countInt = Integer.parseInt(evalVariable(count));
-            collectionSteps.stepCheckItemCount(collectionName, countInt);
+            collectionSteps.stepCheckItemCount(collectionName, operator, countInt);
         });
     }
 
@@ -101,6 +94,8 @@ public class CollectionStorySteps extends AbstractSteps implements ICollectionUt
             , parameters = {"collectionName - наименование коллекции"})
     @Тогда("^количество элементов коллекции \"([^\"]*)\" не равно нулю$")
     @Context(type = ContextType.COLLECTION, change = ContextChange.USE, parameter = "collectionName", onlyStepContext = true)
+    // Шаг оставлен для совместимости. Аналогичен шагу:
+    // * количество элементов коллекции "имя_коллеции" не равно "0"
     public void stepCheckNotEmpty(
             @Collection String collectionName
     ) {
@@ -111,16 +106,17 @@ public class CollectionStorySteps extends AbstractSteps implements ICollectionUt
 
     @StepDescription(action = "UI->Коллекции->Количество определенных элементов коллекции равно"
             , parameters = {"collectionName - наименование коллекции", "count - проверяемое количество элементов", "conditions - параметры элементов"})
-    @Тогда("^количество элементов коллекции \"([^\"]*)\" равно \"([^\"]*)\" с параметрами:$")
+    @Тогда("^количество элементов коллекции \"([^\"]*)\" (равно|не равно|содержит значение|не содержит значение|начинается с|не начинается с|оканчивается на|не оканчивается на|соответствует|не соответствует|равно игнорируя регистр|не равно игнорируя регистр|равно игнорируя пробелы|не равно игнорируя пробелы|по длине равно|по длине не равно|по длине больше|по длине не меньше|по длине меньше|по длине не больше|больше|больше или равно|меньше|меньше или равно|раньше или равно|позже или равно|позже|раньше) \"([^\"]*)\" с параметрами:$")
     @Context(type = ContextType.COLLECTION, change = ContextChange.USE, parameter = "collectionName", onlyStepContext = true)
     public void stepCheckItemCount(
             @Collection String collectionName,
+            @Value CompareOperatorEnum operator,
             @Value String count,
             @Read("field") @Value({"operator", "value"}) List<FieldOperatorValueTable> conditions
     ) {
         flow(()-> {
             int countInt = Integer.parseInt(evalVariable(count));
-            collectionSteps.stepCheckItemCount(collectionName, countInt, parseConditions(conditions));
+            collectionSteps.stepCheckItemCount(collectionName, operator, countInt, parseConditions(conditions));
         });
     }
 

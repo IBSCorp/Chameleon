@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DbGears xmlns="http://qualit.ibs-qa.ru/schema/db">
+    <Connection name="H2" driver="org.h2.Driver" url="jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;user=#{user};password=#{password}" autoCommit="true">
+        <Params>
+            <FieldString name="Пользователь" locator="user"/>
+            <FieldString name="Пароль" locator="password"/>
+        </Params>
+    </Connection>
+    <Query name="Создание таблицы" statement="CREATE TABLE PERSON(id int primary key, name varchar(255))"/>
+    <Query name="Добавление пользователя" statement="INSERT INTO PERSON(id, name) values(:id,:name)">
+        <Params>
+            <FieldInteger name="Идентификатор" locator="id"/>
+            <FieldString name="Имя" locator="name"/>
+        </Params>
+    </Query>
+    <Query name="Добавление пользователя (sql)" statement="classpath:/sql/insert.sql">
+        <Params>
+            <FieldInteger name="Идентификатор" locator="id"/>
+            <FieldString name="Имя" locator="name"/>
+        </Params>
+    </Query>
+    <Query name="Перечень пользователей" statement="select * from PERSON order by id">
+        <Result>
+            <FieldInteger name="Идентификатор" locator="id"/>
+            <FieldString name="Имя" locator="name"/>
+        </Result>
+    </Query>
+    <Query name="Удаление таблицы" statement="DROP TABLE PERSON"/>
+</DbGears>
