@@ -33,4 +33,5 @@
         description="Если установлено true, то кроме содержимого окна браузера выполняется скриншот и всего экрана."/>
     <CheckBox name="highlightElements" label="Подсветка элементов" defaultValue="false"
               description="Если установлено true, то при прохождении теста на экране подсвечиваются элементы, над которыми выполняются операции."/>
+    <Hidden name="webdriver.http.factory" defaultValue="jdk-http-client"/>
 </Properties>
