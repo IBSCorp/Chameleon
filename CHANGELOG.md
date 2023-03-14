@@ -1,4 +1,6 @@
 # Версия 3.x.x
+## 3.3.0-SNAPSHOT (released 14.03.2023)
+* Исправлена ошибка для браузера Chrome 111
 
 ## 3.3.0-SNAPSHOT (released 27.01.2023)
 * Обновление Spring Framework до версии 5.3.24
