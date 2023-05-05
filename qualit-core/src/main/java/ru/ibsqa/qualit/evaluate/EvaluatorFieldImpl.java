@@ -1,5 +1,6 @@
 package ru.ibsqa.qualit.evaluate;
 
+import ru.ibsqa.qualit.definitions.repository.ConfigurationPriority;
 import ru.ibsqa.qualit.steps.CoreFieldSteps;
 import ru.ibsqa.qualit.storage.IVariableScope;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,9 +12,9 @@ import org.springframework.stereotype.Component;
  *      #field{название_поля}
  */
 @Component
-@Evaluator({
+@Evaluator(value = {
         "#field{название_поля}"
-})
+}, priority = ConfigurationPriority.LOW)
 public class EvaluatorFieldImpl extends AbstractEvaluator {
 
     @Autowired

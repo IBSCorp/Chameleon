@@ -1,6 +1,7 @@
 package ru.ibsqa.qualit.evaluate;
 
 
+import ru.ibsqa.qualit.definitions.repository.ConfigurationPriority;
 import ru.ibsqa.qualit.i18n.ILocaleManager;
 import ru.ibsqa.qualit.storage.IVariableScope;
 import lombok.extern.slf4j.Slf4j;
@@ -19,9 +20,9 @@ import static org.junit.jupiter.api.Assertions.fail;
  *      #md5{passw0rd}
  */
 @Component
-@Evaluator({
+@Evaluator(value = {
         "#md5{текст}"
-})
+}, priority = ConfigurationPriority.LOW)
 @Slf4j
 public class EvaluatorMd5Impl extends AbstractEvaluator {
 

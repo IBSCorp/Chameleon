@@ -1,5 +1,6 @@
 package ru.ibsqa.qualit.steps;
 
+import ru.ibsqa.qualit.compare.ICompareManager;
 import ru.ibsqa.qualit.context.IContextExplorer;
 import ru.ibsqa.qualit.context.PickElementResult;
 import ru.ibsqa.qualit.elements.*;
@@ -21,7 +22,7 @@ public class CoreFieldSteps extends AbstractSteps {
     private IContextExplorer contextExplorer;
 
     @Autowired
-    private CoreUtilSteps utilSteps;
+    private ICompareManager compareManager;
 
     @UIStep
     @TestStep("поле \"${fieldName}\" заполняется значением \"${value}\"")
@@ -54,7 +55,7 @@ public class CoreFieldSteps extends AbstractSteps {
 
     @UIStep
     @TestStep("значение поля \"${fieldName}\" ${operator} \"${expected}\"")
-    public void checkFieldValue(String fieldName, CompareOperatorEnum operator, String expected) {
+    public void checkFieldValue(String fieldName, String operator, String expected) {
         IFacadeReadable field = getField(fieldName, IFacadeReadable.class);
         AtomicReference<String> actual = new AtomicReference<>();
         boolean isChecked;
@@ -63,14 +64,14 @@ public class CoreFieldSteps extends AbstractSteps {
                     Duration.ofSeconds(((IFacadeWait)field).getWaitTimeOut()),
                     () -> {
                         actual.set(getFieldValue(field, fieldName));
-                        return operator.checkValue(actual.get(), expected);
+                        return compareManager.checkValue(operator, actual.get(), expected);
                     }
             );
         } else {
-            isChecked = operator.checkValue(getFieldValue(field, fieldName), expected);
+            isChecked = compareManager.checkValue(operator, getFieldValue(field, fieldName), expected);
         }
         if (!isChecked) {
-            fail(operator.buildErrorMessage(message("checkField"), actual.get(), expected));
+            fail(compareManager.buildErrorMessage(operator, message("checkField"), actual.get(), expected));
         }
     }
 

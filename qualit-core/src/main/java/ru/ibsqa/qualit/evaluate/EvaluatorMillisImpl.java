@@ -1,6 +1,7 @@
 package ru.ibsqa.qualit.evaluate;
 
 import org.springframework.stereotype.Component;
+import ru.ibsqa.qualit.definitions.repository.ConfigurationPriority;
 import ru.ibsqa.qualit.storage.IVariableScope;
 
 /**
@@ -9,9 +10,9 @@ import ru.ibsqa.qualit.storage.IVariableScope;
  *      #millis{}
  */
 @Component
-@Evaluator({
+@Evaluator(value = {
         "#millis{}"
-})
+}, priority = ConfigurationPriority.LOW)
 public class EvaluatorMillisImpl extends AbstractEvaluator {
 
     @Override

@@ -19,6 +19,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.support.pagefactory.ElementLocator;
 import org.springframework.stereotype.Component;
+import ru.ibsqa.qualit.utils.delay.DelayUtils;
 
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -100,11 +101,7 @@ public class UiaSearchBy {
                             return base;
                         } catch (EvalError evalError) {
                             exception = evalError;
-                            try {
-                                Thread.sleep(101);
-                            } catch (InterruptedException e) {
-                                log.error(e.getMessage(), e);
-                            }
+                            DelayUtils.sleep(101);
                         }
 
                     } else {
@@ -165,11 +162,7 @@ public class UiaSearchBy {
 
             } catch (ElementNotFoundException ignore) {
                 exception = ignore;
-                try {
-                    Thread.sleep(101);
-                } catch (InterruptedException e) {
-                    log.error(e.getMessage(), e);
-                }
+                DelayUtils.sleep(101);
             }
         } while (System.currentTimeMillis() < maxWaitTime);
 

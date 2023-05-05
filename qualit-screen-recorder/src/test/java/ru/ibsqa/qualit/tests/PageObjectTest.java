@@ -2,12 +2,10 @@ package ru.ibsqa.qualit.tests;
 
 import com.google.common.collect.Iterators;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import ru.ibsqa.qualit.Constants;
 import ru.ibsqa.qualit.page_objects.FormPage;
@@ -16,13 +14,14 @@ import ru.ibsqa.qualit.page_objects.MainPage;
 import ru.ibsqa.qualit.selenium.driver.IDriverManager;
 import ru.ibsqa.qualit.steps.CollectionSteps;
 import ru.ibsqa.qualit.steps.CoreUtilSteps;
+import ru.ibsqa.qualit.utils.spring.QualITSpringExtension;
 
 import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Slf4j
-@ExtendWith(SpringExtension.class)
+@ExtendWith(QualITSpringExtension.class)
 @ContextConfiguration("classpath:spring.xml")
 @TestExecutionListeners(inheritListeners = false, listeners =
         {DependencyInjectionTestExecutionListener.class})
@@ -65,11 +64,7 @@ public class PageObjectTest {
         formPage.type.type(Constants.TYPE);
         formPage.exotic.type(Constants.EXOTIC);
         formPage.saveBtn.click();
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        utilSteps.stopExecutedMs(500);
         listPage.loadPage();
         collectionSteps.waitCollectionByConditions("Таблица", 10, Arrays.asList(
                 CollectionSteps.FindCondition.builder().fieldName("Наименование").value(Constants.NAME).build(),

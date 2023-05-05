@@ -1,5 +1,6 @@
 package ru.ibsqa.qualit.evaluate;
 
+import ru.ibsqa.qualit.definitions.repository.ConfigurationPriority;
 import ru.ibsqa.qualit.page_factory.pages.IContextManagerPage;
 import ru.ibsqa.qualit.storage.IVariableScope;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +15,9 @@ import java.util.regex.Pattern;
  *      #json{currentPage}
  */
 @Component
-@Evaluator({
+@Evaluator(value = {
         "#json{currentPage}"
-})
+}, priority = ConfigurationPriority.LOW)
 public class EvaluatorPageJsonImpl implements IEvaluator {
 
     @Autowired

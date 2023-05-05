@@ -14,6 +14,10 @@ public class FeatureStorySteps extends AbstractSteps {
     @Autowired
     private CoreFeatureSteps featureSteps;
 
+    @StepDescription(action = "Сценарии->Выполнить сценарий"
+            , subAction = "Выполнить сценарий"
+            , parameters = {"scenario - наименование вызываемого сценария",
+                            "function - наименование функции, в которой находится вызываемый сценарий"})
     @Допустим("^выполнен сценарий \"([^\"]*)\" из функционала \"([^\"]*)\"$")
     public void executeScenario(@Value String scenario, @Value String function) {
         flow(() ->
@@ -21,6 +25,11 @@ public class FeatureStorySteps extends AbstractSteps {
         );
     }
 
+    @StepDescription(action = "Сценарии->Выполнить сценарий"
+            , subAction = "Выполнить сценарий с параметрами"
+            , parameters = {"scenario - наименование вызываемого сценария",
+                            "function - наименование функции, в которой находится вызываемый сценарий",
+                            "params - параметры вызываемого сценария"})
     @Допустим("^выполнен сценарий \"([^\"]*)\" из функционала \"([^\"]*)\" с параметрами:$")
     public void executeScenario(@Value String scenario, @Value String function, @Read("field") @Value("value") List<FieldValueTable> params) {
         flow(() ->

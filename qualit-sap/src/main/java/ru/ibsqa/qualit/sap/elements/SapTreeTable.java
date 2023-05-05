@@ -4,9 +4,9 @@ import ru.ibsqa.qualit.definitions.repository.ConfigurationPriority;
 import ru.ibsqa.qualit.elements.MetaElement;
 import ru.ibsqa.qualit.sap.definitions.repository.MetaSapTreeTable;
 import ru.ibsqa.qualit.sap.driver.SapSupportedDriver;
-import ru.ibsqa.qualit.sap.driver.Utils;
 import com.jacob.activeX.ActiveXComponent;
 import lombok.extern.slf4j.Slf4j;
+import ru.ibsqa.qualit.utils.delay.DelayUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +23,7 @@ public class SapTreeTable extends SapElementFacade {
             keys = getKeys();
         }
         for (String key : keys) {
-            Utils.delayInsec(1);
+            DelayUtils.sleepSec(1);
             if (getNodeValue(key).equals(value)) {
                 doubleClick(key);
                 return;
@@ -37,7 +37,7 @@ public class SapTreeTable extends SapElementFacade {
             keys = getKeys();
         }
         for (String key : keys) {
-            Utils.delayInsec(1);
+            DelayUtils.sleepSec(1);
             if (getNodeValue(key).equals(value)) {
                 select(key);
                 return;
@@ -51,7 +51,7 @@ public class SapTreeTable extends SapElementFacade {
             keys = getKeys();
         }
         for (String key : keys) {
-            Utils.delayInsec(1);
+            DelayUtils.sleepSec(1);
             if (getNodeValue(key).equals(value)) {
                 expand(key);
                 return;
@@ -75,7 +75,7 @@ public class SapTreeTable extends SapElementFacade {
     private List<String> getKeys() {
         keys = new ArrayList<>();
         ActiveXComponent mActiveXComponent = new ActiveXComponent((getVariant().getDispatch()));
-        Utils.delayInsec(1);
+        DelayUtils.sleepSec(1);
         int rowCount = getRowCount();
         for (int i = 0; i < rowCount; i++) {
             keys.add(new ActiveXComponent(mActiveXComponent.invoke("GetAllNodeKeys").toDispatch()).invoke("ElementAt", i).getString());

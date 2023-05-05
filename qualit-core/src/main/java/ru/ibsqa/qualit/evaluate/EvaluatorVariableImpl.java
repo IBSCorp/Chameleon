@@ -1,5 +1,6 @@
 package ru.ibsqa.qualit.evaluate;
 
+import ru.ibsqa.qualit.definitions.repository.ConfigurationPriority;
 import ru.ibsqa.qualit.storage.IVariableScope;
 import ru.ibsqa.qualit.storage.IVariableStorage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import java.util.regex.Pattern;
  *      #{имя_переменной}
  */
 @Component
+@Evaluator(value = {}, priority = ConfigurationPriority.LOW)
 public class EvaluatorVariableImpl implements IEvaluator {
 
     @Autowired

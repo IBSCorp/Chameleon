@@ -58,7 +58,7 @@ public class RepositoryManagerImpl implements IRepositoryManager {
     }
 
     @PostConstruct
-    private void collectRepositories() {
+    private void init() {
         for (val repositoryType : repositoryTypes) {
             val namespace = repositoryType.getNamespace();
             if (Objects.nonNull(namespace)) {
@@ -71,6 +71,7 @@ public class RepositoryManagerImpl implements IRepositoryManager {
                 }
             }
         }
+        verify();
     }
 
     @Getter
@@ -104,7 +105,6 @@ public class RepositoryManagerImpl implements IRepositoryManager {
     }
 
     @Override
-    @PostConstruct
     public void verify() {
         List<IRepositoryElement> elements = pickAllElements();
         for (IRepositoryVerifier verifier : verifiers) {

@@ -1,6 +1,6 @@
 package ru.ibsqa.qualit.steps;
 
-import ru.ibsqa.qualit.context.IContextExplorer;
+import ru.ibsqa.qualit.compare.ICompareManager;
 import ru.ibsqa.qualit.elements.selenium.IFacadeSelenium;
 import ru.ibsqa.qualit.page_factory.pages.Page;
 import ru.ibsqa.qualit.selenium.enums.KeyEnum;
@@ -22,7 +22,7 @@ public class SeleniumFieldSteps extends CoreFieldSteps {
     private PageSteps pageSteps;
 
     @Autowired
-    private IContextExplorer contextExplorer;
+    private ICompareManager compareManager;
 
     @UIStep
     @TestStep("в поле \"${fieldName}\" выполнено нажатие клавиши \"${key}\"")
@@ -54,18 +54,18 @@ public class SeleniumFieldSteps extends CoreFieldSteps {
 
     @UIStep
     @TestStep("значение подсказки для поля \"${fieldName}\" ${operator} \"${expected}\"")
-    public void checkFieldPlaceholder(String fieldName, CompareOperatorEnum operator, String expected) {
+    public void checkFieldPlaceholder(String fieldName, String operator, String expected) {
         IFacadeSelenium field = getSeleniumField(fieldName);
         AtomicReference<String> actual = new AtomicReference<>();
         boolean isChecked = waiting(
                 Duration.ofSeconds(field.getWaitTimeOut()),
                 () -> {
                     actual.set(getSeleniumField(fieldName).getPlaceholder());
-                    return operator.checkValue(actual.get(), expected);
+                    return compareManager.checkValue(operator, actual.get(), expected);
                 }
         );
         if (!isChecked) {
-            fail(operator.buildErrorMessage(message("checkFieldPlaceholder"), actual.get(), expected));
+            fail(compareManager.buildErrorMessage(operator, message("checkFieldPlaceholder"), actual.get(), expected));
         }
     }
 
@@ -190,18 +190,18 @@ public class SeleniumFieldSteps extends CoreFieldSteps {
 
     @UIStep
     @TestStep("в поле \"${fieldName}\" значение ошибки ${operator} \"${expected}\"")
-    public void checkFieldError(String fieldName, CompareOperatorEnum operator, String expected) {
+    public void checkFieldError(String fieldName, String operator, String expected) {
         IFacadeSelenium field = getSeleniumField(fieldName);
         AtomicReference<String> actual = new AtomicReference<>();
         boolean isChecked = waiting(
                 Duration.ofSeconds(field.getWaitTimeOut()),
                 () -> {
                     actual.set(Optional.ofNullable(getSeleniumField(fieldName).getErrorMsg()).orElse(""));
-                    return operator.checkValue(actual.get(), expected);
+                    return compareManager.checkValue(operator, actual.get(), expected);
                 }
         );
         if (!isChecked) {
-            fail(operator.buildErrorMessage(message("checkFieldError"), actual.get(), expected));
+            fail(compareManager.buildErrorMessage(operator, message("checkFieldError"), actual.get(), expected));
         }
     }
 
@@ -219,18 +219,18 @@ public class SeleniumFieldSteps extends CoreFieldSteps {
 
     @UIStep
     @TestStep("значение атрибута \"${attribute}\" поля \"${fieldName}\" ${operator} \"${expected}\"")
-    public void checkFieldAttribute(String attribute, String fieldName, CompareOperatorEnum operator, String expected) {
+    public void checkFieldAttribute(String attribute, String fieldName, String operator, String expected) {
         IFacadeSelenium field = getSeleniumField(fieldName);
         AtomicReference<String> actual = new AtomicReference<>();
         boolean isChecked = waiting(
                 Duration.ofSeconds(field.getWaitTimeOut()),
                 () -> {
                     actual.set(Optional.ofNullable(getSeleniumField(fieldName).getAttribute(attribute)).orElse(""));
-                    return operator.checkValue(actual.get(), expected);
+                    return compareManager.checkValue(operator, actual.get(), expected);
                 }
         );
         if (!isChecked) {
-            fail(operator.buildErrorMessage(message("checkFieldAttribute", attribute), actual.get(), expected));
+            fail(compareManager.buildErrorMessage(operator, message("checkFieldAttribute", attribute), actual.get(), expected));
         }
     }
 

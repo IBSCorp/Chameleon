@@ -22,6 +22,7 @@ public class StepListenerManagerImpl implements IStepListenerManager {
 
     private List<IStepListener> beforeListeners;
     private List<IStepListener> afterListeners;
+    private final ThreadLocal<Boolean> ignoredMode = new ThreadLocal<>();
 
     @Autowired
     private IAssertManager assertManager;
@@ -37,6 +38,10 @@ public class StepListenerManagerImpl implements IStepListenerManager {
 
     @Override
     public void stepBefore(JoinPoint joinPoint, StepType stepType) {
+        if (isIgnoredMode()) {
+            return;
+        }
+
         stepVisibilityManager.openLayer(AspectUtils.getAnnotation(joinPoint, HiddenStep.class).isPresent());
 
         if (stepType.isTestStep() || stepType.isBddStep()) {
@@ -50,6 +55,10 @@ public class StepListenerManagerImpl implements IStepListenerManager {
 
     @Override
     public void stepAfter(JoinPoint joinPoint, StepType stepType) {
+        if (isIgnoredMode()) {
+            return;
+        }
+
         if (!stepVisibilityManager.isHidden()) {
             afterListeners.forEach(l -> l.stepAfter(joinPoint, stepType));
 
@@ -62,6 +71,10 @@ public class StepListenerManagerImpl implements IStepListenerManager {
 
     @Override
     public void stepAfterReturning(JoinPoint joinPoint, Object data, StepType stepType) {
+        if (isIgnoredMode()) {
+            return;
+        }
+
         AssertLayer assertLayer = null;
         if (stepType.isTestStep() || stepType.isBddStep()) {
             assertLayer = assertManager.closeLayer();
@@ -84,6 +97,10 @@ public class StepListenerManagerImpl implements IStepListenerManager {
 
     @Override
     public void stepAfterThrowing(JoinPoint joinPoint, Throwable throwable, StepType stepType) {
+        if (isIgnoredMode()) {
+            return;
+        }
+
         if (!stepVisibilityManager.isHidden()) {
             afterListeners.forEach(l -> l.stepAfterThrowing(joinPoint, throwable, stepType));
         }
@@ -94,7 +111,7 @@ public class StepListenerManagerImpl implements IStepListenerManager {
     @Override
     public Object stepAround(ProceedingJoinPoint proceedingJoinPoint, StepType stepType) throws Throwable {
         Object[] args = proceedingJoinPoint.getArgs();
-        if (assertManager.isSoftAssert()) {
+        if (assertManager.isSoftAssert() && !isIgnoredMode()) {
             try {
                 return proceedingJoinPoint.proceed(args);
             } catch (AssertionError assertionError) {
@@ -105,5 +122,16 @@ public class StepListenerManagerImpl implements IStepListenerManager {
         } else {
             return proceedingJoinPoint.proceed(args);
         }
+    }
+
+    @Override
+    public void setIgnoredMode(boolean ignoredMode) {
+        this.ignoredMode.set(ignoredMode);
+    }
+
+    @Override
+    public boolean isIgnoredMode() {
+        Boolean ignoredMode = this.ignoredMode.get();
+        return Objects.nonNull(ignoredMode) && ignoredMode;
     }
 }

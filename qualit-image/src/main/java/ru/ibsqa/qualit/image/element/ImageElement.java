@@ -7,6 +7,7 @@ import ru.ibsqa.qualit.reporter.IReporterManager;
 import ru.ibsqa.qualit.selenium.driver.IDriverManager;
 import ru.ibsqa.qualit.selenium.driver.WebDriverFacade;
 import ru.ibsqa.qualit.selenium.enums.KeyEnum;
+import ru.ibsqa.qualit.utils.delay.DelayUtils;
 import ru.ibsqa.qualit.utils.spring.SpringUtils;
 import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
@@ -153,11 +154,7 @@ public class ImageElement implements IFacadeSelenium {
 		getRobot().keyPress(KeyEvent.VK_V);
 		getRobot().keyRelease(KeyEvent.VK_V);
 		getRobot().keyRelease(KeyEvent.VK_CONTROL);
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		DelayUtils.sleep(1000);
 		getRobot().keyPress(KeyEvent.VK_TAB);
 		getRobot().keyRelease(KeyEvent.VK_TAB);
 	}

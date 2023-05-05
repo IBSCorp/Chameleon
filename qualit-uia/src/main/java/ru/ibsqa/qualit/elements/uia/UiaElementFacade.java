@@ -2,6 +2,7 @@ package ru.ibsqa.qualit.elements.uia;
 
 import ru.ibsqa.qualit.elements.selenium.WebElementFacade;
 import ru.ibsqa.qualit.uia.driver.UiaDriver;
+import ru.ibsqa.qualit.utils.delay.DelayUtils;
 import ru.ibsqa.qualit.utils.spring.SpringUtils;
 import ru.ibsqa.qualit.utils.waiting.WaitingUtils;
 import com.sun.jna.platform.win32.WinDef;
@@ -92,10 +93,7 @@ public abstract class UiaElementFacade extends WebElementFacade implements IUiaE
                         rect.top > 0) {
                     return rect;
                 }
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException ignore) {
-                }
+                DelayUtils.sleep(1000);
             }
         } catch (AutomationException e) {
             log.error(e.getMessage(), e);

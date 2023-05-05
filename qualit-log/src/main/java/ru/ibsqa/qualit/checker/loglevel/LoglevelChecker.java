@@ -6,6 +6,7 @@ import org.apache.log4j.LogManager;
 import org.springframework.stereotype.Component;
 import ru.ibsqa.qualit.checker.IStartChecker;
 import ru.ibsqa.qualit.checker.StartCheckerPriority;
+import ru.ibsqa.qualit.utils.spring.SpringUtils;
 
 import java.util.Objects;
 
@@ -22,7 +23,11 @@ public class LoglevelChecker implements IStartChecker {
     public void check() {
         String loglevel = System.getProperties().getProperty("loglevel", null);
         if (Objects.nonNull(loglevel)) {
-            LogManager.getRootLogger().setLevel(Level.toLevel(loglevel));
+            var level = Level.toLevel(loglevel);
+            LogManager.getRootLogger().setLevel(level);
+            if (!level.isGreaterOrEqual(Level.INFO)) {
+                SpringUtils.setDebug(true);
+            }
         }
     }
 }

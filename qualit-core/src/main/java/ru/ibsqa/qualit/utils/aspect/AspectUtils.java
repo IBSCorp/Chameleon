@@ -1,6 +1,7 @@
 package ru.ibsqa.qualit.utils.aspect;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.commons.text.StringSubstitutor;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.reflect.MethodSignature;
@@ -8,7 +9,10 @@ import ru.ibsqa.qualit.steps.aspect.ParamExtraction;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -51,7 +55,7 @@ public final class AspectUtils {
 
         return Stream.of(annotations)
                 .filter(a -> a.annotationType().equals(annotationType))
-                .map(a -> (T)a)
+                .map(a -> (T) a)
                 .findAny();
     }
 
@@ -62,9 +66,9 @@ public final class AspectUtils {
 
         return Stream.of(annotations)
                 .map(a -> {
-                    Matcher matcher = pattern.matcher(a.toString());
+                    Matcher matcher = pattern.matcher(StringEscapeUtils.unescapeJava(a.toString()));
                     if (matcher.find()) {
-                        String value = matcher.group(1);
+                        String value = matcher.group(2);
                         if (StringUtils.isEmpty(value)) {
                             return null;
                         }

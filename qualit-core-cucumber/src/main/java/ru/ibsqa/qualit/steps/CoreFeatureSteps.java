@@ -18,6 +18,7 @@ import io.cucumber.core.stepexpression.StepTypeRegistry;
 import io.cucumber.messages.types.Comment;
 import io.cucumber.messages.types.Envelope;
 import io.cucumber.messages.types.GherkinDocument;
+import io.cucumber.spring.QualITFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -161,6 +162,10 @@ public class CoreFeatureSteps extends AbstractSteps {
             Method setGlue = RuntimeOptions.class.getDeclaredMethod("setGlue", List.class);
             setGlue.setAccessible(true);
             setGlue.invoke(runtimeOptions, getCucumberGlueList());
+
+            Method setObjectFactoryClass = RuntimeOptions.class.getDeclaredMethod("setObjectFactoryClass", Class.class);
+            setObjectFactoryClass.setAccessible(true);
+            setObjectFactoryClass.invoke(runtimeOptions, QualITFactory.class);
         } catch (Exception exception) {
             throw new RuntimeException(exception);
         }

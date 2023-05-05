@@ -2,6 +2,7 @@ package ru.ibsqa.qualit.steps;
 
 import ru.ibsqa.qualit.api.context.IContextManagerApiRequest;
 import ru.ibsqa.qualit.api.context.IContextManagerApiResponse;
+import ru.ibsqa.qualit.compare.ICompareManager;
 import ru.ibsqa.qualit.converters.Variable;
 import ru.ibsqa.qualit.json.utils.DataUtils;
 import org.jbehave.core.annotations.Given;
@@ -28,6 +29,9 @@ public class ApiStorySteps extends AbstractSteps {
 
     @Autowired
     private IContextManagerApiResponse contextManagerResponse;
+
+    @Autowired
+    private ICompareManager compareManager;
 
     @Given("установлен адрес сервиса \"$baseURI\"")
     public void setBaseURI(Variable baseURI) {
@@ -205,7 +209,7 @@ public class ApiStorySteps extends AbstractSteps {
             String value = row.get("value");
             value = evalVariable(value);
             if (check) {
-                fieldSteps.checkFieldValue(field, CompareOperatorEnum.EQUALS, value);
+                fieldSteps.checkFieldValue(field, compareManager.defaultOperator(), value);
             } else {
                 fieldSteps.fillField(field, value);
             }

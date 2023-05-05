@@ -15,6 +15,7 @@ import java.util.Objects;
 import static org.junit.jupiter.api.Assertions.fail;
 
 @Slf4j
+@Deprecated
 public enum CompareOperatorEnum {
     EQUALS("равно"),
     NOT_EQUALS("не равно"),

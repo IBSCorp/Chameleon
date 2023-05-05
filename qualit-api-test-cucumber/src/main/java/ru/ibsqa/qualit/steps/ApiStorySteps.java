@@ -1,7 +1,12 @@
 package ru.ibsqa.qualit.steps;
 
+import io.cucumber.java.ru.Дано;
+import io.cucumber.java.ru.Когда;
+import io.cucumber.java.ru.Тогда;
+import org.springframework.beans.factory.annotation.Autowired;
 import ru.ibsqa.qualit.api.context.IContextManagerApiRequest;
 import ru.ibsqa.qualit.api.context.IContextManagerApiResponse;
+import ru.ibsqa.qualit.compare.ICompareManager;
 import ru.ibsqa.qualit.context.Context;
 import ru.ibsqa.qualit.context.ContextChange;
 import ru.ibsqa.qualit.context.ContextType;
@@ -9,10 +14,6 @@ import ru.ibsqa.qualit.converters.FieldValueTable;
 import ru.ibsqa.qualit.json.utils.DataUtils;
 import ru.ibsqa.qualit.steps.roles.Value;
 import ru.ibsqa.qualit.steps.roles.Write;
-import io.cucumber.java.ru.Дано;
-import io.cucumber.java.ru.Когда;
-import io.cucumber.java.ru.Тогда;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Arrays;
 import java.util.List;
@@ -26,8 +27,12 @@ public class ApiStorySteps extends AbstractSteps {
 
     @Autowired
     private IContextManagerApiRequest contextManagerRequest;
+
     @Autowired
     private IContextManagerApiResponse contextManagerResponse;
+
+    @Autowired
+    private ICompareManager compareManager;
 
     @Тогда("^установлен адрес сервиса \"(.*)\"$")
     @StepDescription(action = "API->Действия->Установить адрес сервиса"
@@ -84,7 +89,7 @@ public class ApiStorySteps extends AbstractSteps {
     @StepDescription(action = "API->Действия->Создать запрос"
             , subAction = "Создать запрос"
             , parameters = {"field - наименование запроса"})
-    @Context(type = ContextType.REQUEST, change = ContextChange.AFTER,  parameter = "requestName", delete = ContextType.RESPONSE)
+    @Context(type = ContextType.REQUEST, change = ContextChange.AFTER, parameter = "requestName", delete = ContextType.RESPONSE)
     public void createRequest(String requestName) {
         flow(() ->
                 apiSteps.createRequest(requestName)
@@ -105,7 +110,7 @@ public class ApiStorySteps extends AbstractSteps {
     @StepDescription(action = "API->Действия->Создать запрос"
             , subAction = "Создать запрос с параметрами"
             , parameters = {"requestName - наименование запроса", "params - параметры"})
-    @Context(type = ContextType.REQUEST, change = ContextChange.BEFORE, parameter = "requestName",  delete = ContextType.RESPONSE)
+    @Context(type = ContextType.REQUEST, change = ContextChange.BEFORE, parameter = "requestName", delete = ContextType.RESPONSE)
     public void createRequest(String requestName, @Write("field") @Value("value") List<FieldValueTable> params) {
         flow(() -> {
             apiSteps.createRequest(requestName);
@@ -116,7 +121,7 @@ public class ApiStorySteps extends AbstractSteps {
     @Дано("^создан запрос на основе шаблона \"([^\"]*)\" с параметрами:$")
     @StepDescription(action = "API->Действия->Создать запрос на основе шаблона"
             , subAction = "Создать запрос на основе шаблона с параметрами"
-            , parameters = {"template - наименование наименование шаблона",  "field - параметры"})
+            , parameters = {"template - наименование наименование шаблона", "field - параметры"})
     public void createRequestFromTemplate(String template, List<FieldValueTable> params) {
         flow(() -> {
             apiSteps.createRequestFromTemplate(DataUtils.getDataAsString(template));
@@ -165,7 +170,7 @@ public class ApiStorySteps extends AbstractSteps {
             String value = fieldValue.getValue();
             value = evalVariable(value);
             if (check) {
-                fieldSteps.checkFieldValue(field, CompareOperatorEnum.EQUALS, value);
+                fieldSteps.checkFieldValue(field, compareManager.defaultOperator(), value);
             } else {
                 fieldSteps.fillField(field, value);
             }
@@ -190,6 +195,8 @@ public class ApiStorySteps extends AbstractSteps {
     }
 
     @Тогда("^получен ответ$")
+    @StepDescription(action = "API->Проверки->Проверить ответ"
+            , subAction = "Получен ответ")
     @Context(type = ContextType.RESPONSE, change = ContextChange.AFTER, value = "currentResponse")
     public void validateResponse() {
         flow(() ->
@@ -211,7 +218,7 @@ public class ApiStorySteps extends AbstractSteps {
 
     @Тогда("^получен ответ \"([^\"]*)\"$")
     @StepDescription(action = "API->Проверки->Проверить ответ"
-            , subAction = "Получен ответ"
+            , subAction = "Получен ответ с именем"
             , parameters = {"responseName - наименование ответа"})
     @Context(type = ContextType.RESPONSE, change = ContextChange.AFTER, parameter = "responseName", onlyStepContext = true)
     public void validateResponse(String responseName) {
@@ -222,7 +229,7 @@ public class ApiStorySteps extends AbstractSteps {
 
     @Тогда("^получен ответ \"([^\"]*)\" с параметрами:$")
     @StepDescription(action = "API->Проверки->Проверить ответ"
-            , subAction = "Получен ответ с параметрами"
+            , subAction = "Получен ответ с именем и с параметрами"
             , parameters = {"responseName - наименование ответа", "params - параметры"})
     @Context(type = ContextType.RESPONSE, change = ContextChange.BEFORE, parameter = "responseName")
     public void validateResponse(String responseName, List<FieldValueTable> params) {

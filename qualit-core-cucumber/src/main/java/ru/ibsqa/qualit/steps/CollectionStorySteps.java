@@ -1,18 +1,16 @@
 package ru.ibsqa.qualit.steps;
 
+import io.cucumber.java.ru.Когда;
+import io.cucumber.java.ru.Тогда;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import ru.ibsqa.qualit.compare.ICompareManager;
 import ru.ibsqa.qualit.context.Context;
 import ru.ibsqa.qualit.context.ContextChange;
 import ru.ibsqa.qualit.context.ContextType;
 import ru.ibsqa.qualit.converters.FieldOperatorValueTable;
 import ru.ibsqa.qualit.converters.FieldValueTable;
-import ru.ibsqa.qualit.steps.roles.Collection;
-import ru.ibsqa.qualit.steps.roles.Read;
-import ru.ibsqa.qualit.steps.roles.Value;
-import ru.ibsqa.qualit.steps.roles.Variable;
-import io.cucumber.java.ru.Когда;
-import io.cucumber.java.ru.Тогда;
-import org.springframework.beans.factory.annotation.Autowired;
+import ru.ibsqa.qualit.steps.roles.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,13 +21,16 @@ public class CollectionStorySteps extends AbstractSteps implements ICollectionUt
     @Autowired
     private CollectionSteps collectionSteps;
 
+    @Autowired
+    private ICompareManager compareManager;
+
     @StepDescription(action = "UI->Коллекции->Выбрать элемент коллекции"
             , parameters = {"collectionName - наименование коллекции", "conditions - условия"})
     @Когда("^выбран элемент коллекции \"([^\"]*)\" с параметрами:$")
     @Context(type = ContextType.COLLECTION, change = ContextChange.BEFORE, parameter = "collectionName", onlyStepContext = true)
     public void stepSetCollectionByConditions(
             @Collection String collectionName,
-            @Read("field") @Value({"operator", "value"}) List<FieldOperatorValueTable> conditions
+            @Read("field") @Operator("operator") @Value("value") List<FieldOperatorValueTable> conditions
     ) {
         flow(() ->
                 collectionSteps.stepSetCollectionByConditions(collectionName, parseConditions(conditions))
@@ -43,7 +44,7 @@ public class CollectionStorySteps extends AbstractSteps implements ICollectionUt
     public void stepSetCollectionByIndex(
             @Collection String collectionName, @Value String index
     ) {
-        flow(()-> {
+        flow(() -> {
             int indexInt = Integer.parseInt(evalVariable(index));
             collectionSteps.stepSetCollectionByIndex(collectionName, indexInt);
         });
@@ -55,9 +56,9 @@ public class CollectionStorySteps extends AbstractSteps implements ICollectionUt
     @Context(type = ContextType.COLLECTION, change = ContextChange.USE, parameter = "collectionName", onlyStepContext = true)
     public void stepCheckItemExisting(
             @Collection String collectionName,
-            @Read("field") @Value({"operator", "value"}) List<FieldOperatorValueTable> conditions
+            @Read("field") @Operator("operator") @Value("value") List<FieldOperatorValueTable> conditions
     ) {
-        flow(()->
+        flow(() ->
                 collectionSteps.searchItem(collectionName, parseConditions(conditions))
         );
     }
@@ -68,23 +69,23 @@ public class CollectionStorySteps extends AbstractSteps implements ICollectionUt
     @Context(type = ContextType.COLLECTION, change = ContextChange.USE, parameter = "collectionName", onlyStepContext = true)
     public void stepCheckItemNotExisting(
             @Collection String collectionName,
-            @Read("field") @Value({"operator", "value"}) List<FieldOperatorValueTable> conditions
+            @Read("field") @Operator("operator") @Value("value") List<FieldOperatorValueTable> conditions
     ) {
-        flow(()-> {
-            collectionSteps.stepCheckItemCount(collectionName, CompareOperatorEnum.EQUALS, 0, parseConditions(conditions));
+        flow(() -> {
+            collectionSteps.stepCheckItemCount(collectionName, compareManager.defaultOperator(), 0, parseConditions(conditions));
         });
     }
 
     @StepDescription(action = "UI->Коллекции->Количество элементов коллекции равно"
             , parameters = {"collectionName - наименование коллекции", "count - ожидаемое количество элементов"})
-    @Тогда("^количество элементов коллекции \"([^\"]*)\" (равно|не равно|содержит значение|не содержит значение|начинается с|не начинается с|оканчивается на|не оканчивается на|соответствует|не соответствует|равно игнорируя регистр|не равно игнорируя регистр|равно игнорируя пробелы|не равно игнорируя пробелы|по длине равно|по длине не равно|по длине больше|по длине не меньше|по длине меньше|по длине не больше|больше|больше или равно|меньше|меньше или равно|раньше или равно|позже или равно|позже|раньше) \"([^\"]*)\"$")
+    @Тогда("^количество элементов коллекции \"([^\"]*)\" ([^\"]+) \"([^\"]*)\"$")
     @Context(type = ContextType.COLLECTION, change = ContextChange.USE, parameter = "collectionName", onlyStepContext = true)
     public void stepCheckItemCount(
             @Collection String collectionName,
-            @Value CompareOperatorEnum operator,
+            @Operator String operator,
             @Value String count
     ) {
-        flow(()-> {
+        flow(() -> {
             int countInt = Integer.parseInt(evalVariable(count));
             collectionSteps.stepCheckItemCount(collectionName, operator, countInt);
         });
@@ -99,22 +100,22 @@ public class CollectionStorySteps extends AbstractSteps implements ICollectionUt
     public void stepCheckNotEmpty(
             @Collection String collectionName
     ) {
-        flow(()->
+        flow(() ->
                 collectionSteps.stepCheckNotEmpty(collectionName)
         );
     }
 
     @StepDescription(action = "UI->Коллекции->Количество определенных элементов коллекции равно"
             , parameters = {"collectionName - наименование коллекции", "count - проверяемое количество элементов", "conditions - параметры элементов"})
-    @Тогда("^количество элементов коллекции \"([^\"]*)\" (равно|не равно|содержит значение|не содержит значение|начинается с|не начинается с|оканчивается на|не оканчивается на|соответствует|не соответствует|равно игнорируя регистр|не равно игнорируя регистр|равно игнорируя пробелы|не равно игнорируя пробелы|по длине равно|по длине не равно|по длине больше|по длине не меньше|по длине меньше|по длине не больше|больше|больше или равно|меньше|меньше или равно|раньше или равно|позже или равно|позже|раньше) \"([^\"]*)\" с параметрами:$")
+    @Тогда("^количество элементов коллекции \"([^\"]*)\" ([^\"]+) \"([^\"]*)\" с параметрами:$")
     @Context(type = ContextType.COLLECTION, change = ContextChange.USE, parameter = "collectionName", onlyStepContext = true)
     public void stepCheckItemCount(
             @Collection String collectionName,
-            @Value CompareOperatorEnum operator,
+            @Operator String operator,
             @Value String count,
-            @Read("field") @Value({"operator", "value"}) List<FieldOperatorValueTable> conditions
+            @Read("field") @Operator("operator") @Value("value") List<FieldOperatorValueTable> conditions
     ) {
-        flow(()-> {
+        flow(() -> {
             int countInt = Integer.parseInt(evalVariable(count));
             collectionSteps.stepCheckItemCount(collectionName, operator, countInt, parseConditions(conditions));
         });
@@ -122,17 +123,17 @@ public class CollectionStorySteps extends AbstractSteps implements ICollectionUt
 
     @StepDescription(action = "UI->Коллекции->Сохранить количество элементов коллекции"
             , parameters = {"variable - переменная, в которую будет сохранено количество",
-                            "collectionName - наименование коллекции",
-                            "conditions - параметры элементов"
-                            }, expertView = true)
+            "collectionName - наименование коллекции",
+            "conditions - параметры элементов"
+    }, expertView = true)
     @Когда("^в переменной \"([^\"]*)\" сохранено количество элементов коллекции \"([^\"]*)\" с параметрами:$")
     @Context(type = ContextType.COLLECTION, change = ContextChange.USE, parameter = "collectionName", onlyStepContext = true)
     public void stepCountCollectionItemsByConditions(
             @Variable String variable,
             @Collection String collectionName,
-            @Read("field") @Value({"operator", "value"}) List<FieldOperatorValueTable> conditions
+            @Read("field") @Operator("operator") @Value("value") List<FieldOperatorValueTable> conditions
     ) {
-        flow(()-> {
+        flow(() -> {
             int count = 0;
             try {
                 count = collectionSteps.getItems(collectionName, parseConditions(conditions), false).size();
@@ -144,6 +145,7 @@ public class CollectionStorySteps extends AbstractSteps implements ICollectionUt
     }
 
     @StepDescription(action = "UI->Коллекции->Проверить сортировку элементов коллекции"
+            , subAction = "Коллекция  отсортирована по полю с параметрами"
             , parameters = {"collectionName - наименование коллекции",
             "fieldName - наименование поля, сортировка которого будет проверяться",
             "conditions - параметры элементов"
@@ -154,18 +156,22 @@ public class CollectionStorySteps extends AbstractSteps implements ICollectionUt
             @Collection String collectionName,
             @Read String fieldName,
             @Value({"field", "value"}) List<FieldValueTable> conditions) {
-        flow(()->
+        flow(() ->
                 collectionSteps.checkSorted(collectionName, fieldName, parsePairs(conditions, getEvaluateManager()))
         );
     }
 
+    @StepDescription(action = "UI->Коллекции->Проверить сортировку элементов коллекции"
+            , subAction = "Коллекция отсортирована с параметрами"
+            , parameters = {"collectionName - наименование коллекции", "conditions - параметры элементов"
+    }, expertView = true)
     @Тогда("^коллекция \"([^\"]*)\" отсортирована с параметрами:$")
     @Context(type = ContextType.COLLECTION, change = ContextChange.USE, parameter = "collectionName", onlyStepContext = true)
     public void checkSorted(
             @Collection String collectionName,
             @Value({"field", "value"}) List<FieldValueTable> conditions
     ) {
-        flow(()->
+        flow(() ->
                 collectionSteps.checkSorted(collectionName, parsePairs(conditions, getEvaluateManager()))
         );
     }
@@ -185,7 +191,7 @@ public class CollectionStorySteps extends AbstractSteps implements ICollectionUt
     public void stepWaitCollectionByConditions(
             @Collection String collectionName,
             @Value String seconds,
-            @Read("field") @Value({"operator", "value"}) List<FieldOperatorValueTable> conditions
+            @Read("field") @Operator("operator") @Value("value") List<FieldOperatorValueTable> conditions
     ) {
         this.flow(() -> {
             collectionSteps.waitCollectionByConditions(collectionName, Integer.parseInt(seconds), this.parseConditions(conditions));
@@ -214,6 +220,7 @@ public class CollectionStorySteps extends AbstractSteps implements ICollectionUt
 
     /**
      * Преобразовать List<FieldValueTable> со столбцами field и value в Map
+     *
      * @param conditions
      * @return
      */

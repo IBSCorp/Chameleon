@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
+import ru.ibsqa.qualit.compare.ICompareManager;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -15,16 +16,19 @@ public class CoreVariableSteps extends AbstractSteps {
     @Autowired
     private CoreUtilSteps utilSteps;
 
+    @Autowired
+    private ICompareManager compareManager;
+
     @TestStep("в переменной \"${variable}\" сохранено значение \"${value}\"")
     public void createVariable(String variable, String value) {
         setVariable(variable, evalVariable(value));
     }
 
     @TestStep("значение выражения \"${expression}\" ${operator} \"${expected}\"")
-    public void checkExpressionValue(String expression, CompareOperatorEnum operator, String expected) {
+    public void checkExpressionValue(String expression, String operator, String expected) {
         String actual = evalVariable(expression);
-        if (!operator.checkValue(actual, expected)) {
-            fail(operator.buildErrorMessage(message("checkExpression"), actual, expected));
+        if (!compareManager.checkValue(operator, actual, expected)) {
+            fail(compareManager.buildErrorMessage(operator, message("checkExpression"), actual, expected));
         }
     }
 }

@@ -5,7 +5,7 @@
 
     <groupId>ru.ibsqa.qualit</groupId>
     <artifactId>qualit</artifactId>
-    <version>3.3.1-SNAPSHOT</version>
+    <version>3.4.0</version>
     <packaging>pom</packaging>
 
     <modules>
@@ -53,7 +53,7 @@
         <module>qualit-winium-cucumber</module>
     </modules>
 
-    <url>https://gitlab.appline.ru/ibs-qa/qualit</url>
+    <url>https://github.com/IBSCorp/QualIT</url>
     <licenses>
         <license>
             <name>MPL 2.0</name>
@@ -132,7 +132,7 @@
     </distributionManagement>
 
     <properties>
-        <qualit.version>3.3.1-SNAPSHOT</qualit.version>
+        <qualit.version>3.4.0</qualit.version>
 
         <encoding>UTF-8</encoding>
         <file.encoding>${encoding}</file.encoding>
@@ -163,7 +163,7 @@
 <!--        <sonar.moduleKey>${project.artifactId}</sonar.moduleKey>-->
 <!--        <sonar.projectKey>${project.artifactId}</sonar.projectKey>-->
 <!--        <sonar.projectName>${project.artifactId}</sonar.projectName>-->
-        <testit-api-client-java.version>1.0.9</testit-api-client-java.version>
+        <testit-api-client-java.version>1.1.0</testit-api-client-java.version>
     </properties>
 
     <!-- Прочитать про управление зависимостями:
@@ -210,6 +210,7 @@
                         <forkNode implementation="org.apache.maven.plugin.surefire.extensions.SurefireForkNodeFactory"/>
                         <argLine>
                             -Dfile.encoding=${encoding}
+                            -Dcucumber.object-factory=io.cucumber.spring.QualITFactory
                             -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"
                             --add-opens java.base/java.lang=ALL-UNNAMED
                             --add-opens java.base/java.lang.reflect=ALL-UNNAMED

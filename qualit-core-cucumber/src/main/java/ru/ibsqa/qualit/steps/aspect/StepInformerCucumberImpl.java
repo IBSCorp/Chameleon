@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 @Component
 public class StepInformerCucumberImpl extends AbstractStepInformer {
 
-    private final Pattern pattern = Pattern.compile("^@io\\.cucumber\\.java\\.[^.]+\\.[^.]+\\(value=\"(.*)\"\\)$");
+    private final Pattern pattern = Pattern.compile("^@io\\.cucumber\\.java\\.[^.]+\\.[^.]+\\((value=)?\"(.*)\"\\)$");
 
     @Override
     public Optional<String> getDescription(JoinPoint joinPoint, StepType stepType) {

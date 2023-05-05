@@ -6,7 +6,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import ru.ibsqa.qualit.Constants;
 import ru.ibsqa.qualit.definitions.repository.IRepositoryManager;
@@ -17,13 +16,14 @@ import ru.ibsqa.qualit.steps.CollectionSteps;
 import ru.ibsqa.qualit.steps.CoreUtilSteps;
 import ru.ibsqa.qualit.steps.PageSteps;
 import ru.ibsqa.qualit.steps.SeleniumFieldSteps;
+import ru.ibsqa.qualit.utils.spring.QualITSpringExtension;
 
 import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 @Slf4j
-@ExtendWith(SpringExtension.class)
+@ExtendWith(QualITSpringExtension.class)
 @ContextConfiguration("classpath:spring.xml")
 @TestExecutionListeners(inheritListeners = false, listeners =
         {DependencyInjectionTestExecutionListener.class})
@@ -85,7 +85,7 @@ public class RepositoryTest {
 
     @Test
     public void searchInRepositoryTest() {
-        assertNotEquals(repositoryManager.pickAllElements().size(),0);
+        assertNotEquals(repositoryManager.pickAllElements().size(), 0);
         log.info(repositoryManager.pickElement("Главная страница", MetaPage.class).toString());
     }
 

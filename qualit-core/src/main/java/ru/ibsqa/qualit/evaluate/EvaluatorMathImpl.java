@@ -2,6 +2,7 @@ package ru.ibsqa.qualit.evaluate;
 
 import bsh.EvalError;
 import bsh.Interpreter;
+import ru.ibsqa.qualit.definitions.repository.ConfigurationPriority;
 import ru.ibsqa.qualit.storage.IVariableScope;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -12,10 +13,10 @@ import org.springframework.stereotype.Component;
  *      #math{5*2+7}
  */
 @Component
-@Evaluator({
+@Evaluator(value = {
         "#math{арифметическое_выражение}",
         "#math{5*2+7}"
-})
+}, priority = ConfigurationPriority.LOW)
 @Slf4j
 public class EvaluatorMathImpl extends AbstractEvaluator {
 

@@ -1,16 +1,19 @@
 package ru.ibsqa.qualit.utils.spring;
 
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.core.io.support.ResourcePatternResolver;
-import ru.ibsqa.qualit.i18n.ILocaleManager;
 import lombok.Getter;
+import lombok.Setter;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.stereotype.Component;
+import ru.ibsqa.qualit.i18n.ILocaleManager;
 
 import java.io.*;
 import java.util.Objects;
@@ -27,20 +30,40 @@ public class SpringUtils implements ApplicationContextAware {
 
     private static ResourcePatternResolver resourceResolver;
 
+    @Getter
+    @Setter
+    private static boolean debug;
+
+    @SneakyThrows
     @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        context = applicationContext;
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        try {
+            context = applicationContext;
+        } catch (BeansException e) {
+            throw getRootException(e);
+        }
     }
 
-    public static <T> T getBean(Class<T> beanClass) throws BeansException {
-        return context.getBean(beanClass);
+    @SneakyThrows
+    public static <T> T getBean(Class<T> beanClass) {
+        try {
+            return context.getBean(beanClass);
+        } catch (BeansException e) {
+            throw getRootException(e);
+        }
     }
 
-    public static <T> T getBean(String value) throws BeansException {
-        return (T)context.getBean(value);
+    @SneakyThrows
+    @SuppressWarnings("unchecked")
+    public static <T> T getBean(String value) {
+        try {
+            return (T) context.getBean(value);
+        } catch (BeansException e) {
+            throw getRootException(e);
+        }
     }
 
-    public static String getBeanName(Object bean){
+    public static String getBeanName(Object bean) {
         SpringBeanNameResolver springBeanNameResolver = getBean(SpringBeanNameResolver.class);
         return springBeanNameResolver.getBeanName(bean);
     }
@@ -79,14 +102,14 @@ public class SpringUtils implements ApplicationContextAware {
         Resource[] resources = null;
         try {
             resources = getResourcesInternal(locationPattern);
-        } catch (IOException e) {
+        } catch (IOException ignored) {
         }
 
         if (resources != null) {
             checkResourceCount(resources, locationPattern);
             try {
                 return resources[0].getInputStream();
-            } catch (FileNotFoundException e) {
+            } catch (FileNotFoundException ignored) {
             }
         }
 
@@ -105,5 +128,17 @@ public class SpringUtils implements ApplicationContextAware {
 
     public static boolean isClassPathResource(String value) {
         return null != value && value.trim().matches("(?s)(?<classpath>classpath.*)");
+    }
+
+    public static Throwable getRootException(Exception exception) {
+        if (isDebug()) {
+            return exception;
+        } else {
+            Throwable rootCause = ExceptionUtils.getRootCause(exception);
+            StackTraceElement[] stackTrace = exception.getStackTrace();
+            StackTraceElement[] rootStackTrace = {stackTrace[stackTrace.length - 1]};
+            rootCause.setStackTrace(rootStackTrace);
+            return rootCause;
+        }
     }
 }

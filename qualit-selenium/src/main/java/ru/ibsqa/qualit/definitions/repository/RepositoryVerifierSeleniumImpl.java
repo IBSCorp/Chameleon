@@ -1,14 +1,13 @@
 package ru.ibsqa.qualit.definitions.repository;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import ru.ibsqa.qualit.definitions.repository.selenium.AbstractMetaContainer;
 import ru.ibsqa.qualit.definitions.repository.selenium.IMetaElement;
 import ru.ibsqa.qualit.definitions.repository.selenium.IMetaField;
 import ru.ibsqa.qualit.definitions.repository.selenium.elements.MetaCollection;
 import ru.ibsqa.qualit.definitions.repository.selenium.elements.MetaPage;
 import ru.ibsqa.qualit.i18n.ILocaleManager;
-import org.junit.jupiter.api.Assertions;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.List;
@@ -32,26 +31,26 @@ public class RepositoryVerifierSeleniumImpl implements IRepositoryVerifier {
         for (IRepositoryElement el : elements) {
             if (el instanceof MetaPage) {
                 MetaPage page = (MetaPage) el;
-                checkPageUniquie(page);
+                checkPageUnique(page);
             }
         }
         for (IRepositoryElement el : elements) {
             if (el instanceof MetaPage) {
                 MetaPage page = (MetaPage) el;
-                checkFieldsUniquie(page);
-                page.getCollections().forEach(collection -> checkFieldsUniquie((AbstractMetaContainer) collection));
+                checkFieldsUnique(page);
+                page.getCollections().forEach(collection -> checkFieldsUnique((AbstractMetaContainer) collection));
             }
         }
     }
 
-    private void checkPageUniquie(MetaPage page) {
+    private void checkPageUnique(MetaPage page) {
         if (Objects.nonNull(pagesMap.get(page.getName()))) {
-            Assertions.fail(localeManager.getMessage("nonUniquiePage", page.getName()));
+            fail(localeManager.getMessage("nonUniquePage", page.getName()));
         }
         pagesMap.put(page.getName(), page);
     }
 
-    private void checkFieldsUniquie(AbstractMetaContainer container) {
+    private void checkFieldsUnique(AbstractMetaContainer container) {
         List<IMetaField> fields = container.getFields();
         if (container instanceof MetaPage) {
             MetaPage page = (MetaPage) container;
@@ -65,7 +64,7 @@ public class RepositoryVerifierSeleniumImpl implements IRepositoryVerifier {
             );
         }
 
-        List<String> nonUniquieFieldNames = fields.stream()
+        List<String> nonUniqueFieldNames = fields.stream()
                 .collect(Collectors.groupingBy(IMetaElement::getName, Collectors.counting()))
                 .entrySet()
                 .stream()
@@ -73,8 +72,9 @@ public class RepositoryVerifierSeleniumImpl implements IRepositoryVerifier {
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
 
-        if (nonUniquieFieldNames.size() > 0) {
-            fail(localeManager.getMessage((container instanceof MetaCollection) ? "nonUniquieFieldInCollection" : "nonUniquieFieldInPage", nonUniquieFieldNames.get(0), container.getName()));
+        if (nonUniqueFieldNames.size() > 0) {
+            fail(localeManager.getMessage((container instanceof MetaCollection) ? "nonUniqueFieldInCollection" : "nonUniqueFieldInPage",
+                    nonUniqueFieldNames.get(0), container.getName()));
         }
     }
 

@@ -1,5 +1,6 @@
 package ru.ibsqa.qualit.steps;
 
+import ru.ibsqa.qualit.compare.ICompareManager;
 import ru.ibsqa.qualit.utils.IExamplesTableParser;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jbehave.core.annotations.Then;
@@ -22,6 +23,9 @@ public class CollectionStorySteps extends AbstractSteps {
 
     @Autowired
     private IExamplesTableParser examplesTableParser;
+
+    @Autowired
+    private ICompareManager compareManager;
 
     @When("выбран элемент коллекции \"$collectionName\" с параметрами: $conditions")
     public void stepSetCollectionByConditions(String collectionName, ExamplesTable conditions){
@@ -176,7 +180,7 @@ public class CollectionStorySteps extends AbstractSteps {
         for (Map<String, String> row : conditions.getRows()) {
             result.add(CollectionSteps.FindCondition.builder()
                     .fieldName(row.get("field"))
-                    .operator(contains ? CompareOperatorEnum.CONTAINS : CompareOperatorEnum.EQUALS)
+                    .operator(contains ? "содержит значение" : compareManager.defaultOperator())
                     .value(evalVariable(row.get("value")))
                     .build());
         }

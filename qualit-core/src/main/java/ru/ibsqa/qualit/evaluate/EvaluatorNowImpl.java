@@ -1,5 +1,6 @@
 package ru.ibsqa.qualit.evaluate;
 
+import ru.ibsqa.qualit.definitions.repository.ConfigurationPriority;
 import ru.ibsqa.qualit.storage.IVariableScope;
 import org.springframework.stereotype.Component;
 
@@ -13,13 +14,13 @@ import java.util.Calendar;
  *      #now{d llll yyyyг.;-45d}
  */
 @Component
-@Evaluator({
+@Evaluator(value = {
         "#now{дата;исходный_формат;смещение}",
         "#now{dd.MM.yyyy;+1M}}",
         "#now{dd.MM.yyyy HH,mm}",
         "#now{;+5y}",
         "#now{'d llll yyyyг.';-45d}"
-})
+}, priority = ConfigurationPriority.LOW)
 public class EvaluatorNowImpl extends AbstractEvaluator implements IDateEvaluator {
 
     @Override

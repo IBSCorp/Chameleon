@@ -6,6 +6,7 @@ import com.google.common.io.Files;
 import ru.ibsqa.qualit.reporter.TestAttachment;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.ibsqa.qualit.utils.delay.DelayUtils;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -66,12 +67,8 @@ public class BrowserVideoRecorder extends AbstractVideoRecorder {
                 fail("Файл с видео не загружен");
                 break;
             }
-            try {
-                Thread.sleep(1000);
-                count++;
-            } catch (InterruptedException e) {
-                log.error(e.getMessage(), e);
-            }
+            DelayUtils.sleep(1000);
+            count++;
         }
     }
 

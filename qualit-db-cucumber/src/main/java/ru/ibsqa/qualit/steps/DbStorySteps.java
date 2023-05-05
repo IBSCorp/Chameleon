@@ -1,9 +1,12 @@
 package ru.ibsqa.qualit.steps;
 
-import ru.ibsqa.qualit.converters.FieldValueTable;
 import io.cucumber.java.ru.Дано;
 import io.cucumber.java.ru.Когда;
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.ibsqa.qualit.context.Context;
+import ru.ibsqa.qualit.context.ContextChange;
+import ru.ibsqa.qualit.context.ContextType;
+import ru.ibsqa.qualit.converters.FieldValueTable;
 
 import java.util.HashMap;
 import java.util.List;
@@ -21,6 +24,7 @@ public class DbStorySteps extends AbstractSteps {
             , subAction = "Именованное подключение"
             , parameters = {"dbName - наименование подключения", "connectionName - наименование соединения"})
     @Дано("^к БД \"([^\"]*)\" выполнено подключение \"([^\"]*)\"$")
+    @Context(type = ContextType.CONNECTION, change = ContextChange.AFTER, parameter = "connectionName")
     public void connect(String dbName, String connectionName) {
         flow(() ->
                 dbSteps.connect(dbName, connectionName)
@@ -31,6 +35,7 @@ public class DbStorySteps extends AbstractSteps {
             , subAction = "Безымянное подключение"
             , parameters = {"connectionName - наименование соединения"})
     @Дано("^к БД выполнено подключение \"([^\"]*)\"$")
+    @Context(type = ContextType.CONNECTION, change = ContextChange.AFTER, parameter = "connectionName")
     public void connect(String connectionName) {
         flow(() ->
                 dbSteps.connect(connectionName)
@@ -41,6 +46,7 @@ public class DbStorySteps extends AbstractSteps {
             , subAction = "Именованное подключение"
             , parameters = {"dbName - наименование подключения", "connectionName - наименование соединения", "params - список параметров"})
     @Дано("^к БД \"([^\"]*)\" выполнено подключение \"([^\"]*)\" с параметрами:$")
+    @Context(type = ContextType.CONNECTION, change = ContextChange.BEFORE, parameter = "connectionName")
     public void connect(String dbName, String connectionName, List<FieldValueTable> params) {
         flow(() ->
                 dbSteps.connect(dbName, connectionName, parseConditions(params))
@@ -51,6 +57,7 @@ public class DbStorySteps extends AbstractSteps {
             , subAction = "Безымянное подключение"
             , parameters = {"connectionName - наименование соединения", "params - список параметров"})
     @Дано("^к БД выполнено подключение \"([^\"]*)\" с параметрами:$")
+    @Context(type = ContextType.CONNECTION, change = ContextChange.BEFORE, parameter = "connectionName")
     public void connect(String connectionName, List<FieldValueTable> params) {
         flow(() ->
                 dbSteps.connect(connectionName, parseConditions(params))
@@ -80,6 +87,7 @@ public class DbStorySteps extends AbstractSteps {
             , subAction = "Именованное подключение"
             , parameters = {"dbName - наименование подключения", "queryName - наименование запроса"})
     @Когда("^к БД \"([^\"]*)\" выполняется запрос \"([^\"]*)\"$")
+    @Context(type = ContextType.QUERY, change = ContextChange.AFTER, parameter = "queryName")
     public void query(String dbName, String queryName) {
         flow(() ->
                 dbSteps.query(dbName, queryName)
@@ -90,6 +98,7 @@ public class DbStorySteps extends AbstractSteps {
             , subAction = "Безымянное подключение"
             , parameters = {"queryName - наименование запроса"})
     @Когда("^к БД выполняется запрос \"([^\"]*)\"$")
+    @Context(type = ContextType.QUERY, change = ContextChange.AFTER, parameter = "queryName")
     public void query(String queryName) {
         flow(() ->
                 dbSteps.query(evalVariable(queryName))
@@ -100,6 +109,7 @@ public class DbStorySteps extends AbstractSteps {
             , subAction = "Именованное подключение"
             , parameters = {"dbName - наименование подключения", "queryName - наименование запроса"})
     @Когда("^из БД \"([^\"]*)\" выбирается строка запросом \"([^\"]*)\"$")
+    @Context(type = ContextType.QUERY, change = ContextChange.AFTER, parameter = "queryName")
     public void queryFirst(String dbName, String queryName) {
         flow(() -> {
             dbSteps.query(dbName, queryName);
@@ -111,6 +121,7 @@ public class DbStorySteps extends AbstractSteps {
             , subAction = "Безымянное подключение"
             , parameters = {"queryName - наименование запроса"})
     @Когда("^из БД выбирается строка запросом \"([^\"]*)\"$")
+    @Context(type = ContextType.QUERY, change = ContextChange.AFTER, parameter = "queryName")
     public void queryFirst(String queryName) {
         flow(() -> {
             dbSteps.query(queryName);
@@ -122,6 +133,7 @@ public class DbStorySteps extends AbstractSteps {
             , subAction = "Именованное подключение"
             , parameters = {"dbName - наименование подключения", "queryName - наименование запроса", "params - список параметров"})
     @Когда("^к БД \"([^\"]*)\" выполняется запрос \"([^\"]*)\" c параметрами:$")
+    @Context(type = ContextType.QUERY, change = ContextChange.BEFORE, parameter = "queryName")
     public void query(String dbName, String queryName, List<FieldValueTable> params) {
         flow(() ->
                 dbSteps.query(dbName, queryName, parseConditions(params))
@@ -132,6 +144,7 @@ public class DbStorySteps extends AbstractSteps {
             , subAction = "Безымянное подключение"
             , parameters = {"queryName - наименование запроса", "params - список параметров"})
     @Когда("^к БД выполняется запрос \"([^\"]*)\" c параметрами:$")
+    @Context(type = ContextType.QUERY, change = ContextChange.BEFORE, parameter = "queryName")
     public void query(String queryName, List<FieldValueTable> params) {
         flow(() ->
                 dbSteps.query(queryName, parseConditions(params))
@@ -142,6 +155,7 @@ public class DbStorySteps extends AbstractSteps {
             , subAction = "Именованное подключение"
             , parameters = {"dbName - наименование подключения", "queryName - наименование запроса", "params - список параметров"})
     @Когда("^из БД \"([^\"]*)\" выбирается строка запросом \"([^\"]*)\" c параметрами:$")
+    @Context(type = ContextType.QUERY, change = ContextChange.BEFORE, parameter = "queryName")
     public void queryFirst(String dbName, String queryName, List<FieldValueTable> params) {
         flow(() -> {
             dbSteps.query(dbName, queryName, parseConditions(params));
@@ -153,6 +167,7 @@ public class DbStorySteps extends AbstractSteps {
             , subAction = "Безымянное подключение"
             , parameters = {"queryName - наименование запроса", "params - список параметров"})
     @Когда("^из БД выбирается строка запросом \"([^\"]*)\" c параметрами:$")
+    @Context(type = ContextType.QUERY, change = ContextChange.BEFORE, parameter = "queryName")
     public void queryFirst(String queryName, List<FieldValueTable> params) {
         flow(() -> {
             dbSteps.query(queryName, parseConditions(params));

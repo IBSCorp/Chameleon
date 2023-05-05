@@ -6,6 +6,7 @@ import ru.ibsqa.qualit.storage.IVariableScope;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Component
@@ -22,6 +23,7 @@ public class EvaluateManagerImpl implements IEvaluateManager {
     @Autowired
     private void collectEvaluators(List<IEvaluator> evaluators) {
         this.evaluators = evaluators;
+        this.evaluators.sort(Comparator.comparing(IEvaluator::getPriority));
     }
 
     @Override

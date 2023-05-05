@@ -3,6 +3,7 @@ package ru.ibsqa.qualit.steps;
 import ru.ibsqa.qualit.context.Context;
 import ru.ibsqa.qualit.converters.ExpressionOperatorValueTable;
 import ru.ibsqa.qualit.converters.VariableValueTable;
+import ru.ibsqa.qualit.steps.roles.Operator;
 import ru.ibsqa.qualit.steps.roles.Value;
 import ru.ibsqa.qualit.steps.roles.Variable;
 import io.cucumber.java.ru.Когда;
@@ -48,10 +49,10 @@ public class VariableStorySteps extends AbstractSteps {
     @StepDescription(action = "Переменные->Сравнить значение выражения"
             , subAction = "Сравнить значение выражения"
             , parameters = {"expression - вычисляемое выражение", "operator - оператор сравнения", "value - значение"})
-    @Тогда("^значение выражения \"([^\"]*)\" (равно|не равно|содержит значение|не содержит значение|начинается с|не начинается с|оканчивается на|не оканчивается на|соответствует|не соответствует|равно игнорируя регистр|не равно игнорируя регистр|равно игнорируя пробелы|не равно игнорируя пробелы|по длине равно|по длине не равно|по длине больше|по длине не меньше|по длине меньше|по длине не больше|больше|больше или равно|меньше|меньше или равно|раньше или равно|позже или равно|позже|раньше) \"([^\"]*)\"$")
+    @Тогда("^значение выражения \"([^\"]*)\" ([^\"]+) \"([^\"]*)\"$")
     public void stepCheckExpressionValue(
             @Value String expression,
-            @Value CompareOperatorEnum operator,
+            @Operator String operator,
             @Value String value
     ) {
         flow(()->
@@ -65,7 +66,9 @@ public class VariableStorySteps extends AbstractSteps {
             , parameters = {"expressions - вычисляемые выражения, операторы, значения"})
     @Тогда("^значения выражений:$")
     public void stepCheckExpressionValue(
-            @Value({"expression", "operator", "value"}) List<ExpressionOperatorValueTable> expressions) {
+            @Value({"expression", "value"})
+            @Operator({"operator"})
+                    List<ExpressionOperatorValueTable> expressions) {
         flow(()-> {
             for (ExpressionOperatorValueTable row : expressions) {
                 variableSteps.checkExpressionValue(row.getExpression(), row.getOperator(), row.getValue());

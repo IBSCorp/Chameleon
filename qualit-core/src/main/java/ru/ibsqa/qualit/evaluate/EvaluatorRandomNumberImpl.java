@@ -1,5 +1,6 @@
 package ru.ibsqa.qualit.evaluate;
 
+import ru.ibsqa.qualit.definitions.repository.ConfigurationPriority;
 import ru.ibsqa.qualit.storage.IVariableScope;
 import org.springframework.stereotype.Component;
 
@@ -11,10 +12,10 @@ import java.util.Random;
  *      #random{100;200}
  */
 @Component
-@Evaluator({
+@Evaluator(value = {
         "#random{начало_диапазона;конец_диапазона}",
         "#random{100;200}"
-})
+}, priority = ConfigurationPriority.LOW)
 public class EvaluatorRandomNumberImpl extends AbstractEvaluator {
 
     @Override

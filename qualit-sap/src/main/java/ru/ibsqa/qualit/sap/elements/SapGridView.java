@@ -7,6 +7,7 @@ import ru.ibsqa.qualit.definitions.repository.ConfigurationPriority;
 import ru.ibsqa.qualit.elements.MetaElement;
 import ru.ibsqa.qualit.sap.definitions.repository.MetaSapGridView;
 import ru.ibsqa.qualit.sap.driver.SapSupportedDriver;
+import ru.ibsqa.qualit.utils.delay.DelayUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -41,11 +42,7 @@ public class SapGridView extends SapElementFacade {
     }
 
     public void selectContextMenu(String name) {
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        DelayUtils.sleep(3000);
         ActiveXComponent grid = new ActiveXComponent(getVariant().getDispatch());
         try {
             grid.invoke("SelectContextMenuItemByText", name);

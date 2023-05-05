@@ -5,8 +5,8 @@ import io.qameta.allure.cucumber7jvm.AllureCucumber7Jvm;
 import ru.ibsqa.qualit.asserts.AssertLayer;
 import ru.ibsqa.qualit.asserts.IAssertManager;
 import ru.ibsqa.qualit.steps.HiddenStep;
-import ru.ibsqa.qualit.utils.spring.SpringUtils;
 import ru.ibsqa.qualit.utils.reflection.ReflectionUtils;
+import ru.ibsqa.qualit.utils.spring.SpringUtils;
 
 import java.lang.reflect.Field;
 import java.util.Objects;

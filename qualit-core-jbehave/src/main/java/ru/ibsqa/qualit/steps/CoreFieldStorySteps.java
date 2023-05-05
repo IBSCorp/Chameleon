@@ -1,5 +1,6 @@
 package ru.ibsqa.qualit.steps;
 
+import ru.ibsqa.qualit.compare.ICompareManager;
 import ru.ibsqa.qualit.converters.Variable;
 import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
@@ -19,6 +20,9 @@ public class CoreFieldStorySteps extends AbstractSteps {
 
     @Autowired
     private CoreVariableSteps variableSteps;
+
+    @Autowired
+    private ICompareManager compareManager;
 
     @When("поле \"$fieldName\" заполняется значением \"$value\"")
     public void  stepFillField(String fieldName, Variable value){
@@ -86,96 +90,96 @@ public class CoreFieldStorySteps extends AbstractSteps {
     @Then("значение поля \"$fieldName\" равно \"$value\"")
     public void stepCheckFieldValue(String fieldName, Variable value){
         flow(()->
-                fieldSteps.checkFieldValue(fieldName, CompareOperatorEnum.EQUALS, value.getValue())
+                fieldSteps.checkFieldValue(fieldName, compareManager.defaultOperator(), value.getValue())
         );
     }
 
     @Then("значение выражения \"$variable\" равно \"$value\"")
     public void stepCheckVariableValue(Variable variable, Variable value){
         flow(()->
-                variableSteps.checkExpressionValue(variable.getValue(), CompareOperatorEnum.EQUALS, value.getValue())
+                variableSteps.checkExpressionValue(variable.getValue(), compareManager.defaultOperator(), value.getValue())
         );
     }
 
     @Then("значение поля \"$fieldName\" не равно \"$value\"")
     public void stepCheckFieldNotValue(String fieldName, Variable value){
         flow(()->
-                fieldSteps.checkFieldValue(fieldName, CompareOperatorEnum.NOT_EQUALS, value.getValue())
+                fieldSteps.checkFieldValue(fieldName, "не равно", value.getValue())
         );
     }
 
     @Then("значение выражения \"$variable\" не равно \"$value\"")
     public void stepCheckVariableNotValue(String variable, Variable value){
         flow(()->
-                variableSteps.checkExpressionValue(variable, CompareOperatorEnum.NOT_EQUALS, value.getValue())
+                variableSteps.checkExpressionValue(variable, "не равно", value.getValue())
         );
     }
 
     @Then("значение поля \"$fieldName\" больше \"$value\"")
     public void stepCheckFieldValueGreater(String fieldName, Variable value){
         flow(()->
-                fieldSteps.checkFieldValue(fieldName, CompareOperatorEnum.GREATER, value.getValue())
+                fieldSteps.checkFieldValue(fieldName, "больше", value.getValue())
         );
     }
 
     @Then("значение выражения \"$variable\" больше \"$value\"")
     public void stepCheckVariableValueGreater(Variable variable, Variable value){
         flow(()->
-                variableSteps.checkExpressionValue(variable.getValue(), CompareOperatorEnum.GREATER, value.getValue())
+                variableSteps.checkExpressionValue(variable.getValue(), "больше", value.getValue())
         );
     }
 
     @Then("значение поля \"$fieldName\" больше или равно \"$value\"")
     public void stepCheckFieldValueGreaterOrEqual(String fieldName, Variable value){
         flow(()->
-                fieldSteps.checkFieldValue(fieldName, CompareOperatorEnum.GREATER_OR_EQUALS, value.getValue())
+                fieldSteps.checkFieldValue(fieldName, "больше или равно", value.getValue())
         );
     }
 
     @Then("значение выражения \"$variable\" больше или равно \"$value\"")
     public void stepCheckVariableValueGreaterOrEqual(Variable variable, Variable value){
         flow(()->
-                variableSteps.checkExpressionValue(variable.getValue(), CompareOperatorEnum.GREATER_OR_EQUALS, value.getValue())
+                variableSteps.checkExpressionValue(variable.getValue(), "больше или равно", value.getValue())
         );
     }
 
     @Then("значение поля \"$fieldName\" меньше \"$value\"")
     public void stepCheckFieldValueLower(String fieldName, Variable value){
         flow(()->
-                fieldSteps.checkFieldValue(fieldName, CompareOperatorEnum.LOWER, value.getValue())
+                fieldSteps.checkFieldValue(fieldName, "меньше", value.getValue())
         );
     }
 
     @Then("значение выражения \"$variable\" меньше \"$value\"")
     public void stepCheckVariableValueLower(Variable variable, Variable value){
         flow(()->
-                variableSteps.checkExpressionValue(variable.getValue(), CompareOperatorEnum.LOWER, value.getValue())
+                variableSteps.checkExpressionValue(variable.getValue(), "меньше", value.getValue())
         );
     }
 
     @Then("значение поля \"$fieldName\" меньше или равно \"$value\"")
     public void stepCheckFieldValueLowerOrEqual(String fieldName, Variable value){
         flow(()->
-                fieldSteps.checkFieldValue(fieldName, CompareOperatorEnum.LOWER_OR_EQUALS, value.getValue())
+                fieldSteps.checkFieldValue(fieldName, "меньше или равно", value.getValue())
         );
     }
 
     @Then("значение выражения \"$variable\" меньше или равно \"$value\"")
     public void stepCheckVariableValueLowerOrEqual(Variable variable, Variable value){
         flow(()->
-                variableSteps.checkExpressionValue(variable.getValue(), CompareOperatorEnum.LOWER_OR_EQUALS, value.getValue())
+                variableSteps.checkExpressionValue(variable.getValue(), "меньше или равно", value.getValue())
         );
     }
 
     @Then("значение поля \"$fieldName\" содержит значение \"$value\"")
     public void stepCheckFieldContainsValue(String fieldName, Variable value){
-        flow(() -> fieldSteps.checkFieldValue(fieldName, CompareOperatorEnum.CONTAINS, value.getValue()));
+        flow(() -> fieldSteps.checkFieldValue(fieldName, "содержит значение", value.getValue()));
     }
 
     @Then("значение выражения \"$variable\" содержит значение \"$value\"")
     public void stepCheckVariableContainsValue(Variable variable, Variable value){
         flow(()->
-                variableSteps.checkExpressionValue(variable.getValue(), CompareOperatorEnum.CONTAINS, value.getValue())
+                variableSteps.checkExpressionValue(variable.getValue(), "содержит значение", value.getValue())
         );
     }
 
@@ -185,7 +189,7 @@ public class CoreFieldStorySteps extends AbstractSteps {
             for (Map<String, String> row : fields.getRows()) {
                 String field = row.get("field");
                 String value = evalVariable(row.get("value"));
-                fieldSteps.checkFieldValue(field, CompareOperatorEnum.EQUALS, value);
+                fieldSteps.checkFieldValue(field, compareManager.defaultOperator(), value);
             }
         });
     }
@@ -196,7 +200,7 @@ public class CoreFieldStorySteps extends AbstractSteps {
             for (Map<String, String> row : variables.getRows()) {
                 String variable = row.get("variable");
                 String value = row.get("value");
-                variableSteps.checkExpressionValue(variable, CompareOperatorEnum.EQUALS, value);
+                variableSteps.checkExpressionValue(variable, compareManager.defaultOperator(), value);
             }
         });
     }
@@ -204,14 +208,14 @@ public class CoreFieldStorySteps extends AbstractSteps {
     @Then("значение поля \"$fieldName\" начинается с \"$value\"")
     public void stepFieldStartsWith(String fieldName, Variable value){
         flow(()->
-                fieldSteps.checkFieldValue(fieldName, CompareOperatorEnum.STARTS_WITH, value.getValue())
+                fieldSteps.checkFieldValue(fieldName, "начинается с", value.getValue())
         );
     }
 
     @Then("значение выражения \"$variable\" начинается с \"$value\"")
     public void stepVariableStartsWith(Variable variable, Variable value){
         flow(()->
-                variableSteps.checkExpressionValue(variable.getValue(), CompareOperatorEnum.STARTS_WITH, value.getValue())
+                variableSteps.checkExpressionValue(variable.getValue(), "начинается с", value.getValue())
         );
     }
 
@@ -295,14 +299,14 @@ public class CoreFieldStorySteps extends AbstractSteps {
     @Then("длинна значения поля \"$fieldName\" не превышает \"$maxLength\"")
     public void checkFieldMaxLength(String fieldName, Variable maxLength){
         flow(()-> {
-            fieldSteps.checkFieldValue(fieldName, CompareOperatorEnum.LENGTH_LOWER, maxLength.getValue());
+            fieldSteps.checkFieldValue(fieldName, "по длине меньше", maxLength.getValue());
         });
     }
 
     @Then("длинна значения поля \"$fieldName\" не меньше \"$minLength\"")
     public void checkFieldMinLength(String fieldName, Variable minLength){
         flow(()-> {
-            fieldSteps.checkFieldValue(fieldName, CompareOperatorEnum.LENGTH_GREATER, minLength.getValue());
+            fieldSteps.checkFieldValue(fieldName, "по длине больше", minLength.getValue());
         });
     }
 

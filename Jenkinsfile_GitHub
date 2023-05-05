@@ -1,0 +1,104 @@
+pipeline {
+    agent { label 'QualIT-win' }
+    stages {
+        stage('Clean workspace') {
+            steps {
+                cleanWs()
+            }
+        }
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+        stage('Deploy to GitHub') {
+            steps {
+                bat 'if exist ..\\qualit-examples rmdir /s /q ..\\qualit-examples'
+                bat 'if exist ..\\qualit-github rmdir /s /q ..\\qualit-github'
+                dir('../qualit-examples') {
+                    bat 'git clone https://gitlab.appline.ru/qualit/examples/db-example.git'
+                    bat 'git clone https://gitlab.appline.ru/qualit/examples/multimodule-example.git'
+                    bat 'git clone https://gitlab.appline.ru/qualit/examples/rest-api-example.git'
+                    bat 'git clone https://gitlab.appline.ru/qualit/examples/soft-assert-example.git'
+                    bat 'git clone https://gitlab.appline.ru/qualit/examples/testit-example.git'
+                    bat 'git clone https://gitlab.appline.ru/qualit/examples/web-drivers-example.git'
+                    bat 'git clone https://gitlab.appline.ru/qualit/examples/web-example.git'
+                    bat 'git clone https://gitlab.appline.ru/qualit/examples/winium-example.git'
+                    bat 'git clone https://gitlab.appline.ru/qualit/examples/junit-example.git'
+                }
+                dir('../qualit-github') {
+                    bat 'git clone https://github.com/IBSCorp/QualIT.git'
+                    bat 'git clone https://github.com/IBSCorp/db-example.git'
+                    bat 'git clone https://github.com/IBSCorp/multimodule-example.git'
+                    bat 'git clone https://github.com/IBSCorp/rest-api-example.git'
+                    bat 'git clone https://github.com/IBSCorp/soft-assert-example.git'
+                    bat 'git clone https://github.com/IBSCorp/testit-example.git'
+                    bat 'git clone https://github.com/IBSCorp/web-drivers-example.git'
+                    bat 'git clone https://github.com/IBSCorp/web-example.git'
+                    bat 'git clone https://github.com/IBSCorp/winium-example.git'
+                    bat 'git clone https://github.com/IBSCorp/junit-example.git'
+                    dir('../qualit-github/QualIT') {
+                        bat 'xcopy ..\\..\\qualit-github-deploy ..\\QualIT /s /e /y'
+                        bat 'git add .'
+                        bat 'git commit -m "Merge branch ' + env["Branch"] + ' into main"'
+                        bat 'git push'
+                    }
+                    dir('../qualit-github/db-example') {
+                        bat 'xcopy ..\\..\\qualit-examples\\db-example ..\\db-example /s /e /y'
+                        bat 'git add .'
+                        bat 'git commit -m "Merge branch ' + env["Branch"] + ' into main"'
+                        bat 'git push'
+                    }
+                    dir('../qualit-github/multimodule-example') {
+                        bat 'xcopy ..\\..\\qualit-examples\\multimodule-example ..\\multimodule-example /s /e /y'
+                        bat 'git add .'
+                        bat 'git commit -m "Merge branch ' + env["Branch"] + ' into main"'
+                        bat 'git push'
+                    }
+                    dir('../qualit-github/rest-api-example') {
+                        bat 'xcopy ..\\..\\qualit-examples\\rest-api-example ..\\rest-api-example /s /e /y'
+                        bat 'git add .'
+                        bat 'git commit -m "Merge branch ' + env["Branch"] + ' into main"'
+                        bat 'git push'
+                    }
+                    dir('../qualit-github/soft-assert-example') {
+                        bat 'xcopy ..\\..\\qualit-examples\\soft-assert-example ..\\soft-assert-example /s /e /y'
+                        bat 'git add .'
+                        bat 'git commit -m "Merge branch ' + env["Branch"] + ' into main"'
+                        bat 'git push'
+                    }
+                    dir('../qualit-github/testit-example') {
+                        bat 'xcopy ..\\..\\qualit-examples\\testit-example ..\\testit-example /s /e /y'
+                        bat 'git add .'
+                        bat 'git commit -m "Merge branch ' + env["Branch"] + ' into main"'
+                        bat 'git push'
+                    }
+                    dir('../qualit-github/web-drivers-example') {
+                        bat 'xcopy ..\\..\\qualit-examples\\web-drivers-example ..\\web-drivers-example /s /e /y'
+                        bat 'git add .'
+                        bat 'git commit -m "Merge branch ' + env["Branch"] + ' into main"'
+                        bat 'git push'
+                    }
+                    dir('../qualit-github/web-example') {
+                        bat 'xcopy ..\\..\\qualit-examples\\web-example ..\\web-example /s /e /y'
+                        bat 'git add .'
+                        bat 'git commit -m "Merge branch ' + env["Branch"] + ' into main"'
+                        bat 'git push'
+                    }
+                    dir('../qualit-github/winium-example') {
+                        bat 'xcopy ..\\..\\qualit-examples\\winium-example ..\\winium-example /s /e /y'
+                        bat 'git add .'
+                        bat 'git commit -m "Merge branch ' + env["Branch"] + ' into main"'
+                        bat 'git push'
+                    }
+                    dir('../qualit-github/junit-example') {
+                        bat 'xcopy ..\\..\\qualit-examples\\junit-example ..\\junit-example /s /e /y'
+                        bat 'git add .'
+                        bat 'git commit -m "Merge branch ' + env["Branch"] + ' into main"'
+                        bat 'git push'
+                    }
+                }
+            }
+        }
+    }
+}

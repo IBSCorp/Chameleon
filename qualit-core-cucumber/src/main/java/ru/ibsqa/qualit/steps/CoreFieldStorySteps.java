@@ -1,14 +1,15 @@
 package ru.ibsqa.qualit.steps;
 
+import io.cucumber.java.ru.Когда;
+import io.cucumber.java.ru.Тогда;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import ru.ibsqa.qualit.compare.ICompareManager;
 import ru.ibsqa.qualit.context.Context;
 import ru.ibsqa.qualit.converters.FieldOperatorValueTable;
 import ru.ibsqa.qualit.converters.FieldTable;
 import ru.ibsqa.qualit.converters.FieldValueTable;
 import ru.ibsqa.qualit.steps.roles.*;
-import io.cucumber.java.ru.Когда;
-import io.cucumber.java.ru.Тогда;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +21,9 @@ public class CoreFieldStorySteps extends AbstractSteps {
     @Autowired
     private CoreFieldSteps fieldSteps;
 
+    @Autowired
+    private ICompareManager compareManager;
+
     @DebugPluginAction
     @StepDescription(action = "UI->Элементы->Действия->Заполнить поле"
             , subAction = "Заполнить поле"
@@ -29,7 +33,7 @@ public class CoreFieldStorySteps extends AbstractSteps {
             @Write String field,
             @Value String value
     ) {
-        flow(()->
+        flow(() ->
                 fieldSteps.fillField(field, value)
         );
     }
@@ -42,7 +46,7 @@ public class CoreFieldStorySteps extends AbstractSteps {
     public void stepFillFields(
             @Write("field") @Value("value") List<FieldValueTable> fields
     ) {
-        flow(()-> {
+        flow(() -> {
             for (FieldValueTable fieldValue : fields) {
                 fieldSteps.fillField(fieldValue.getField(), Optional.ofNullable(evalVariable(fieldValue.getValue())).orElse(StringUtils.EMPTY));
             }
@@ -53,13 +57,13 @@ public class CoreFieldStorySteps extends AbstractSteps {
     @StepDescription(action = "UI->Элементы->Проверки->Проверить поле"
             , subAction = "Проверить значение поля"
             , parameters = {"field - наименование поля", "operator - соответствие чему проверять", "value - значение"})
-    @Тогда("^значение поля \"([^\"]*)\" (равно|не равно|содержит значение|не содержит значение|начинается с|не начинается с|оканчивается на|не оканчивается на|соответствует|не соответствует|равно игнорируя регистр|не равно игнорируя регистр|равно игнорируя пробелы|не равно игнорируя пробелы|по длине равно|по длине не равно|по длине больше|по длине не меньше|по длине меньше|по длине не больше|больше|больше или равно|меньше|меньше или равно|раньше или равно|позже или равно|позже|раньше) \"(.*)\"$")
+    @Тогда("^значение поля \"([^\"]*)\" ([^\"]+) \"(.*)\"$")
     public void stepCheckFieldValue(
             @Read String field,
-            @Value CompareOperatorEnum operator,
+            @Operator String operator,
             @Value String value) {
-        flow(()->
-                fieldSteps.checkFieldValue(field, Optional.ofNullable(operator).orElse(CompareOperatorEnum.EQUALS), value)
+        flow(() ->
+                fieldSteps.checkFieldValue(field, Optional.ofNullable(operator).orElse(compareManager.defaultOperator()), value)
         );
     }
 
@@ -69,12 +73,12 @@ public class CoreFieldStorySteps extends AbstractSteps {
             , parameters = {"fields - поля, операторы, значения"})
     @Тогда("^значения полей:$")
     public void stepCheckFieldsValue(
-            @Read("field") @Value({"operator", "value"}) List<FieldOperatorValueTable> fields) {
-        flow(()-> {
+            @Read("field") @Operator("operator") @Value("value") List<FieldOperatorValueTable> fields) {
+        flow(() -> {
             for (FieldOperatorValueTable fieldValue : fields) {
                 fieldSteps.checkFieldValue(
                         fieldValue.getField(),
-                        Optional.ofNullable(fieldValue.getOperator()).orElse(CompareOperatorEnum.EQUALS),
+                        Optional.ofNullable(fieldValue.getOperator()).orElse(compareManager.defaultOperator()),
                         Optional.ofNullable(fieldValue.getValue()).map(this::evalVariable).orElse(StringUtils.EMPTY)
                 );
             }
@@ -90,48 +94,53 @@ public class CoreFieldStorySteps extends AbstractSteps {
             @Variable String variable,
             @Read String field
     ) {
-        flow(()-> {
+        flow(() -> {
             String value = fieldSteps.getFieldValue(field);
             setVariable(variable, value);
         });
     }
 
+    @StepDescription(action = "UI->Элементы->Действия->Сохранить значение поля"
+            , subAction = "Сохранить значение поля начиная с индекса"
+            , parameters = {"variable - наименование переменной", "field - наименование поля", "index - индекс с которого сохранить значение поля"})
     @Тогда("^в переменной \"([^\"]*)\" сохранено значение поля \"([^\"]*)\" начиная с индекса \"([^\"]*)\"$")
     @Context(variables = {"variable"})
     public void stepSaveVariableSubStr(
-            @Read String field,
             @Variable String variable,
+            @Read String field,
             @Value int index
     ) {
-        flow(()-> {
+        flow(() -> {
             String value = fieldSteps.getFieldValue(field).substring(index);
             setVariable(variable, value);
         });
     }
 
+    @StepDescription(action = "UI->Элементы->Действия->Сохранить значение поля"
+            , subAction = "Сохранить значение поля выбранное по регулярному выражению"
+            , parameters = {"variable - наименование переменной", "field - наименование поля", "pattern - регулярное выражение"})
     @Тогда("^в переменной \"([^\"]*)\" сохранено значение поля \"([^\"]*)\" выбранное по регулярному выражению \"([^\"]*)\"$")
     @Context(variables = {"var"})
     public void stepCreateVariableByPattern(
-            @Variable String var,
+            @Variable String variable,
             @Read String field,
             @Value String pattern
     ) {
-        flow(()-> {
+        flow(() -> {
             String value = fieldSteps.getFieldValue(field);
             Pattern regexp = Pattern.compile(pattern);
             Matcher m = regexp.matcher(value);
             if (m.find()) {
-                setVariable(var, m.group(1));
+                setVariable(variable, m.group(1));
             }
         });
     }
 
     @StepDescription(action = "UI->Элементы->Действия->Сохранить значение поля"
             , subAction = "Сохранить значения полей"
-            , parameters = {"fieldName - наименование поля", "variable - наименование переменной"})
+            , parameters = {"conditions - список переменных"})
     @Тогда("^значения полей сохранены в переменные:$")
-    public void saveVariables(
-            @Read("field") List<FieldTable> conditions) {
+    public void saveVariables(@Read("field") List<FieldTable> conditions) {
         flow(() -> {
             for (FieldTable fieldTable : conditions) {
                 stepSaveVariable(fieldTable.getField(), fieldTable.getField().replaceAll("\\s", "_").replace("-", "_"));
@@ -144,10 +153,8 @@ public class CoreFieldStorySteps extends AbstractSteps {
             , subAction = "Очистить поле"
             , parameters = {"field - наименование поля"})
     @Тогда("^поле \"([^\"]*)\" очищено$")
-    public void stepClearField(
-            @Write String field
-    ) {
-        flow(()->
+    public void stepClearField(@Write String field) {
+        flow(() ->
                 fieldSteps.clearField(field)
         );
     }
@@ -157,15 +164,14 @@ public class CoreFieldStorySteps extends AbstractSteps {
             , multiple = true
             , parameters = {"fields - список полей"})
     @Тогда("^очищены поля:$")
-    public void stepClearFields(
-            @Write("field") List<FieldTable> fields
-    ) {
-        flow(()-> {
+    public void stepClearFields(@Write("field") List<FieldTable> fields) {
+        flow(() -> {
             for (FieldTable fieldTable : fields) {
                 fieldSteps.clearField(fieldTable.getField());
             }
         });
     }
+
     @StepDescription(action = "UI->Элементы->Проверки->Проверить поле"
             , subAction = "Поле присутствует"
             , parameters = {"field - наименование поля"})
@@ -173,7 +179,7 @@ public class CoreFieldStorySteps extends AbstractSteps {
     public void checkFieldExists(
             @Exists String field
     ) {
-        flow(()->
+        flow(() ->
                 fieldSteps.checkFieldExists(field)
         );
     }
@@ -185,7 +191,7 @@ public class CoreFieldStorySteps extends AbstractSteps {
     @Тогда("^следующие поля присутствуют:$")
     public void checkFieldsExists(
             @Exists("field") List<FieldTable> fields) {
-        flow(()-> {
+        flow(() -> {
             for (FieldTable fieldTable : fields) {
                 fieldSteps.checkFieldExists(fieldTable.getField());
             }
@@ -200,7 +206,7 @@ public class CoreFieldStorySteps extends AbstractSteps {
     public void checkFieldNotExists(
             @Exists String field
     ) {
-        flow(()->
+        flow(() ->
                 fieldSteps.checkFieldNotExists(field)
         );
     }
@@ -213,7 +219,7 @@ public class CoreFieldStorySteps extends AbstractSteps {
     public void checkFieldsNotExists(
             @Exists("field") List<FieldTable> fields
     ) {
-        flow(()-> {
+        flow(() -> {
             for (FieldTable fieldTable : fields) {
                 fieldSteps.checkFieldNotExists(fieldTable.getField());
             }

@@ -23,6 +23,7 @@ public abstract class AbstractMetaVisibleProperty extends AbstractMetaProperty {
         return Optional.ofNullable(label).map(l -> String.format("%s (%s)", getName(), l)).orElse(getName());
     }
 
+    @XmlAttribute
     private Boolean required;
 
     public boolean isRequired() {

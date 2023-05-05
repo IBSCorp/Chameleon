@@ -1,14 +1,14 @@
 package ru.ibsqa.qualit.tests;
 
-import ru.ibsqa.qualit.steps.CollectionSteps;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import ru.ibsqa.qualit.steps.CollectionSteps;
+import ru.ibsqa.qualit.utils.spring.QualITSpringExtension;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-@ExtendWith(SpringExtension.class)
+@ExtendWith(QualITSpringExtension.class)
 @ContextConfiguration("classpath:spring.xml")
 @TestExecutionListeners(inheritListeners = false, listeners =
         {DependencyInjectionTestExecutionListener.class})
@@ -29,7 +29,7 @@ public class SortTest {
     public void checkSortTest() {
         log.info("-= Тест проверки сортировки коллекции =-");
 
-        Map<String, CollectionSteps.SortParams > params = new HashMap<>();
+        Map<String, CollectionSteps.SortParams> params = new HashMap<>();
 
         CollectionSteps.SortParams param1 = new CollectionSteps.SortParams();
         params.put("field1", param1);

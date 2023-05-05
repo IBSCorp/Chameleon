@@ -1,5 +1,6 @@
 package ru.ibsqa.qualit.evaluate;
 
+import ru.ibsqa.qualit.definitions.repository.ConfigurationPriority;
 import ru.ibsqa.qualit.storage.IVariableScope;
 import org.springframework.stereotype.Component;
 
@@ -16,14 +17,14 @@ import java.text.DecimalFormatSymbols;
  *      #amount{1234.5;'#,#0.000';'.';'_'} => 12_34.500
  */
 @Component
-@Evaluator({
+@Evaluator(value = {
         "#amount{число}",
         "#amount{число;формат_числа;разделитель_дробной_части;разделитель_групп_разрядов}",
         "#amount{1234.5}",
         "#amount{1234.5;'#,##0.00';',';' '}",
         "#amount{1234.5;;'.';','}",
         "#amount{1234.5;'#,#0.000';'.';'_'}"
-})
+}, priority = ConfigurationPriority.LOW)
 public class EvaluatorAmountImpl extends AbstractEvaluator {
 
     @Override

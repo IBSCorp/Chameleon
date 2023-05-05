@@ -5,7 +5,7 @@
     <parent>
         <artifactId>qualit</artifactId>
         <groupId>ru.ibsqa.qualit</groupId>
-        <version>3.3.1-SNAPSHOT</version>
+        <version>3.4.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <packaging>pom</packaging>
@@ -665,6 +665,7 @@
                         <forkNode implementation="org.apache.maven.plugin.surefire.extensions.SurefireForkNodeFactory"/>
                         <argLine>
                             -Dfile.encoding=${encoding}
+                            -Dcucumber.object-factory=io.cucumber.spring.QualITFactory
                             -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"
                             --add-opens java.base/java.lang=ALL-UNNAMED
                             --add-opens java.base/java.lang.reflect=ALL-UNNAMED

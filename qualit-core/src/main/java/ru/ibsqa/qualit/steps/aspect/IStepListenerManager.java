@@ -13,4 +13,8 @@ public interface IStepListenerManager {
     void stepAfterThrowing(JoinPoint joinPoint, Throwable throwable, StepType stepType);
 
     Object stepAround(ProceedingJoinPoint proceedingJoinPoint, StepType stepType) throws Throwable;
+
+    boolean isIgnoredMode();
+
+    void setIgnoredMode(boolean hiddenMode);
 }

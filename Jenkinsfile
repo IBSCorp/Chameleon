@@ -1,8 +1,8 @@
 pipeline {
-    agent { label 'QualIT-linux' }
+    agent { label 'QualIT-win' }
     stages {
         stage('Clean workspace') {
-            steps{
+            steps {
                 cleanWs()
             }
         }
@@ -11,17 +11,17 @@ pipeline {
                 checkout scm
             }
         }
-        stage('Build Maven') {
+        stage('Package & Test') {
             steps {
                 withMaven(maven: 'Maven3') {
-                    sh 'mvn clean package -Dmaven.test.skip=true -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true -Dmaven.wagon.http.ssl.ignore.validity.dates=true'
+                    bat encoding: 'UTF-8', script: 'mvn clean package test "-Dcucumber.filter.tags=not @robot" -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true -Dmaven.wagon.http.ssl.ignore.validity.dates=true'
                 }
             }
         }
         stage('Deploy to Nexus') {
             steps {
                 withMaven(maven: 'Maven3') {
-                    sh 'mvn deploy -Dmaven.test.skip=true -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true -Dmaven.wagon.http.ssl.ignore.validity.dates=true'
+                    bat encoding: 'UTF-8', script: 'mvn deploy -Dmaven.test.skip=true -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true -Dmaven.wagon.http.ssl.ignore.validity.dates=true'
                 }
             }
         }

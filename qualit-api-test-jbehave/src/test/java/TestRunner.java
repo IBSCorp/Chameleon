@@ -70,7 +70,7 @@ public class TestRunner extends JBehaveRunner {
 //        coreFieldSteps.fillField("Наименование метрики", "system.cpu.count" );
 //        apiSteps.sendRequest();
 //        apiSteps.receiveResponse();
-//        coreFieldSteps.checkFieldValue("Наименование метрики", CompareOperatorEnum.EQUALS,  "system.cpu.count");
+//        coreFieldSteps.checkFieldValue("Наименование метрики", "равно",  "system.cpu.count");
 //        //coreFieldSteps.checkFieldValue("Значение метрики", "8.0");
 //
 //        apiSteps.setCurrentEndpoint("Начало подготовки данных");

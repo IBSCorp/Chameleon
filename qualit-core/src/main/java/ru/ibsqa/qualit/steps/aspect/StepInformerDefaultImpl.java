@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 @Component
 public class StepInformerDefaultImpl extends AbstractStepInformer {
 
-    private final Pattern pattern = Pattern.compile("^@ru\\.ibsqa\\.qualit\\.steps\\.TestStep\\(value=\"(.*)\"\\)$");
+    private final Pattern pattern = Pattern.compile("^@ru\\.ibsqa\\.qualit\\.steps\\.TestStep\\((value=)?\"(.*)\"\\)$");
 
     @Override
     public Optional<String> getDescription(JoinPoint joinPoint, StepType stepType) {

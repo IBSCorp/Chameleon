@@ -3,6 +3,7 @@ package ru.ibsqa.qualit.sap.driver;
 
 import ru.ibsqa.qualit.sap.search_context.SapSearchContext;
 import ru.ibsqa.qualit.selenium.driver.WebDriverFacade;
+import ru.ibsqa.qualit.utils.delay.DelayUtils;
 import ru.ibsqa.qualit.utils.spring.SpringUtils;
 import com.jacob.activeX.ActiveXComponent;
 import com.jacob.com.ComThread;
@@ -69,16 +70,16 @@ public class SapDriver<T extends WebElement> extends WebDriverFacade implements 
         Variant variant = openConnections().invoke("Children", 0);
         this.mVariant = variant;
         newSession = new ActiveXComponent(variant.toDispatch());
-        Utils.delayInsec(3);
+        DelayUtils.sleepSec(3);
         this.session = newSession;
         activateCurrentWindowSap();
     }
 
     private void launchApp(String appPath) {
         try {
-            Utils.delayInsec(5);
+            DelayUtils.sleepSec(5);
             new ProcessBuilder(appPath).start();
-            Utils.delayInsec(5);
+            DelayUtils.sleepSec(5);
         } catch (IOException e) {
             log.error(e.getMessage(), e);
         }
@@ -241,7 +242,7 @@ public class SapDriver<T extends WebElement> extends WebDriverFacade implements 
                 for (int i = 0; i < collectionCount; i++) {
                     ActiveXComponent connection = new ActiveXComponent(GUIApp.invoke("Children", i).toDispatch());
                     connection.invoke("CloseConnection");
-                    Utils.delayInsec(2);
+                    DelayUtils.sleepSec(2);
                 }
             }catch (Exception e){
                 e.printStackTrace();

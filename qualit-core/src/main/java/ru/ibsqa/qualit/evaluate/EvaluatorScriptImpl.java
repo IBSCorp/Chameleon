@@ -2,6 +2,7 @@ package ru.ibsqa.qualit.evaluate;
 
 import bsh.EvalError;
 import bsh.Interpreter;
+import ru.ibsqa.qualit.definitions.repository.ConfigurationPriority;
 import ru.ibsqa.qualit.storage.IVariableScope;
 import ru.ibsqa.qualit.storage.IVariableStorage;
 import lombok.extern.slf4j.Slf4j;
@@ -16,10 +17,10 @@ import java.util.Map;
  *      #script{RESULT=System.currentTimeMillis()}
  */
 @Component
-@Evaluator({
+@Evaluator(value = {
         "#script{RESULT=выражение_java}",
         "#script{RESULT=System.currentTimeMillis()}"
-})
+}, priority = ConfigurationPriority.LOW)
 @Slf4j
 public class EvaluatorScriptImpl extends AbstractEvaluator {
 

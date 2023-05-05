@@ -1,6 +1,7 @@
 package ru.ibsqa.qualit.evaluate;
 
 import org.junit.jupiter.api.Assertions;
+import ru.ibsqa.qualit.definitions.repository.ConfigurationPriority;
 import ru.ibsqa.qualit.storage.IVariableScope;
 import com.sun.jna.Memory;
 import com.sun.jna.Pointer;
@@ -18,10 +19,10 @@ import static org.junit.jupiter.api.Assertions.fail;
  *      #version{C:\Program Files (x86)\RussianPost\PostOffice\config\config01.exe}
  */
 @Component
-@Evaluator({
+@Evaluator(value = {
         "#file{имя_файла}",
         "#file{C:\\Program Files (x86)\\RussianPost\\PostOffice\\config\\config01.exe}"
-})
+}, priority = ConfigurationPriority.LOW)
 @Slf4j
 public class EvaluatorVersionImpl extends AbstractEvaluator {
 

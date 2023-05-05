@@ -3,6 +3,7 @@ package ru.ibsqa.qualit.steps;
 import org.springframework.lang.NonNull;
 import ru.ibsqa.qualit.evaluate.IEvaluateManager;
 import ru.ibsqa.qualit.i18n.ILocaleManager;
+import ru.ibsqa.qualit.steps.aspect.IStepListenerManager;
 import ru.ibsqa.qualit.storage.IVariableStorage;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -31,11 +32,21 @@ public abstract class AbstractSteps {
     @Autowired
     private IStepFlow stepFlow;
 
+    @Getter(AccessLevel.PROTECTED)
     @Autowired
     private WaitingUtils waitingUtils;
 
+    @Getter(AccessLevel.PROTECTED)
+    @Autowired
+    private IStepListenerManager stepListenerManager;
+
     protected boolean waiting(@NonNull Duration timeout, @NonNull Supplier<Boolean> supplier) {
-        return waitingUtils.waiting(timeout, supplier);
+        stepListenerManager.setIgnoredMode(true);
+        try {
+            return waitingUtils.waiting(timeout, supplier);
+        } finally {
+            stepListenerManager.setIgnoredMode(false);
+        }
     }
 
     protected void flow(Runnable stepAction) {

@@ -6,6 +6,7 @@ import ru.ibsqa.qualit.uia.driver.UiaDriver;
 import ru.ibsqa.qualit.uia.driver.UiaSearchBy;
 import ru.ibsqa.qualit.uia.search_context.UiaSearchContext;
 import ru.ibsqa.qualit.uia.search_context.UiaTableRowSearchContext;
+import ru.ibsqa.qualit.utils.delay.DelayUtils;
 import ru.ibsqa.qualit.utils.spring.SpringUtils;
 import com.sun.jna.platform.win32.WinDef;
 import lombok.Getter;
@@ -216,10 +217,7 @@ public class UiaElement extends AutomationBase implements IUiaElement {
                         rect.top > 0) {
                     return new Rectangle(rect.left, rect.top, rect.bottom - rect.top, rect.right - rect.left);
                 }
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException ignore) {
-                }
+                DelayUtils.sleep(101);
             }
         } catch (AutomationException e) {
             log.error(e.getMessage(), e);

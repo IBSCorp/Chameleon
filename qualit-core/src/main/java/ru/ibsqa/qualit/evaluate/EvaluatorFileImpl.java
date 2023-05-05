@@ -1,5 +1,6 @@
 package ru.ibsqa.qualit.evaluate;
 
+import ru.ibsqa.qualit.definitions.repository.ConfigurationPriority;
 import ru.ibsqa.qualit.storage.IVariableScope;
 import ru.ibsqa.qualit.utils.spring.SpringUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -21,11 +22,11 @@ import static org.junit.jupiter.api.Assertions.fail;
  * через ; может быть указана кодировка файла, по умолчанию UTF-8
  */
 @Component
-@Evaluator({
+@Evaluator(value = {
         "#file{имя_файла;кодировка}",
         "#file{C:\\readme.txt;windows-1251}",
         "#file{classpath:/path/to/file/my.json}"
-})
+}, priority = ConfigurationPriority.LOW)
 @Slf4j
 public class EvaluatorFileImpl extends AbstractEvaluator {
 

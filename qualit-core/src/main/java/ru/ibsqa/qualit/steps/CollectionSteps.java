@@ -1,14 +1,15 @@
 package ru.ibsqa.qualit.steps;
 
-import ru.ibsqa.qualit.context.*;
-import ru.ibsqa.qualit.elements.*;
-import ru.ibsqa.qualit.utils.waiting.WaitingUtils;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import ru.ibsqa.qualit.compare.ICompareManager;
+import ru.ibsqa.qualit.context.*;
+import ru.ibsqa.qualit.elements.*;
+import ru.ibsqa.qualit.utils.spring.SpringUtils;
 
 import java.text.*;
 import java.time.Duration;
@@ -16,7 +17,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.fail;
 
 @Component
 @Slf4j
@@ -29,17 +30,18 @@ public class CollectionSteps extends AbstractSteps {
     private IFieldNameResolver fieldNameResolver;
 
     @Autowired
-    private WaitingUtils waitingUtils;
+    private ICompareManager compareManager;
 
     @Data
     @Builder
     public static class FindCondition {
         private String fieldName;
-        private CompareOperatorEnum operator;
+        private String operator;
         private String value;
 
-        public CompareOperatorEnum getOperator() {
-            return Optional.ofNullable(operator).orElse(CompareOperatorEnum.EQUALS);
+        public String getOperator() {
+            return Optional.ofNullable(operator)
+                    .orElseGet(() -> SpringUtils.getBean(ICompareManager.class).defaultOperator());
         }
     }
 
@@ -60,55 +62,55 @@ public class CollectionSteps extends AbstractSteps {
     }
 
     public void stepCheckItemCount(String collectionName, int count) {
-        stepCheckItemCount(collectionName, CompareOperatorEnum.EQUALS, count);
+        stepCheckItemCount(collectionName, compareManager.defaultOperator(), count);
     }
 
     @UIStep
     @TestStep("проверяется коллекция \"${collectionName}\", что количество элементов ${operator} \"${count}\"")
-    public void stepCheckItemCount(String collectionName, CompareOperatorEnum operator, int count) {
+    public void stepCheckItemCount(String collectionName, String operator, int count) {
         IFacadeCollection<?> collection = getCollection(collectionName).getElement();
         AtomicReference<String> actual = new AtomicReference<>();
         boolean isChecked;
         if (collection instanceof IFacadeWait) {
             isChecked = waiting(
-                    Duration.ofSeconds(((IFacadeWait)collection).getWaitTimeOut()),
+                    Duration.ofSeconds(((IFacadeWait) collection).getWaitTimeOut()),
                     () -> {
                         actual.set(Integer.toString(getItems(collection, collectionName).size()));
-                        return operator.checkValue(actual.get(), Integer.toString(count));
+                        return compareManager.checkValue(operator, actual.get(), Integer.toString(count));
                     }
             );
         } else {
             actual.set(Integer.toString(getItems(collection, collectionName).size()));
-            isChecked = operator.checkValue(actual.get(), Integer.toString(count));
+            isChecked = compareManager.checkValue(operator, actual.get(), Integer.toString(count));
         }
         if (!isChecked) {
-            fail(operator.buildErrorMessage(message("checkCollection"), actual.get(), Integer.toString(count)));
+            fail(compareManager.buildErrorMessage(operator, message("checkCollection"), actual.get(), Integer.toString(count)));
         }
     }
 
     @UIStep
     @TestStep("проверяется, что коллекция \"${collectionName}\" не пуста")
     public void stepCheckNotEmpty(String collectionName) {
-        stepCheckItemCount(collectionName, CompareOperatorEnum.GREATER, 0);
+        stepCheckItemCount(collectionName, "больше", 0);
     }
 
     public void stepCheckItemCount(String collectionName, int count, List<FindCondition> conditions) {
-        stepCheckItemCount(collectionName, CompareOperatorEnum.EQUALS, count);
+        stepCheckItemCount(collectionName, compareManager.defaultOperator(), count);
     }
 
     @UIStep
     @TestStep("проверяется коллекция \"${collectionName}\", что количество элементов ${operator} \"${count}\" с параметрами: \"${conditions}\"")
-    public void stepCheckItemCount(String collectionName, CompareOperatorEnum operator, int count, List<FindCondition> conditions) {
+    public void stepCheckItemCount(String collectionName, String operator, int count, List<FindCondition> conditions) {
         IFacadeCollection<?> collection = getCollection(collectionName).getElement();
         AtomicReference<String> actual = new AtomicReference<>();
         boolean isChecked;
         if (collection instanceof IFacadeWait) {
             isChecked = waiting(
-                    Duration.ofSeconds(((IFacadeWait)collection).getWaitTimeOut()),
+                    Duration.ofSeconds(((IFacadeWait) collection).getWaitTimeOut()),
                     () -> {
                         try {
                             actual.set(Integer.toString(getItems(collection, collectionName, conditions, false).size()));
-                            return operator.checkValue(actual.get(), Integer.toString(count));
+                            return compareManager.checkValue(operator, actual.get(), Integer.toString(count));
                         } catch (InvokeFieldException ignore) {
                             return false;
                         }
@@ -116,10 +118,10 @@ public class CollectionSteps extends AbstractSteps {
             );
         } else {
             actual.set(Integer.toString(getItems(collection, collectionName, conditions, false).size()));
-            isChecked = operator.checkValue(actual.get(), Integer.toString(count));
+            isChecked = compareManager.checkValue(operator, actual.get(), Integer.toString(count));
         }
         if (!isChecked) {
-            fail(operator.buildErrorMessage(message("checkCollection"), actual.get(), Integer.toString(count)));
+            fail(compareManager.buildErrorMessage(operator, message("checkCollection"), actual.get(), Integer.toString(count)));
         }
     }
 
@@ -140,7 +142,7 @@ public class CollectionSteps extends AbstractSteps {
                 }
                 i++;
             }
-        } while (collection instanceof IFacadeWait && (System.currentTimeMillis()<(startTime+((IFacadeWait) collection).getWaitTimeOut()*1000)));
+        } while (collection instanceof IFacadeWait && (System.currentTimeMillis() < (startTime + ((IFacadeWait) collection).getWaitTimeOut() * 1000)));
 
         fail(message("collectionNoItemByIndexErrorMessage", collectionName, index));
         return null;
@@ -152,19 +154,24 @@ public class CollectionSteps extends AbstractSteps {
     public <CONTEXT extends IContextObject> CONTEXT searchItem(String collectionName, List<FindCondition> conditions) {
         IFacadeCollection<CONTEXT> collection = getCollection(collectionName).getElement();
 
-        long startTime = System.currentTimeMillis();
-        do {
-            try {
-                List<CONTEXT> found = getItems(collectionName, conditions, true);
-                if (found.size() > 0) {
-                    return found.get(0);
+        getStepListenerManager().setIgnoredMode(true);
+        try {
+            long startTime = System.currentTimeMillis();
+            do {
+                try {
+                    List<CONTEXT> found = getItems(collectionName, conditions, true);
+                    if (found.size() > 0) {
+                        return found.get(0);
+                    }
+                } catch (InvokeFieldException ignore) {
                 }
-            } catch (InvokeFieldException ignore) {
-            }
-        } while (collection instanceof IFacadeWait && (System.currentTimeMillis()<(startTime+((IFacadeWait) collection).getWaitTimeOut()*1000)));
+            } while (collection instanceof IFacadeWait && (System.currentTimeMillis() < (startTime + ((IFacadeWait) collection).getWaitTimeOut() * 1000)));
 
-        fail(message("CollectionItemNotFoundAssertMessage", collectionName, conditions.toString()));
-        return null;
+            fail(message("CollectionItemNotFoundAssertMessage", collectionName, conditions.toString()));
+            return null;
+        } finally {
+            getStepListenerManager().setIgnoredMode(false);
+        }
     }
 
     @UIStep
@@ -182,7 +189,7 @@ public class CollectionSteps extends AbstractSteps {
 
     public IContextObject waitObjectInCollectionByConditions(String collectionName, int sec, List<FindCondition> conditions) {
         AtomicReference<IContextObject> contextObject = new AtomicReference<>();
-        if (waitingUtils.waiting(sec * 1000, () -> {
+        if (waiting(Duration.ofSeconds(sec), () -> {
             try {
                 List<IContextObject> contextObjects = getItems(collectionName, conditions);
                 if (contextObjects.size() > 0) {
@@ -204,7 +211,7 @@ public class CollectionSteps extends AbstractSteps {
     @UIStep
     @TestStep("ожидается элемент коллекции \"${collectionName}\" в течение \"${sec}\"")
     public void waitCollectionElements(String collectionName, int sec) {
-        if (!waitingUtils.waiting(sec * 1000, () -> {
+        if (!waiting(Duration.ofSeconds(sec), () -> {
             try {
                 return getItems(collectionName).size() > 0;
             } catch (AssertionError ae) {
@@ -285,8 +292,8 @@ public class CollectionSteps extends AbstractSteps {
     /**
      * Получение элементов коллекции с параметрами
      *
-     * @param collection     - коллекция
-     * @param conditions     - условия поиска
+     * @param collection - коллекция
+     * @param conditions - условия поиска
      * @param <CONTEXT>
      * @return
      */
@@ -297,24 +304,23 @@ public class CollectionSteps extends AbstractSteps {
     /**
      * Получение элементов коллекции с параметрами
      *
-     * @param collection     - коллекция
-     * @param conditions     - условия поиска
-     * @param onlyFirst      - если true, то прекратить поиск после обнаружения первого элемента
+     * @param collection - коллекция
+     * @param conditions - условия поиска
+     * @param onlyFirst  - если true, то прекратить поиск после обнаружения первого элемента
      * @param <CONTEXT>
      * @return
      */
     @UIStep
     @TestStep("получить элементы коллекции \"${collectionName}\" с параметрами \"${conditions}\"")
     public <CONTEXT extends IContextObject> List<CONTEXT> getItems(IFacadeCollection<CONTEXT> collection, String collectionName, List<FindCondition> conditions, boolean onlyFirst) {
-
         List<CONTEXT> result = new ArrayList<>();
 
         for (CONTEXT item : collection) {
-
             boolean match = true;
 
-            for (FindCondition row : conditions) {
+            StringBuilder logText = new StringBuilder(String.format("Получен элемент коллекции \"%s\" с параметрами:\n", collectionName));
 
+            for (FindCondition row : conditions) {
                 // Отделить имя поля и параметры
                 String fieldName = null;
                 try {
@@ -336,21 +342,27 @@ public class CollectionSteps extends AbstractSteps {
                     } else {
                         actual = actual.trim();
                     }
-                    match = row.getOperator().checkValue(actual, expected);
+
+                    logText.append(String.format("%s: %s\n", fieldName, actual));
+                    match = compareManager.checkValue(row.getOperator(), actual, expected);
                 }
 
                 if (!match) {
+                    logText.append(String.format("Элемент коллекции \"%s\" не подошел по параметру: \"%s\". Ожидалось: \"%s\" %s \"%s\"",
+                            collectionName, fieldName, fieldName, row.getOperator(), expected));
+
+                    log.debug(logText.toString());
                     break;
                 }
             }
 
             if (match) {
                 result.add(item);
+                log.debug(String.format("%sЭлемент коллекции \"%s\" подошел по всем заданным параметрам поиска.", logText, collectionName));
                 if (onlyFirst) {
                     break;
                 }
             }
-
         }
 
         return result;
@@ -470,7 +482,7 @@ public class CollectionSteps extends AbstractSteps {
         /**
          * Сравнение двух значений с учетом параметров
          */
-        @SuppressWarnings({"unchecked","rawtypes"})
+        @SuppressWarnings({"unchecked", "rawtypes"})
         public int compare(String s1, String s2) {
 
             Comparable c1 = null;
@@ -525,6 +537,7 @@ public class CollectionSteps extends AbstractSteps {
 
     /**
      * Проверка сортировки коллекции
+     *
      * @param collectionName имя коллекции для вывода сообщения
      * @param array          - массив значений
      * @param sortParamsMap  - параметры проверки сортировки
@@ -556,7 +569,7 @@ public class CollectionSteps extends AbstractSteps {
      * Общая функция проверки сортировки
      *
      * @param collectionName - имя коллекции
-     * @param conditions - условия
+     * @param conditions     - условия
      */
     @SuppressWarnings("unchecked")
     private void checkSortedInternal(String collectionName, List<Pair<String, String>> conditions) {
@@ -617,7 +630,7 @@ public class CollectionSteps extends AbstractSteps {
         boolean isChecked;
         if (collection instanceof IFacadeWait) {
             isChecked = waiting(
-                    Duration.ofSeconds(((IFacadeWait)collection).getWaitTimeOut()),
+                    Duration.ofSeconds(((IFacadeWait) collection).getWaitTimeOut()),
                     () -> waitForSortedInternal(sortParamsMap, groupField.get(), this.getItems(collection, collectionName))
             );
         } else {

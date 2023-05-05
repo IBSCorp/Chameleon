@@ -1,5 +1,6 @@
 package ru.ibsqa.qualit.evaluate;
 
+import ru.ibsqa.qualit.definitions.repository.ConfigurationPriority;
 import ru.ibsqa.qualit.storage.IVariableScope;
 import org.springframework.stereotype.Component;
 
@@ -17,11 +18,11 @@ import java.util.Calendar;
  *      - результирующий формат (необязательный параметр, по умолчанию дата возвращается в исходном формате)
  */
 @Component
-@Evaluator({
+@Evaluator(value = {
         "#date{дата}",
         "#date{дата;исходный_формат;смещение;результирующий_формат}",
         "#date{05.11.17;dd.MM.yy;-1d;dd-MM-yyyy}"
-})
+}, priority = ConfigurationPriority.LOW)
 public class EvaluatorDateImpl extends AbstractEvaluator implements IDateEvaluator {
 
     @Override

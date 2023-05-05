@@ -1,5 +1,6 @@
 package ru.ibsqa.qualit.steps;
 
+import ru.ibsqa.qualit.compare.ICompareManager;
 import ru.ibsqa.qualit.converters.Variable;
 import ru.ibsqa.qualit.selenium.enums.KeyEnum;
 import org.jbehave.core.annotations.Then;
@@ -16,6 +17,9 @@ public class SeleniumFieldStorySteps extends AbstractSteps {
     @Autowired
     private SeleniumFieldSteps fieldSteps;
 
+    @Autowired
+    private ICompareManager compareManager;
+
     @When("поле \"$fieldName\" заполняется значением \"$value\" и нажимается ENTER")
     public void  stepFillFieldAndPressEnter(Variable fieldName, Variable value){
         flow(()-> {
@@ -30,7 +34,7 @@ public class SeleniumFieldStorySteps extends AbstractSteps {
     @Then("значение подсказки для поля \"$fieldName\" равно \"$value\"")
     public void checkFieldPlaceholder(Variable fieldName, Variable expected){
         flow(()->
-                fieldSteps.checkFieldPlaceholder(fieldName.getValue(), CompareOperatorEnum.EQUALS, expected.getValue())
+                fieldSteps.checkFieldPlaceholder(fieldName.getValue(), compareManager.defaultOperator(), expected.getValue())
         );
     }
 
@@ -199,21 +203,21 @@ public class SeleniumFieldStorySteps extends AbstractSteps {
     @Then("значение {ссылки|кнопки} \"$fieldName\" равно \"$value\"")
     public void stepCheckValue(Variable fieldName, Variable value){
         flow(()->
-                fieldSteps.checkFieldValue(fieldName.getValue(), CompareOperatorEnum.EQUALS, value.getValue())
+                fieldSteps.checkFieldValue(fieldName.getValue(), compareManager.defaultOperator(), value.getValue())
         );
     }
 
     @Then("значение {ссылки|кнопки} \"$fieldName\" не равно \"$value\"")
     public void stepCheckNotValue(Variable fieldName, Variable value){
         flow(()->
-                fieldSteps.checkFieldValue(fieldName.getValue(), CompareOperatorEnum.NOT_EQUALS, value.getValue())
+                fieldSteps.checkFieldValue(fieldName.getValue(), "не равно", value.getValue())
         );
     }
 
     @Then("значение {ссылки|кнопки} \"$fieldName\" содержит значение \"$value\"")
     public void stepCheckContainsValue(Variable fieldName, Variable value){
         flow(()->
-                fieldSteps.checkFieldValue(fieldName.getValue(), CompareOperatorEnum.CONTAINS, value.getValue())
+                fieldSteps.checkFieldValue(fieldName.getValue(), "содержит значение", value.getValue())
         );
     }
 
@@ -248,7 +252,7 @@ public class SeleniumFieldStorySteps extends AbstractSteps {
     @Then("значение атрибута \"$attribute\" поля \"$fieldName\" равно \"$value\"")
     public void stepCheckFieldAttribute(Variable attribute, Variable fieldName, Variable value) {
         flow(()-> {
-            fieldSteps.checkFieldAttribute(attribute.getValue(), fieldName.getValue(), CompareOperatorEnum.EQUALS, value.getValue());
+            fieldSteps.checkFieldAttribute(attribute.getValue(), fieldName.getValue(), compareManager.defaultOperator(), value.getValue());
             /*
             String currentAttribute = fieldSteps.getFieldAttribute(fieldName.getValue(), attribute.getValue());
             if (currentAttribute == null)
@@ -261,7 +265,7 @@ public class SeleniumFieldStorySteps extends AbstractSteps {
     @Then("значение атрибута \"$attribute\" поля \"$fieldName\" содержит \"$value\"")
     public void checkFieldAttributeContains(Variable attribute, Variable fieldName, Variable value) {
         flow(()-> {
-            fieldSteps.checkFieldAttribute(attribute.getValue(), fieldName.getValue(), CompareOperatorEnum.CONTAINS, value.getValue());
+            fieldSteps.checkFieldAttribute(attribute.getValue(), fieldName.getValue(), "содержит значение", value.getValue());
             /*
             String currentAttribute = fieldSteps.getFieldAttribute(fieldName.getValue(), attribute.getValue());
             if (currentAttribute == null)
