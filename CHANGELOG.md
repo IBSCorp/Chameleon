@@ -1,5 +1,10 @@
+# Версия 3.4.1 (released 29.05.2023)
+* Исправлена проблема с дублированием отчетов в случае запуска тестов через maven:
+  * Необходимо наличие опции junit.platform.execution.listeners.deactivate=io.qameta.allure.junitplatform.AllureJunitPlatform в файле junit-platform.properties
+    * Если на проекте подключен BDD фреймворк Cucumber, то также необходимо наличие файла cucumber.properties в ресурсных файлах проекта
+
 # Версия 3.4.0 (released 04.05.2023)
-* Изменен подход для операций сравнения и дабавлена возможность создания кастомных операций сравнения [Операции сравнения](https://docs.appline.ru/s/cahgriref9uhhnfr4mug/qualit/d/cbmeatbef9uhhnfr4ti0/kastomizaciya-biblioteki-modulej?currentPageId=cg4r8d3ef9uhhnfr6feg)
+* Изменен подход для операций сравнения и добавлена возможность создания кастомных операций сравнения [Операции сравнения](https://docs.appline.ru/s/cahgriref9uhhnfr4mug/qualit/d/cbmeatbef9uhhnfr4ti0/kastomizaciya-biblioteki-modulej?currentPageId=cg4r8d3ef9uhhnfr6feg)
 * Добавлена поддержка Java17
 * Добавлены контексты и автокомплит для шагов с базами данных
 * Сокращен вывод избыточной информации в лог при возникновении типовых ошибок

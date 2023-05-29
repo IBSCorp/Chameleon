@@ -5,7 +5,7 @@
 
     <groupId>ru.ibsqa.qualit</groupId>
     <artifactId>qualit</artifactId>
-    <version>3.4.0</version>
+    <version>3.4.1</version>
     <packaging>pom</packaging>
 
     <modules>
@@ -132,7 +132,7 @@
     </distributionManagement>
 
     <properties>
-        <qualit.version>3.4.0</qualit.version>
+        <qualit.version>3.4.1</qualit.version>
 
         <encoding>UTF-8</encoding>
         <file.encoding>${encoding}</file.encoding>
