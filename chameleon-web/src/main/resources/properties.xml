@@ -1,0 +1,37 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<Properties xmlns="http://chameleon.ibs-qa.ru/schema/properties">
+    <Text name="applicationUrl" label="Адрес приложения" environment="true"
+          description="Адрес приложения, которое будет открыто перед началом тестов."/>
+    <List name="driverType" label="Тип драйвера" environment="true" defaultValue="CHROME" priority="1"
+          description="Выбирается тип драйвера для проведения тестов.">
+        <Item value="CHROME"/>
+        <Item value="FIREFOX"/>
+        <Item value="IE"/>
+        <Item value="EDGE"/>
+        <Item value="SAFARI"/>
+    </List>
+    <CheckBox name="maximizeWindow" label="Развернуть браузер" defaultValue="true"
+              description="Если установлено true, то перед началом тестов браузер будет развернут на полный экран."/>
+    <Text name="defaultWaitTimeOut" label="Время ожидания по умолчанию" defaultValue="10" regexp="\d+"
+          description="Время ожидания элемента в процессе его поиска, указывается в секундах. Применяется данное значение, если в репозитории у элемента явно не указано его время ожидания."/>
+    <Text name="implicitlyWait" label="Задержка поиска элементов" defaultValue="0" regexp="\d+"
+          description="Безусловная задержка при поиске элементов, указывается в секундах. Влияет на скорость тестов, не рекомендуется указывать продолжительные значения."/>
+    <CheckBox name="closeDriverAfterTest" label="Закрывать браузер" defaultValue="true"
+        description="Если установлено true, то по окончании тестов браузер останется открытым и при следующем запуске может быть продолжено выполнение теста с последнего шага."/>
+    <CheckBox name="connectToRunningApp" label="Подключаться к браузеру" defaultValue="false"
+        description="Если установлено false, то при запуске тестов драйвер будет подключен к открытому ранее браузеру, это позволит продолжить выполнение теста с последнего шага. Такой режим удобен при отладке длинных тестов по частям. Выполненные ранее шаги следует закомментировать."/>
+    <List name="screenshotConfiguration" label="Режим скриншотов" defaultValue="FOR_FAILURES"
+          description="Выбирается условие снятия скриншотов.">
+        <Item value="FOR_FAILURES" label="При ошибках"/>
+        <Item value="FOR_EACH_STEP" label="Для каждого шага"/>
+        <Item value="BEFORE_AND_AFTER_EACH_STEP" label="До и после каждого шага"/>
+        <Item value="DISABLED" label="Отключено"/>
+    </List>
+    <CheckBox name="advancedScreenshotMethod" label="Скриншоты с прокруткой" defaultValue="false"
+        description="Если установлено true, то при снятии скриншотов производится попытка прокрутки страницы для получения полного содержимого."/>
+    <CheckBox name="fullScreenshot" label="Полноэкранные скриншоты" defaultValue="false"
+        description="Если установлено true, то кроме содержимого окна браузера выполняется скриншот и всего экрана."/>
+    <CheckBox name="highlightElements" label="Подсветка элементов" defaultValue="false"
+              description="Если установлено true, то при прохождении теста на экране подсвечиваются элементы, над которыми выполняются операции."/>
+    <Hidden name="webdriver.http.factory" defaultValue="jdk-http-client"/>
+</Properties>

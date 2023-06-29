@@ -1,0 +1,23 @@
+{
+   "appDesc": {
+      "message": "Плагин для записи видео с экрана с помощью горячих клавиш."
+   },
+   "appName": {
+      "message": "IBS Video Recorder"
+   },
+   "appNameMini": {
+      "message": "Video Recorder"
+   },
+   "notificationErrorActiveTab": {
+      "message": "IBS Video Recorder не сможет начать запись вкладки пока вы инициализируете приложение. Для этого, достаточно кликнуть на иконке приложения на панели приложений."
+   },
+   "notificationErrorChromeTab": {
+      "message": "Запись страниц служебных страниц (включая страницы приложений) не поддерживается в IBS Video Recorder."
+   },
+   "btnCaptureVideo": {
+      "message": "Запись видео"
+   },
+   "optionsLabelStopVideo": {
+      "message": "Остановить запись видео"
+   }
+}

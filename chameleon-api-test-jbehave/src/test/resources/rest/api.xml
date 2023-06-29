@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ApiGears xmlns="http://chameleon.ibs-qa.ru/schema/api">
+    <Credential name="Первый пользователь" user="user1" password="password1" authentication="PREEMPTIVE_BASIC"/>
+    <Proxy name="proxy1" host="localhost" port="8080" scheme="http" user="user1" password="password1"/>
+    <Endpoint name="Метрика" path="/actuator/metrics/{name}">
+        <Request method="GET">
+            <Params>
+                <FieldString name="Наименование метрики" locator="name" inPath="true"/>
+                <FieldString name="Тест" locator="test" inPath="false"/>
+            </Params>
+            <Header>
+                <FieldString name="Заголовок" locator="Title" defaultValue="test_value"/>
+                <FieldString name="Тэг" locator="ETag"/>
+            </Header>
+        </Request>
+        <Response name="Успешно" statusCode="200 OK (хорошо)" schema="classpath:/rest/Метрика/schema.json">
+            <Body>
+                <FieldString name="Наименование метрики" locator="$.name"/>
+                <FieldNumber name="Значение метрики" locator="$.measurements[0].value"/>
+            </Body>
+        </Response>
+    </Endpoint>
+    <Endpoint name="Начало подготовки данных" path="/api/deliverdispatch/prepareStart">
+        <Request method="POST" template="classpath:/rest/Начало подготовки данных/template.json">
+            <Body>
+                <FieldString name="Наименование теста" locator="$.key"/>
+                <FieldString name="Индекс ОПС" locator="$.storeId"/>
+            </Body>
+        </Request>
+        <Response name="Успешно" statusCode="200 OK (хорошо)" schema="classpath:/rest/Начало подготовки данных/dataItemSchema.json">
+            <Body>
+                <FieldInteger name="Все содержимое" locator="$"/>
+                <FieldInteger name="Идентификатор" locator="$.id"/>
+                <FieldString name="Наименование теста" locator="$.scenario.key"/>
+                <FieldString name="Индекс ОПС" locator="$.store.id"/>
+            </Body>
+        </Response>
+    </Endpoint>
+</ApiGears>

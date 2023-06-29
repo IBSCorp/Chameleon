@@ -1,0 +1,22 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd"
+       default-lazy-init="true">
+
+    <!-- Пример настройки -->
+    <bean class="ru.ibsqa.chameleon.influx.config.InfluxConfig">
+        <!--
+            Что бы не коммитить url для influx, можно в командной строке указать параметром, например:
+            -Dinflux.url=http://127.0.0.1:8086
+
+            Это может пригодиться для сборки фреймворка.
+         -->
+        <property name="url" value="#{ systemProperties['influx.url'] }"/>
+        <property name="database" value="test_db"/>
+        <property name="enabled" value="true"/>
+        <property name="measurement" value="org_ibsqa_chameleon_influx_tests"/>
+    </bean>
+
+</beans>

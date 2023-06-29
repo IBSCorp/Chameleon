@@ -3,57 +3,57 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>ru.ibsqa.qualit</groupId>
-    <artifactId>qualit</artifactId>
-    <version>3.4.1</version>
+    <groupId>ru.ibsqa.chameleon</groupId>
+    <artifactId>chameleon</artifactId>
+    <version>3.5.0</version>
     <packaging>pom</packaging>
 
     <modules>
-        <module>qualit-allure</module>
-        <module>qualit-allure-cucumber</module>
-        <module>qualit-allure-jbehave</module>
-        <module>qualit-api-test</module>
-        <module>qualit-api-test-cucumber</module>
-        <module>qualit-api-test-jbehave</module>
-        <module>qualit-appium</module>
-        <module>qualit-bom</module>
-        <module>qualit-browser-utils</module>
-        <module>qualit-core</module>
-        <module>qualit-core-cucumber</module>
-        <module>qualit-core-jbehave</module>
-        <module>qualit-data</module>
-        <module>qualit-db</module>
-        <module>qualit-db-cucumber</module>
-        <module>qualit-db-jbehave</module>
-        <module>qualit-image</module>
-        <module>qualit-influx</module>
-        <module>qualit-influx-cucumber</module>
-        <module>qualit-json-cucumber</module>
-        <module>qualit-json-jbehave</module>
-        <module>qualit-log</module>
-        <module>qualit-sap</module>
-        <module>qualit-sap-cucumber</module>
-        <module>qualit-screen-recorder</module>
-        <module>qualit-selenium</module>
-        <module>qualit-selenium-cucumber</module>
-        <module>qualit-selenium-jbehave</module>
-        <module>qualit-soap</module>
-        <module>qualit-soap-cucumber</module>
-        <module>qualit-jira-jbehave</module>
-        <module>qualit-thirdparty-jsonassert-patched</module>
-        <module>qualit-uia</module>
-        <module>qualit-uia-cucumber</module>
-        <module>qualit-web</module>
-        <module>qualit-web-cucumber</module>
-        <module>qualit-web-jbehave</module>
-        <module>qualit-windows</module>
-        <module>qualit-windows-cucumber</module>
-        <module>qualit-windows-jbehave</module>
-        <module>qualit-winium</module>
-        <module>qualit-winium-cucumber</module>
+        <module>chameleon-allure</module>
+        <module>chameleon-allure-cucumber</module>
+        <module>chameleon-allure-jbehave</module>
+        <module>chameleon-api-test</module>
+        <module>chameleon-api-test-cucumber</module>
+        <module>chameleon-api-test-jbehave</module>
+        <module>chameleon-appium</module>
+        <module>chameleon-bom</module>
+        <module>chameleon-browser-utils</module>
+        <module>chameleon-core</module>
+        <module>chameleon-core-cucumber</module>
+        <module>chameleon-core-jbehave</module>
+        <module>chameleon-data</module>
+        <module>chameleon-db</module>
+        <module>chameleon-db-cucumber</module>
+        <module>chameleon-db-jbehave</module>
+        <module>chameleon-image</module>
+        <module>chameleon-influx</module>
+        <module>chameleon-influx-cucumber</module>
+        <module>chameleon-json-cucumber</module>
+        <module>chameleon-json-jbehave</module>
+        <module>chameleon-log</module>
+        <module>chameleon-sap</module>
+        <module>chameleon-sap-cucumber</module>
+        <module>chameleon-screen-recorder</module>
+        <module>chameleon-selenium</module>
+        <module>chameleon-selenium-cucumber</module>
+        <module>chameleon-selenium-jbehave</module>
+        <module>chameleon-soap</module>
+        <module>chameleon-soap-cucumber</module>
+        <module>chameleon-jira-jbehave</module>
+        <module>chameleon-thirdparty-jsonassert-patched</module>
+        <module>chameleon-uia</module>
+        <module>chameleon-uia-cucumber</module>
+        <module>chameleon-web</module>
+        <module>chameleon-web-cucumber</module>
+        <module>chameleon-web-jbehave</module>
+        <module>chameleon-windows</module>
+        <module>chameleon-windows-cucumber</module>
+        <module>chameleon-windows-jbehave</module>
+        <module>chameleon-winium</module>
+        <module>chameleon-winium-cucumber</module>
     </modules>
 
-    <url>https://github.com/IBSCorp/QualIT</url>
+    <url>https://github.com/IBSCorp/Chameleon</url>
     <licenses>
         <license>
             <name>MPL 2.0</name>
@@ -120,19 +120,19 @@
     <distributionManagement>
         <!-- Publish the versioned releases here -->
         <snapshotRepository>
-            <id>qualit-snapshots</id>
-            <name>QualIT Framework Snapshots Repo</name>
-            <url>https://nexus.appline.ru/repository/qualit-snapshots</url>
+            <id>chameleon-snapshots</id>
+            <name>Chameleon Framework Snapshots Repo</name>
+            <url>https://nexus.appline.ru/repository/chameleon-snapshots</url>
         </snapshotRepository>
         <repository>
-            <id>qualit</id>
-            <name>QualIT Framework</name>
-            <url>https://nexus.appline.ru/repository/qualit</url>
+            <id>chameleon</id>
+            <name>Chameleon Framework</name>
+            <url>https://nexus.appline.ru/repository/chameleon</url>
         </repository>
     </distributionManagement>
 
     <properties>
-        <qualit.version>3.4.1</qualit.version>
+        <chameleon.version>3.5.0</chameleon.version>
 
         <encoding>UTF-8</encoding>
         <file.encoding>${encoding}</file.encoding>
@@ -168,22 +168,22 @@
 
     <!-- Прочитать про управление зависимостями:
         https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html
-        Для правильного определения версий зависимостей библиотек. При указании в проектах наследованных от QualIT
+        Для правильного определения версий зависимостей библиотек. При указании в проектах наследованных от chameleon
         зависимостей от junit и cucumber не нужно указывать тег <version> -->
     <repositories>
         <repository>
-            <id>qualit-snapshots</id>
-            <name>IBS QualIT Snapshots Repo</name>
-            <url>https://nexus.appline.ru/repository/qualit-snapshots</url>
+            <id>chameleon-snapshots</id>
+            <name>Chameleon Framework Snapshots Repo</name>
+            <url>https://nexus.appline.ru/repository/chameleon-snapshots</url>
             <layout>default</layout>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
         </repository>
         <repository>
-            <id>qualit</id>
-            <name>QualIT Framework</name>
-            <url>https://nexus.appline.ru/repository/qualit</url>
+            <id>chameleon</id>
+            <name>Chameleon Framework</name>
+            <url>https://nexus.appline.ru/repository/chameleon</url>
         </repository>
     </repositories>
 
@@ -210,7 +210,7 @@
                         <forkNode implementation="org.apache.maven.plugin.surefire.extensions.SurefireForkNodeFactory"/>
                         <argLine>
                             -Dfile.encoding=${encoding}
-                            -Dcucumber.object-factory=io.cucumber.spring.QualITFactory
+                            -Dcucumber.object-factory=io.cucumber.spring.ChameleonFactory
                             -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"
                             --add-opens java.base/java.lang=ALL-UNNAMED
                             --add-opens java.base/java.lang.reflect=ALL-UNNAMED

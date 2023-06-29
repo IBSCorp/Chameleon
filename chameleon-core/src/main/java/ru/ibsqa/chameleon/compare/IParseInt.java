@@ -1,0 +1,18 @@
+package ru.ibsqa.chameleon.compare;
+
+import ru.ibsqa.chameleon.i18n.ILocaleManager;
+
+import java.util.Objects;
+
+import static org.junit.jupiter.api.Assertions.fail;
+
+public interface IParseInt {
+    default int parseInt(String value) {
+        try {
+            return (Objects.isNull(value) || value.isEmpty()) ? 0 : Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            fail(ILocaleManager.message("numberFormatErrorMessage", value));
+        }
+        return 0;
+    }
+}

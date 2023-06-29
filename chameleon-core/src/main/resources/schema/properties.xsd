@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema
+        elementFormDefault="qualified"
+        xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        targetNamespace="http://chameleon.ibs-qa.ru/schema/properties">
+
+    <xs:element name="Properties" type="PropertiesType"/>
+
+    <xs:complexType name="PropertiesType">
+        <xs:choice maxOccurs="unbounded">
+            <xs:group ref="PropertyType"/>
+        </xs:choice>
+    </xs:complexType>
+
+    <xs:group name="PropertyType">
+        <xs:choice>
+            <xs:element name="Text" type="TextType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="List" type="ListType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="CheckBox" type="CheckBoxType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="Hidden" type="HiddenType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:choice>
+    </xs:group>
+
+    <xs:complexType name="BasePropertyType" mixed="true">
+        <xs:attribute name="name" type="NonEmptyType" use="required"/>
+        <xs:attribute name="label" type="xs:string"/>
+        <xs:attribute name="required" type="xs:boolean"/>
+        <xs:attribute name="environment" type="xs:boolean"/>
+        <xs:attribute name="description" type="xs:string"/>
+        <xs:attribute name="priority" type="xs:integer"/>
+    </xs:complexType>
+
+    <xs:complexType name="TextType" mixed="true">
+        <xs:complexContent>
+            <xs:extension base="BasePropertyType">
+                <xs:attribute name="defaultValue" type="xs:string"/>
+                <xs:attribute name="regexp" type="xs:string"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="ListType" mixed="true">
+        <xs:complexContent>
+            <xs:extension base="BasePropertyType">
+                <xs:sequence minOccurs="1" maxOccurs="unbounded">
+                    <xs:element name="Item" type="ItemType" minOccurs="1" maxOccurs="unbounded"/>
+                </xs:sequence>
+                <xs:attribute name="defaultValue" type="xs:string"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="CheckBoxType" mixed="true">
+        <xs:complexContent>
+            <xs:extension base="BasePropertyType">
+                <xs:attribute name="defaultValue" type="xs:boolean"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="HiddenType" mixed="true">
+        <xs:attribute name="name" type="NonEmptyType" use="required"/>
+        <xs:attribute name="defaultValue" type="xs:string"/>
+    </xs:complexType>
+
+    <xs:complexType name="ItemType">
+        <xs:attribute name="value" type="NonEmptyType" use="required"/>
+        <xs:attribute name="label" type="xs:string"/>
+    </xs:complexType>
+
+    <xs:simpleType name="NonEmptyType">
+        <xs:restriction base="xs:string">
+            <xs:minLength value="1"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+</xs:schema>

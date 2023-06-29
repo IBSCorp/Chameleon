@@ -1,0 +1,24 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<Properties xmlns="http://chameleon.ibs-qa.ru/schema/properties">
+    <Text name="applicationUrl" label="Путь к приложению" environment="true"
+          description="Путь к приложению, которое будет открыто перед началом тестов."/>
+    <List name="driverType" label="Тип драйвера" environment="true" defaultValue="WINIUM" priority="2"
+          description="Выбирается тип драйвера для проведения тестов.">
+        <Item value="WINIUM"/>
+    </List>
+    <Text name="defaultWaitTimeOut" label="Время ожидания по умолчанию" defaultValue="10" regexp="\d+"
+          description="Время ожидания элемента в процессе его поиска, указывается в секундах. Применяется данное значение, если в репозитории у элемента явно не указано его время ожидания."/>
+    <Text name="webdriver.timeouts.implicitlywait" label="Задержка поиска элементов" defaultValue="0" regexp="\d+"
+          description="Безусловная задержка при поиске элементов, указывается в секундах. Влияет на скорость тестов, не рекомендуется указывать продолжительные значения."/>
+    <CheckBox name="closeDriverAfterTest" label="Закрывать приложение" defaultValue="true" priority="2"
+        description="Если установлено true, то по окончании тестов браузер останется открытым и при следующем запуске может быть продолжено выполнение теста с последнего шага."/>
+    <CheckBox name="connectToRunningApp" label="Подключаться к приложению"  defaultValue="false" priority="2"
+        description="Если установлено true, то при запуске тестов драйвер будет подключен к открытому ранее браузеру, это позволит продолжить выполнение теста с последнего шага. Такой режим удобен при отладке длинных тестов по частям. Выполненные ранее шаги следует закомментировать."/>
+    <List name="screenshotConfiguration" label="Режим скриншотов" defaultValue="FOR_FAILURES"
+          description="Выбирается условие снятия скриншотов.">
+        <Item value="FOR_FAILURES" label="При ошибках"/>
+        <Item value="FOR_EACH_STEP" label="Для каждого шага"/>
+        <Item value="BEFORE_AND_AFTER_EACH_STEP" label="До и после каждого шага"/>
+        <Item value="DISABLED" label="Отключено"/>
+    </List>
+</Properties>

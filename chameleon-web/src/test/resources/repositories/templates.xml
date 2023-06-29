@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Templates xmlns="http://chameleon.ibs-qa.ru/schema/templates">
+    <Template name="Button" locator=".//button[normalize-space()='%1$s']"/>
+    <Template name="Link" locator=".//a[normalize-space()='%1$s']"/>
+    <Template name="TextInput" locator=".//label[normalize-space()='%1$s']/following-sibling::input"/>
+    <Template name="ComboBox" locator=".//label[normalize-space()='%1$s']/following-sibling::select"/>
+    <Template name="CheckBox" locator=".//label[normalize-space()='%1$s']/preceding-sibling::input[@type='checkbox']"/>
+</Templates>

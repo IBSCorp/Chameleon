@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema elementFormDefault="qualified"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://chameleon.ibs-qa.ru/schema/json-data">
+
+    <xs:annotation>
+        <xs:appinfo>Repository</xs:appinfo>
+    </xs:annotation>
+
+    <xs:simpleType name="nonEmptyString">
+        <xs:restriction base="xs:string">
+            <xs:minLength value="1"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:element name="JsonLooks" type="JsonLooksType"/>
+
+    <xs:complexType name="JsonLooksType">
+        <xs:sequence minOccurs="1" maxOccurs="unbounded">
+            <xs:element type="JsonLookType" name="JsonLook" minOccurs="1" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="JsonLookType" mixed="true">
+        <xs:choice maxOccurs="unbounded">
+            <xs:group ref="FieldsType"/>
+        </xs:choice>
+        <xs:attribute type="nonEmptyString" name="name" use="required"/>
+        <xs:attribute type="xs:string" name="schema"/>
+    </xs:complexType>
+
+    <xs:complexType name="FieldType" mixed="true">
+        <xs:attribute type="nonEmptyString" name="name" use="required"/>
+        <xs:attribute type="nonEmptyString" name="locator" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="FieldListType" mixed="true">
+        <xs:choice maxOccurs="unbounded">
+            <xs:group ref="FieldsType"/>
+        </xs:choice>
+    </xs:complexType>
+
+    <xs:group name="FieldsType">
+        <xs:choice>
+            <xs:element type="FieldType" name="FieldString" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element type="FieldType" name="FieldNumber" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element type="FieldType" name="FieldInteger" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element type="FieldType" name="FieldBoolean" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element type="FieldType" name="FieldObject" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element type="FieldType" name="FieldArray" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:choice>
+    </xs:group>
+
+</xs:schema>

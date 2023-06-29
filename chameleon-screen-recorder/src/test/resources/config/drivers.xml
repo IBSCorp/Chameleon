@@ -1,0 +1,41 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd"
+       default-lazy-init="true">
+
+    <bean id="chromeDriverConfiguration" class="ru.ibsqa.chameleon.selenium.driver.configuration.DefaultDriverConfiguration">
+        <property name="maximizeWindow" value="false"/>
+        <property name="driverType">
+            <value type="ru.ibsqa.chameleon.selenium.driver.WebSupportedDriver">CHROME</value>
+        </property>
+    </bean>
+
+    <bean id="videoConfiguration" class="ru.ibsqa.chameleon.recorders.DefaultVideoRecorderConfiguration">
+        <property name="extensionId" value="bmphfkokgkcdfknoimdjkikimoamgfkn"/>
+        <property name="forSites">
+            <array value-type="java.lang.String">
+                <value>*://*.google.com/*</value>
+                <value>*://*.appline.ru/*</value>
+            </array>
+        </property>
+        <property name="extensionPath" value="#{systemProperties['user.dir']}\src\main\resources\RecordPlugin\chrome"/>
+        <property name="enabled" value="true"/>
+    </bean>
+
+    <bean id="exampleDriver" class="ru.ibsqa.chameleon.driver.WebDriverVideoFacade" destroy-method="quit">
+        <property name="defaultDriver" value="true"/>
+        <property name="driverFactory">
+            <bean class="ru.ibsqa.chameleon.selenium.driver.WebDriverFactory">
+                <constructor-arg ref="chromeDriverConfiguration"/>
+            </bean>
+        </property>
+        <property name="videoRecorder">
+            <bean class="ru.ibsqa.chameleon.recorders.BrowserVideoRecorder">
+                <property name="videoRecorderConfiguration" ref="videoConfiguration"/>
+            </bean>
+        </property>
+    </bean>
+
+</beans>

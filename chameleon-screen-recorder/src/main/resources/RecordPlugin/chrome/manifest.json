@@ -1,0 +1,86 @@
+{
+   "omnibox": {"keyword": "http://ibs-qa/"},
+   "content_security_policy": "script-src 'self' https://apis.google.com; object-src 'self'",
+   "homepage_url": "https://ibs-qa.ru/",
+   "offline_enabled": true,
+   "incognito": "spanning",
+   "description": "__MSG_appDesc__",
+   "minimum_chrome_version": "43",
+   "icons": {
+      "48": "images/icons/48x48.png",
+      "16": "images/icons/16x16.png",
+      "128": "images/icons/128x128.png"
+   },
+   "version": "1.0",
+   "web_accessible_resources": ["images/*"],
+   "browser_action": {
+      "default_title": "__MSG_appName__",
+      "default_icon": {
+         "48": "images/icons/48x48.png",
+         "16": "images/icons/16x16.png",
+         "128": "images/icons/128x128.png"
+      }
+   },
+   "background": {"page": "background.html"},
+   "permissions": [
+      "*://*/*",
+      "http://*.google.com/",
+      "<all_urls>",
+      "downloads",
+      "clipboardWrite",
+      "clipboardRead",
+      "tabs",
+      "activeTab",
+      "storage",
+      "unlimitedStorage",
+      "contextMenus",
+      "identity",
+      "desktopCapture",
+      "tabCapture"
+   ],
+   "manifest_version": 2,
+   "name": "__MSG_appName__",
+   "update_url": "https://bitst0rm.github.io/releases/bitstsadf0rm-chrome-extensions/Nimbus-Screenshot-Screen-Video-Recorder/update.xml",
+   "default_locale": "ru",
+   "short_name": "IBS Screen Recorder",
+   "content_scripts": [{
+      "js": ["js/hotkeys.js"],
+      "run_at": "document_end",
+      "matches": ["<all_urls>"]
+   }],
+   "externally_connectable": {"matches": [
+      "*://*.google.com/*",
+      "*://*.appline.ru/*"
+   ]},
+   "commands": {
+      "start_tab_video": {
+         "description": "Start record tab/page",
+         "suggested_key": {
+            "default": "Ctrl+Shift+7",
+            "mac": "Command+Shift+7"
+         }
+      },
+      "pause_video": {
+         "description": "Pause video recording",
+         "suggested_key": {
+            "default": "Ctrl+Shift+0",
+            "mac": "Command+Shift+0"
+         }
+      },
+      "start_desktop_video": {
+         "description": "Start record desktop",
+         "suggested_key": {
+            "default": "Ctrl+Shift+8",
+            "mac": "Command+Shift+8"
+         }
+      },
+      "stop_video": {
+         "description": "Stop video recording",
+         "suggested_key": {
+            "default": "Ctrl+Shift+9",
+            "mac": "Command+Shift+9"
+         }
+      }
+   },
+   "key": "cffifjgabjalihmjiojbennijblkhccc"
+}

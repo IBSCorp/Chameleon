@@ -1,0 +1,58 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<Modules xmlns="http://chameleon.ibs-qa.ru/internal/schema/modules">
+    <Module name="core" label="Core" always="true">
+        <Dependencies>
+            <Dependency artifactId="chameleon-core"/>
+        </Dependencies>
+    </Module>
+    <Module name="cucumber" label="BDD Cucumber">
+        <Dependencies>
+            <Dependency artifactId="chameleon-core-cucumber"/>
+        </Dependencies>
+    </Module>
+    <ModuleGroup label="Интеграции">
+        <Module name="testit" label="Интеграция с Test IT" restricted="true" message="Модуль поставляется отдельно">
+            <Dependencies>
+                <Dependency artifactId="qualit-testit"/>
+                <Dependency artifactId="qualit-testit-cucumber" ifModule="cucumber"/>
+            </Dependencies>
+        </Module>
+        <Module name="allure" label="Интеграция с Allure">
+            <Dependencies>
+                <Dependency artifactId="chameleon-allure"/>
+                <Dependency artifactId="chameleon-allure-cucumber" ifModule="cucumber"/>
+            </Dependencies>
+        </Module>
+    </ModuleGroup>
+    <ModuleGroup label="Тестирование UI">
+        <Module name="web" label="Тестирование Web-интерфейса">
+            <Dependencies>
+                <Dependency artifactId="chameleon-web"/>
+                <Dependency artifactId="chameleon-web-cucumber" ifModule="cucumber"/>
+            </Dependencies>
+        </Module>
+        <Module name="winium" label="Тестирование Windows-приложений">
+            <Dependencies>
+                <Dependency artifactId="chameleon-winium"/>
+                <Dependency artifactId="chameleon-winium-cucumber" ifModule="cucumber"/>
+            </Dependencies>
+        </Module>
+    </ModuleGroup>
+    <Module name="api-test" label="Тестирование REST API">
+        <Dependencies>
+            <Dependency artifactId="chameleon-api-test"/>
+            <Dependency artifactId="chameleon-api-test-cucumber" ifModule="cucumber"/>
+        </Dependencies>
+    </Module>
+    <Module name="db" label="Тестирование баз данных">
+        <Dependencies>
+            <Dependency artifactId="chameleon-db"/>
+            <Dependency artifactId="chameleon-db-cucumber" ifModule="cucumber"/>
+        </Dependencies>
+    </Module>
+    <Module name="log" label="Логирование">
+        <Dependencies>
+            <Dependency artifactId="chameleon-log"/>
+        </Dependencies>
+    </Module>
+</Modules>

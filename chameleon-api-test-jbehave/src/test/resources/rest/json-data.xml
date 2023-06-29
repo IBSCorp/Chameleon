@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<JsonLooks xmlns="http://chameleon.ibs-qa.ru/schema/json-data">
+    <JsonLook name="Файл конфигурации" schema="rest/Конфигурация/schema.json">
+        <FieldArray name="Базы данных" locator="$.databases"/>
+        <FieldArray name="Базы данных mssql" locator="$.databases[?(@.type=='mssql')]"/>
+        <FieldString name="База данных" locator="$.databases[?(@.mid=='#{идентификатор_db}')]"/>
+        <FieldString name="Пользователь" locator="$.databases[?(@.mid=='#{идентификатор_db}')].config.user"/>
+        <FieldString name="Пароль" locator="$.databases[?(@.mid=='#{идентификатор_db}')].config.password"/>
+        <FieldInteger name="integerField" locator="$.databases[?(@.mid=='mssqlmain')].integerField"/>
+        <FieldString name="russian1" locator="$.russian1"/>
+        <FieldString name="russian2" locator="$.russian2"/>
+        <FieldString name="test1" locator="$.test.test1"/>
+        <FieldString name="test2" locator="$.test.test2"/>
+        <FieldString name="Имена" locator="$.names"/>
+        <FieldString name="Последнее имя" locator="$.names[-1:].name"/>
+        <FieldString name="Идентификатор" locator="$.id"/>
+        <FieldString name="fragment1" locator="$.fragment1"/>
+        <FieldString name="fragment2" locator="$.fragment2"/>
+    </JsonLook>
+</JsonLooks>

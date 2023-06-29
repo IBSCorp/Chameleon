@@ -27,7 +27,7 @@ pipeline {
                     bat 'git clone https://gitlab.appline.ru/qualit/examples/junit-example.git'
                 }
                 dir('../qualit-github') {
-                    bat 'git clone https://github.com/IBSCorp/QualIT.git'
+                    bat 'git clone https://github.com/IBSCorp/Chameleon.git'
                     bat 'git clone https://github.com/IBSCorp/db-example.git'
                     bat 'git clone https://github.com/IBSCorp/multimodule-example.git'
                     bat 'git clone https://github.com/IBSCorp/rest-api-example.git'
@@ -37,8 +37,8 @@ pipeline {
                     bat 'git clone https://github.com/IBSCorp/web-example.git'
                     bat 'git clone https://github.com/IBSCorp/winium-example.git'
                     bat 'git clone https://github.com/IBSCorp/junit-example.git'
-                    dir('../qualit-github/QualIT') {
-                        bat 'xcopy ..\\..\\qualit-github-deploy ..\\QualIT /s /e /y'
+                    dir('../qualit-github/Chameleon') {
+                        bat 'xcopy ..\\..\\qualit-github-deploy ..\\Chameleon /s /e /y'
                         bat 'git add .'
                         bat 'git commit -m "Merge branch ' + env["Branch"] + ' into main"'
                         bat 'git push'

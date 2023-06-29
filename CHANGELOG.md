@@ -1,3 +1,14 @@
+# Версия 3.5.0 (released 29.06.2023)
+* Изменено название фреймворка QualIT -> Chameleon
+* Пакеты переименованы ru.ibsqa.qualit -> ru.ibsqa.chameleon
+* Неймспейсы в XSD переименованы http://qualit.ibs-qa.ru -> http://chameleon.ibs-qa.ru
+* Переименованы классы:
+ * QualITSpringExtension -> ChameleonSpringExtension
+ * QualITFactory -> ChameleonFactory
+* Переработан механизм автокомплита, предлагающего имена компонентов при редактировании BDD-сценария и перетаскивании шагов из плагина в сценарий
+* Добавлен автокомплит компонентов в проекты DB и REST-API
+* Обновление Appium до 8.2.1
+
 # Версия 3.4.1 (released 29.05.2023)
 * Исправлена проблема с дублированием отчетов в случае запуска тестов через maven:
   * Необходимо наличие опции junit.platform.execution.listeners.deactivate=io.qameta.allure.junitplatform.AllureJunitPlatform в файле junit-platform.properties
@@ -93,7 +104,7 @@
 
 ## 3.1.0-SNAPSHOT (released 01.06.2022-31.10.2022)
 * Изменено название фреймфорка Chameleon -> QualIT
-* Пакеты переименованы ru.appline.chameleon -> ru.ibsqa.qualit
+* Пакеты переименованы ru.appline.chameleon -> ru.ibsqa.chameleon
 * Переименованы классы:
   * ChameleonFeatureHooks -> DefaultFeatureHooks
   * ChameleonCucumberListener -> DefaultCucumberListener
@@ -164,7 +175,7 @@
 * Во всех проектах, кроме JBehave, обновлен JUnit 4 на JUnit 5
   * Все TestRunner классы переделаны
   * Заменено `import static org.junit.Assert.*;` на `import static org.junit.jupiter.api.Assertions.*;`
-  * Обязательно создание package в каталоге test (например, ru.ibsqa.qualit)
+  * Обязательно создание package в каталоге test (например, ru.ibsqa.chameleon)
   * Обязательно наличие в каталоге resources, файла spring.xml, в котором указана конфигурация для сканирования пакетов
 * Проекты с Cucumber обновлены с версии 4 до версии 7
   * Все объекты cucumber переехали из неймспейса cucumber. в неймспейс io.cucumber
@@ -238,7 +249,7 @@
     зависимости, которые называются транзитивными зависимостями. Транзитивные зависимости не влияют на код и на
     этапы компиляции, поэтому проект соберется без проблем, но во время выполнения такого проекта, функционал связанный
     с этими библиотеками, будет отсутствовать. Типовой список транзитивных зависимостей:
-    * ru.ibsqa.qualit:chameleon-log - логирование автотестов, только для проектов, содержащий раздел test
+    * ru.ibsqa.chameleon:chameleon-log - логирование автотестов, только для проектов, содержащий раздел test
     * io.qameta.allure:allure-junit5 - для проектов, содержащий юнит тесты, не будет создаваться allure отчет
     * org.junit.jupiter:junit-jupiter-engine - для проектов, содержащий юнит тесты, тесты не будут запускаться
     * org.junit.platform:junit-platform-suite-engine - для проектов, содержащий TestRunner с аннотацией @Suite, или

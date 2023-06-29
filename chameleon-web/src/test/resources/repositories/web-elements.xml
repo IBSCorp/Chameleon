@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Pages xmlns="http://chameleon.ibs-qa.ru/schema/web-elements">
+    <Page name="Песочница">
+        <Page name="Меню">
+            <Link name="Песочница"/>
+            <Link name="Товары"/>
+            <Link name="Тест Iframe"/>
+            <Link name="Сброс данных"/>
+        </Page>
+        <Page name="Главная страница">
+            <Link name="QualIT" isLoaded="true"/>
+            <Block name="Меню"/>
+        </Page>
+        <Page name="Список товаров">
+            <Block name="Меню"/>
+            <StaticText name="Заголовок" locator='//h5[text()="Список товаров"]'/>
+            <Collection name="Таблица" locator=".//table/tbody/tr">
+                <StaticText name="#" locator=".//th"/>
+                <StaticText name="Наименование" locator=".//td[1]"/>
+                <StaticText name="Тип" locator=".//td[2]"/>
+                <StaticText name="Экзотический" locator=".//td[3]"/>
+            </Collection>
+            <Button name="Добавить"/>
+        </Page>
+        <Page name="Добавление товара">
+            <StaticText name="Заголовок" locator='//h5[text()="Добавление товара"]' isLoaded="true"/>
+            <TextInput name="Наименование" isLoaded="true"/>
+            <ComboBox name="Тип"/>
+            <CheckBox name="Экзотический"/>
+            <Button name="Сохранить"/>
+        </Page>
+        <Page name="Тест Iframe" frames="external">
+            <StaticText name="Заголовок 1" frames=".." locator='.//h5[text()="Тест Iframe"]'/>
+            <StaticText name="Заголовок 2" locator='.//div[text()="Внешний фрейм"]'/>
+            <StaticText name="Заголовок 3" frames="internal" locator='.//div[text()="Вложенный фрейм"]'/>
+        </Page>
+    </Page>
+</Pages>

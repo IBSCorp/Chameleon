@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>ru.ibsqa.chameleon</groupId>
+        <artifactId>chameleon</artifactId>
+        <version>3.5.0</version>
+    </parent>
+
+    <artifactId>chameleon-thirdparty-jsonassert-patched</artifactId>
+
+    <name>JSONassert</name>
+    <description>A library to develop RESTful but flexible APIs</description>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>ru.ibsqa.chameleon</groupId>
+                <artifactId>chameleon-bom</artifactId>
+                <version>3.5.0</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>ru.ibsqa.chameleon</groupId>
+            <artifactId>chameleon-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>ru.ibsqa.chameleon</groupId>
+            <artifactId>chameleon-log</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
+    <url>https://github.com/skyscreamer/JSONassert</url>
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>carterpage</id>
+            <name>Carter Page</name>
+            <email>carter@skyscreamer.org</email>
+        </developer>
+        <developer>
+            <id>cepage</id>
+            <name>Corby Page</name>
+            <email>corby@skyscreamer.org</email>
+        </developer>
+        <developer>
+            <id>sduskis</id>
+            <name>Solomon Duskis</name>
+            <email>solomon@skyscreamer.org</email>
+        </developer>
+    </developers>
+</project>

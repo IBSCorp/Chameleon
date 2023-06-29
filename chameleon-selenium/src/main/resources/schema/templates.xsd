@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema
+        elementFormDefault="qualified"
+        xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        targetNamespace="http://chameleon.ibs-qa.ru/schema/templates">
+
+    <xs:annotation>
+        <xs:appinfo>Repository</xs:appinfo>
+    </xs:annotation>
+
+    <xs:element name="Templates" type="TemplatesType"/>
+
+    <xs:complexType name="TemplatesType">
+        <xs:sequence minOccurs="1" maxOccurs="unbounded">
+            <xs:element type="TemplateType" name="Template" minOccurs="1" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="TemplateType" mixed="true">
+        <xs:attribute type="xs:string" name="name" use="required"/>
+        <xs:attribute type="xs:string" name="locator" use="required"/>
+    </xs:complexType>
+
+</xs:schema>

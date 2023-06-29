@@ -1,0 +1,6 @@
+<aspectj>
+    <aspects>
+        <aspect name="ru.ibsqa.chameleon.steps.aspect.AspectSteps"/>
+        <aspect name="ru.ibsqa.chameleon.reporter.aspect.AspectAttachments"/>
+    </aspects>
+</aspectj>

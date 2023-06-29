@@ -1,0 +1,4 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<Properties xmlns="http://chameleon.ibs-qa.ru/schema/properties">
+    <CheckBox label="Отправлять результаты в Allure" name="allure.enabled" defaultValue="true" description="Отправлять результаты в Allure"/>
+</Properties>
