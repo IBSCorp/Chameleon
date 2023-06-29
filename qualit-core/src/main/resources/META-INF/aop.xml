@@ -1,6 +1,0 @@
-<aspectj>
-    <aspects>
-        <aspect name="ru.ibsqa.qualit.steps.aspect.AspectSteps"/>
-        <aspect name="ru.ibsqa.qualit.reporter.aspect.AspectAttachments"/>
-    </aspects>
-</aspectj>
