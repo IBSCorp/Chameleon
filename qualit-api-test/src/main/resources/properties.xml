@@ -1,7 +1,0 @@
-<?xml version = "1.0" encoding = "UTF-8"?>
-<Properties xmlns="http://qualit.ibs-qa.ru/schema/properties">
-    <CheckBox name="api.attachContent" label="Прикреплять к отчету запросы и ответы" defaultValue="true"
-              description="Если установлено true, то выполняется прикрепление к отчету содержимое запросов и ответов."/>
-    <CheckBox name="api.attachMeta" label="Прикреплять к отчету метаданные" defaultValue="true"
-              description="Если установлено true, то выполняется прикрепление к отчету информация о структуре запроса и ответа."/>
-</Properties>
