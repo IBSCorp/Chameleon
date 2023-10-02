@@ -1,16 +1,16 @@
 package ru.ibsqa.chameleon.page_factory.locator;
 
 import ru.ibsqa.chameleon.selenium.driver.IDriverManager;
-import ru.ibsqa.chameleon.selenium.driver.WebDriverFacade;
-import ru.ibsqa.chameleon.utils.waiting.WaitingUtils;
+import ru.ibsqa.chameleon.selenium.driver.IDriverFacade;
+import ru.ibsqa.chameleon.utils.waiting.Waiting;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.WebDriverException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -22,18 +22,15 @@ public class DefaultFrameManager implements IFrameManager {
     private IDriverManager driverManager;
 
     @Autowired
-    private WaitingUtils waitingUtils;
-
-    @Autowired
     private ISearchStrategy searchStrategy;
 
     private final String NO_FRAMES = "";
     private final String CURRENT_FRAME = ".";
     private final String PARENT_FRAME = "..";
-    private ThreadLocal<String> currentPath = new ThreadLocal<>();
-    private ThreadLocal<String> pageFrames = new ThreadLocal<>();
-    private ThreadLocal<String> collectionFrames = new ThreadLocal<>();
-    private ThreadLocal<String> elementFrames = new ThreadLocal<>();
+    private ThreadLocal<String> currentPath = new InheritableThreadLocal<>();
+    private ThreadLocal<String> pageFrames = new InheritableThreadLocal<>();
+    private ThreadLocal<String> collectionFrames = new InheritableThreadLocal<>();
+    private ThreadLocal<String> elementFrames = new InheritableThreadLocal<>();
 
     {
         currentPath.set(NO_FRAMES);
@@ -83,7 +80,7 @@ public class DefaultFrameManager implements IFrameManager {
 
         log.debug(String.format("changeFramePath(\"%s\")", framePath));
 
-        WebDriverFacade driver = driverManager.getLastDriver();
+        IDriverFacade driver = driverManager.getLastDriver();
 
         driver.switchToDefaultContent();
         if (driver.isFramesSupport()) {
@@ -134,26 +131,18 @@ public class DefaultFrameManager implements IFrameManager {
      *
      * @param frameLocator
      */
-    private void switchToFrame(WebDriverFacade driver, String frameLocator) {
-
-        AtomicReference<WebDriverException> exception = new AtomicReference<>();
-        if (!waitingUtils.waiting(driver.getDefaultWaitTimeOut() * 1000, () -> {
-            try {
-                if (frameLocator.matches("\\d+")) {
-                    driver.switchTo().frame(Integer.parseInt(frameLocator));
-                } else if (frameLocator.matches("^[a-zA-Z_$0-9]*$")) {
-                    driver.switchTo().frame(frameLocator);
-                } else {
-                    driver.switchTo().frame(driver.findElement(searchStrategy.getLocator(frameLocator)));
-                }
-            } catch (WebDriverException e) {
-                exception.set(e);
-                return false;
-            }
-            return true;
-        })) {
-            throw exception.get();
-        }
+    private void switchToFrame(IDriverFacade driver, String frameLocator) {
+        Waiting.on(Duration.ofSeconds(driver.getDefaultWaitTimeOut()))
+                .ignoring(WebDriverException.class)
+                .apply(() -> {
+                    if (frameLocator.matches("\\d+")) {
+                        driver.switchTo().frame(Integer.parseInt(frameLocator));
+                    } else if (frameLocator.matches("^[a-zA-Z_$0-9]*$")) {
+                        driver.switchTo().frame(frameLocator);
+                    } else {
+                        driver.switchTo().frame(driver.findElement(searchStrategy.getLocator(frameLocator)));
+                    }
+                });
     }
 
 }

@@ -384,15 +384,4 @@ public class UiaDriver<T extends WebElement> extends WebDriverFacade implements 
 
     }
 
-    private Long implicitlyWait;
-
-    @Override
-    public void setImplicitlywait(long seconds) {
-        implicitlyWait = seconds;
-    }
-
-    public Long getImplicitlywait() {
-        return Objects.nonNull(implicitlyWait) ? implicitlyWait : getConfiguration().getImplicitlyWait();
-    }
-
 }

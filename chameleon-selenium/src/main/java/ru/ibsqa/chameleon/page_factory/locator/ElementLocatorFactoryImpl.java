@@ -1,5 +1,9 @@
 package ru.ibsqa.chameleon.page_factory.locator;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import ru.ibsqa.chameleon.definitions.annotations.selenium.Field;
 import ru.ibsqa.chameleon.definitions.annotations.selenium.Page;
 import ru.ibsqa.chameleon.page_factory.handlers.ClassAnnotationsHandler;
@@ -7,10 +11,6 @@ import ru.ibsqa.chameleon.page_factory.handlers.ElementAnnotationsHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.support.pagefactory.AjaxElementLocator;
 import org.openqa.selenium.support.pagefactory.ElementLocator;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -30,7 +30,8 @@ public class ElementLocatorFactoryImpl extends AbstractElementLocatorFactory {
     }
 
     @Override
-    public ElementLocator createLocator(Class clazz) {
+    public ElementLocator createLocator(Class<?> clazz) {
+        // TODO заменить на ElementLocatorImpl
         return new AjaxElementLocator(getSearchContext(), getTimeOut(clazz), new ClassAnnotationsHandler(getDriverId(), clazz));
     }
 

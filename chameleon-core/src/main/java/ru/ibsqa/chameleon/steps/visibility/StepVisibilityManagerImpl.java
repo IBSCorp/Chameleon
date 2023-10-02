@@ -7,7 +7,7 @@ import java.util.Objects;
 @Component
 public class StepVisibilityManagerImpl implements IStepVisibilityManager {
 
-    private final ThreadLocal<StepVisibilityLayer> currentLayer = new ThreadLocal<>();
+    private final ThreadLocal<StepVisibilityLayer> currentLayer = new InheritableThreadLocal<>();
 
     @Override
     public void openLayer(boolean hidden) {

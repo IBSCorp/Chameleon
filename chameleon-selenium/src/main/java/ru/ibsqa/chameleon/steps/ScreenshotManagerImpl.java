@@ -1,10 +1,11 @@
 package ru.ibsqa.chameleon.steps;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.ibsqa.chameleon.i18n.ILocaleManager;
 import ru.ibsqa.chameleon.selenium.driver.IDriverManager;
-import ru.ibsqa.chameleon.selenium.driver.WebDriverFacade;
+import ru.ibsqa.chameleon.selenium.driver.IDriverFacade;
 import ru.ibsqa.chameleon.utils.spring.SpringUtils;
 
 import java.util.Comparator;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Component
+@Slf4j
 public class ScreenshotManagerImpl implements IScreenshotManager {
 
     private List<IScreenshotSteps> implementations;
@@ -27,7 +29,12 @@ public class ScreenshotManagerImpl implements IScreenshotManager {
 
     @Override
     public void takeScreenshotToReport(String name, IScreenshotSteps.SeverityLevel level) {
-        WebDriverFacade webDriver =  SpringUtils.getBean(IDriverManager.class).getLastDriver();
+        IDriverFacade webDriver =  SpringUtils.getBean(IDriverManager.class).getLastDriver();
+
+        if (!webDriver.hasWrappedDriver()) {
+            log.info(localeManager.getMessage("skipScreenshot", name));
+            return;
+        }
 
         // Найти подходящие имплементации для формирования скриншота
         IScreenshotSteps screenshotSteps = implementations.stream()

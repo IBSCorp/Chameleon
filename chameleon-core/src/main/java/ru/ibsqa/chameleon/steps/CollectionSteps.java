@@ -10,11 +10,12 @@ import ru.ibsqa.chameleon.compare.ICompareManager;
 import ru.ibsqa.chameleon.context.*;
 import ru.ibsqa.chameleon.elements.*;
 import ru.ibsqa.chameleon.utils.spring.SpringUtils;
+import ru.ibsqa.chameleon.utils.waiting.ExploreResult;
+import ru.ibsqa.chameleon.utils.waiting.Waiting;
 
 import java.text.*;
 import java.time.Duration;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.fail;
@@ -68,24 +69,16 @@ public class CollectionSteps extends AbstractSteps {
     @UIStep
     @TestStep("проверяется коллекция \"${collectionName}\", что количество элементов ${operator} \"${count}\"")
     public void stepCheckItemCount(String collectionName, String operator, int count) {
-        IFacadeCollection<?> collection = getCollection(collectionName).getElement();
-        AtomicReference<String> actual = new AtomicReference<>();
-        boolean isChecked;
-        if (collection instanceof IFacadeWait) {
-            isChecked = waiting(
-                    Duration.ofSeconds(((IFacadeWait) collection).getWaitTimeOut()),
-                    () -> {
-                        actual.set(Integer.toString(getItems(collection, collectionName).size()));
-                        return compareManager.checkValue(operator, actual.get(), Integer.toString(count));
-                    }
+        final IFacadeCollection<?> collection = getCollection(collectionName).getElement();
+        Waiting.on(collection).explore(() -> {
+            final String actual = Integer.toString(getItems(collection, collectionName).size());
+            return ExploreResult.create(
+                    compareManager.checkValue(operator, actual, Integer.toString(count)),
+                    actual
             );
-        } else {
-            actual.set(Integer.toString(getItems(collection, collectionName).size()));
-            isChecked = compareManager.checkValue(operator, actual.get(), Integer.toString(count));
-        }
-        if (!isChecked) {
-            fail(compareManager.buildErrorMessage(operator, message("checkCollection"), actual.get(), Integer.toString(count)));
-        }
+        }).ifNegative((actual) ->
+                fail(compareManager.buildErrorMessage(operator, message("checkCollection"), actual, Integer.toString(count)))
+        );
     }
 
     @UIStep
@@ -101,85 +94,64 @@ public class CollectionSteps extends AbstractSteps {
     @UIStep
     @TestStep("проверяется коллекция \"${collectionName}\", что количество элементов ${operator} \"${count}\" с параметрами: \"${conditions}\"")
     public void stepCheckItemCount(String collectionName, String operator, int count, List<FindCondition> conditions) {
-        IFacadeCollection<?> collection = getCollection(collectionName).getElement();
-        AtomicReference<String> actual = new AtomicReference<>();
-        boolean isChecked;
-        if (collection instanceof IFacadeWait) {
-            isChecked = waiting(
-                    Duration.ofSeconds(((IFacadeWait) collection).getWaitTimeOut()),
-                    () -> {
-                        try {
-                            actual.set(Integer.toString(getItems(collection, collectionName, conditions, false).size()));
-                            return compareManager.checkValue(operator, actual.get(), Integer.toString(count));
-                        } catch (InvokeFieldException ignore) {
-                            return false;
-                        }
-                    }
-            );
-        } else {
-            actual.set(Integer.toString(getItems(collection, collectionName, conditions, false).size()));
-            isChecked = compareManager.checkValue(operator, actual.get(), Integer.toString(count));
-        }
-        if (!isChecked) {
-            fail(compareManager.buildErrorMessage(operator, message("checkCollection"), actual.get(), Integer.toString(count)));
-        }
+        final IFacadeCollection<?> collection = getCollection(collectionName).getElement();
+        Waiting.on(collection).explore(() -> {
+                    final String actual = Integer.toString(getItems(collection, collectionName, conditions, false).size());
+                    return ExploreResult.create(
+                            compareManager.checkValue(operator, actual, Integer.toString(count)),
+                            actual
+                    );
+                }
+        ).ifNegative((actual) ->
+                fail(compareManager.buildErrorMessage(operator, message("checkCollection"), actual, Integer.toString(count)))
+        );
     }
 
     @UIStep
     @TestStep("получить элемент коллекции \"${collectionName}\" с индексом \"${index}\"")
     @SuppressWarnings("unchecked")
     public <CONTEXT extends IContextObject> CONTEXT searchItemByIndex(String collectionName, int index) {
-        IFacadeCollection<CONTEXT> collection = getCollection(collectionName).getElement();
-
-        long startTime = System.currentTimeMillis();
-        do {
-            Iterator<CONTEXT> iter = collection.iterator();
-            int i = 0;
-            while (iter.hasNext()) {
-                CONTEXT item = iter.next();
-                if (i == index) {
-                    return item;
+        final IFacadeCollection<CONTEXT> collection = getCollection(collectionName).getElement();
+        return Waiting.on(collection).explore(() -> {
+                    final Iterator<CONTEXT> iter = collection.iterator();
+                    int i = 0;
+                    while (iter.hasNext()) {
+                        CONTEXT item = iter.next();
+                        if (i == index) {
+                            return ExploreResult.positive(item);
+                        }
+                        i++;
+                    }
+                    return ExploreResult.negative();
                 }
-                i++;
-            }
-        } while (collection instanceof IFacadeWait && (System.currentTimeMillis() < (startTime + ((IFacadeWait) collection).getWaitTimeOut() * 1000)));
-
-        fail(message("collectionNoItemByIndexErrorMessage", collectionName, index));
-        return null;
+        ).ifNegative((actual) ->
+                fail(message("collectionNoItemByIndexErrorMessage", collectionName, index))
+        );
     }
 
     @UIStep
     @TestStep("получить элемент коллекции \"${collectionName}\" с параметрами: \"${conditions}\"")
     @SuppressWarnings("unchecked")
     public <CONTEXT extends IContextObject> CONTEXT searchItem(String collectionName, List<FindCondition> conditions) {
-        IFacadeCollection<CONTEXT> collection = getCollection(collectionName).getElement();
-
-        getStepListenerManager().setIgnoredMode(true);
-        try {
-            long startTime = System.currentTimeMillis();
-            do {
-                try {
-                    List<CONTEXT> found = getItems(collectionName, conditions, true);
+        final IFacadeCollection<CONTEXT> collection = getCollection(collectionName).getElement();
+        return Waiting.on(collection).explore(() -> {
+                    final List<CONTEXT> found = getItems(collection, collectionName, conditions, true);
                     if (found.size() > 0) {
-                        return found.get(0);
+                        return ExploreResult.positive(found.get(0));
                     }
-                } catch (InvokeFieldException ignore) {
+                    return ExploreResult.negative();
                 }
-            } while (collection instanceof IFacadeWait && (System.currentTimeMillis() < (startTime + ((IFacadeWait) collection).getWaitTimeOut() * 1000)));
-
-            fail(message("CollectionItemNotFoundAssertMessage", collectionName, conditions.toString()));
-            return null;
-        } finally {
-            getStepListenerManager().setIgnoredMode(false);
-        }
+        ).ifNegative((actual) ->
+                fail(message("CollectionItemNotFoundAssertMessage", collectionName, conditions.toString()))
+        );
     }
 
     @UIStep
     @TestStep("ожидается элемент коллекции \"${collectionName}\" в течение \"${sec}\" сек с параметрами: \"${conditions}\"")
     @SuppressWarnings("rawtypes")
     public void waitCollectionByConditions(String collectionName, int sec, List<FindCondition> conditions) {
-        PickElementResult<IFacadeCollection, ?> pickElementResult = this.getCollection(collectionName);
-        IContextObject contextObject = waitObjectInCollectionByConditions(collectionName, sec, conditions);
+        final PickElementResult<IFacadeCollection, ?> pickElementResult = this.getCollection(collectionName);
+        final IContextObject contextObject = waitObjectInCollectionByConditions(collectionName, sec, conditions);
         if (Objects.isNull(contextObject)) {
             fail(message("CollectionItemNotFoundAssertMessage", collectionName, conditions.toString()));
         } else {
@@ -188,38 +160,28 @@ public class CollectionSteps extends AbstractSteps {
     }
 
     public IContextObject waitObjectInCollectionByConditions(String collectionName, int sec, List<FindCondition> conditions) {
-        AtomicReference<IContextObject> contextObject = new AtomicReference<>();
-        if (waiting(Duration.ofSeconds(sec), () -> {
-            try {
-                List<IContextObject> contextObjects = getItems(collectionName, conditions);
-                if (contextObjects.size() > 0) {
-                    contextObject.set(contextObjects.get(0));
-                    return true;
-                } else {
-                    return false;
-                }
-            } catch (InvokeFieldException ignore) {
-                return false;
-            }
-        })) {
-            return contextObject.get();
-        } else {
-            return null;
-        }
+        return Waiting.on(Duration.ofSeconds(sec))
+                .ignoring(InvokeFieldException.class)
+                .explore(() -> {
+                    List<IContextObject> contextObjects = getItems(collectionName, conditions);
+                    if (contextObjects.size() > 0) {
+                        return ExploreResult.positive(contextObjects.get(0));
+                    } else {
+                        return ExploreResult.negative();
+                    }
+                }).getData();
     }
 
     @UIStep
     @TestStep("ожидается элемент коллекции \"${collectionName}\" в течение \"${sec}\"")
     public void waitCollectionElements(String collectionName, int sec) {
-        if (!waiting(Duration.ofSeconds(sec), () -> {
-            try {
-                return getItems(collectionName).size() > 0;
-            } catch (AssertionError ae) {
-                return false;
-            }
-        })) {
-            fail(message("CollectionItemsNotFoundAssertMessage", collectionName));
-        }
+        Waiting.on(Duration.ofSeconds(sec))
+                .ignoring(InvokeFieldException.class)
+                .ignoring(AssertionError.class)
+                .check(() -> getItems(collectionName).size() > 0)
+                .ifNegative(() ->
+                        fail(message("CollectionItemsNotFoundAssertMessage", collectionName))
+                );
     }
 
     /**
@@ -256,7 +218,7 @@ public class CollectionSteps extends AbstractSteps {
     @UIStep
     @TestStep("получить элементы коллекции \"${collectionName}\"")
     public <CONTEXT extends IContextObject> List<CONTEXT> getItems(IFacadeCollection<CONTEXT> collection, String collectionName) {
-        List<CONTEXT> result = new ArrayList<>();
+        final List<CONTEXT> result = new ArrayList<>();
 
         collection.forEach(result::add);
 
@@ -313,12 +275,12 @@ public class CollectionSteps extends AbstractSteps {
     @UIStep
     @TestStep("получить элементы коллекции \"${collectionName}\" с параметрами \"${conditions}\"")
     public <CONTEXT extends IContextObject> List<CONTEXT> getItems(IFacadeCollection<CONTEXT> collection, String collectionName, List<FindCondition> conditions, boolean onlyFirst) {
-        List<CONTEXT> result = new ArrayList<>();
+        final List<CONTEXT> result = new ArrayList<>();
 
         for (CONTEXT item : collection) {
             boolean match = true;
 
-            StringBuilder logText = new StringBuilder(String.format("Получен элемент коллекции \"%s\" с параметрами:\n", collectionName));
+            final StringBuilder logText = new StringBuilder(String.format("Получен элемент коллекции \"%s\" с параметрами:\n", collectionName));
 
             for (FindCondition row : conditions) {
                 // Отделить имя поля и параметры
@@ -329,13 +291,13 @@ public class CollectionSteps extends AbstractSteps {
                     fail(e.getMessage());
                 }
 
-                IFacade field = item.getField(fieldName);
-                String expected = evalVariable(row.getValue()).replace("\\n", "\n");
+                final IFacade field = item.getField(fieldName);
+                final String expected = evalVariable(row.getValue()).replace("\\n", "\n");
                 if (null == field) {
                     fail(message("fieldNotExistsAssertMessage", row.getFieldName()));
                 }
                 if (field instanceof IFacadeReadable) {
-                    IFacadeReadable readableField = (IFacadeReadable) field;
+                    final IFacadeReadable readableField = (IFacadeReadable) field;
                     String actual = readableField.getFieldValue();
                     if (actual == null) {
                         actual = "";
@@ -376,7 +338,7 @@ public class CollectionSteps extends AbstractSteps {
      * @return
      */
     public Map<String, String> getRow(IContextObject item, Map<String, SortParams> sortParamsMap) {
-        Map<String, String> row = new HashMap<>();
+        final Map<String, String> row = new HashMap<>();
         sortParamsMap.keySet().forEach(
                 field -> {
                     IFacadeReadable elItem = item.getField(field);
@@ -574,9 +536,9 @@ public class CollectionSteps extends AbstractSteps {
     @SuppressWarnings("unchecked")
     private void checkSortedInternal(String collectionName, List<Pair<String, String>> conditions) {
 
-        Map<String, SortParams> sortParamsMap = new HashMap<>();
+        final Map<String, SortParams> sortParamsMap = new HashMap<>();
         SortParams sortParams = null;
-        AtomicReference<String> groupField = new AtomicReference<>();
+        final ThreadLocal<String> groupField = new InheritableThreadLocal<>();
 
         for (Pair<String, String> entry : conditions) {
 
@@ -627,55 +589,42 @@ public class CollectionSteps extends AbstractSteps {
 
         final IFacadeCollection<IContextObject> collection = getCollection(collectionName).getElement();
 
-        boolean isChecked;
-        if (collection instanceof IFacadeWait) {
-            isChecked = waiting(
-                    Duration.ofSeconds(((IFacadeWait) collection).getWaitTimeOut()),
-                    () -> waitForSortedInternal(sortParamsMap, groupField.get(), this.getItems(collection, collectionName))
-            );
-        } else {
-            isChecked = waitForSortedInternal(sortParamsMap, groupField.get(), this.getItems(collection, collectionName));
-        }
-
-        if (!isChecked) {
-            fail(message("collectionNotSorted", collectionName));
-        }
+        Waiting.on(collection).check(() ->
+                waitForSortedInternal(sortParamsMap, groupField.get(), this.getItems(collection, collectionName))
+        ).ifNegative(() ->
+                fail(message("collectionNotSorted", collectionName))
+        );
     }
 
     private boolean waitForSortedInternal(Map<String, SortParams> sortParamsMap, String groupField, List<IContextObject> items) {
-        try {
-            if (null == groupField) {
-                // Получить значения из коллекции
-                List<Map<String, String>> array = items.stream()
-                        .map(item -> getRow(item, sortParamsMap))
-                        .collect(Collectors.toList());
+        if (Objects.isNull(groupField)) {
+            // Получить значения из коллекции
+            List<Map<String, String>> array = items.stream()
+                    .map(item -> getRow(item, sortParamsMap))
+                    .collect(Collectors.toList());
 
-                return checkSortArray(array, sortParamsMap);
-            } else {
-                // Разбить проверяемую коллекцию на группы
-                Map<String, List<Map<String, String>>> groups = items.stream()
-                        .collect(
-                                Collectors.groupingBy(
-                                        item -> {
-                                            IFacadeReadable elItem = ((IContextObject) item).getField(groupField);
-                                            return elItem.getFieldValue();
-                                        },
-                                        Collectors.mapping(
-                                                item -> getRow(item, sortParamsMap), Collectors.toList()
-                                        )
-                                )
-                        );
+            return checkSortArray(array, sortParamsMap);
+        } else {
+            // Разбить проверяемую коллекцию на группы
+            Map<String, List<Map<String, String>>> groups = items.stream()
+                    .collect(
+                            Collectors.groupingBy(
+                                    item -> {
+                                        IFacadeReadable elItem = ((IContextObject) item).getField(groupField);
+                                        return elItem.getFieldValue();
+                                    },
+                                    Collectors.mapping(
+                                            item -> getRow(item, sortParamsMap), Collectors.toList()
+                                    )
+                            )
+                    );
 
-                // Проверить каждую группу на сортировку
-                return groups.values().stream().allMatch(list ->
-                        checkSortArray(list, sortParamsMap)
-                );
-            }
-        } catch (InvokeFieldException ignore) {
-            return false;
+            // Проверить каждую группу на сортировку
+            return groups.values().stream().allMatch(list ->
+                    checkSortArray(list, sortParamsMap)
+            );
         }
     }
-
 
     @UIStep
     @TestStep("проверяется сортировка коллекции \"${collectionName}\", с параметрами: \"${conditions}\"")

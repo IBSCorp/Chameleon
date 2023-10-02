@@ -1,7 +1,7 @@
 package ru.ibsqa.chameleon.elements.selenium;
 
 import ru.ibsqa.chameleon.elements.*;
-import ru.ibsqa.chameleon.selenium.driver.WebDriverFacade;
+import ru.ibsqa.chameleon.selenium.driver.IDriverFacade;
 import ru.ibsqa.chameleon.selenium.enums.KeyEnum;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.WrapsElement;
@@ -66,16 +66,16 @@ public interface IFacadeSelenium extends IFacadeReadable, IFacadeWait, IFacadeAb
 
     String getLabel();
 
-    WebDriverFacade getDriver();
+    IDriverFacade getDriver();
 
     /**
      * Передвинуть указатель мыши к элементу
      *
-     * @param webDriver драйвер
+     * @param driverFacade драйвер
      * @param element   элемент
      */
-    static void moveMouseTo(WebDriverFacade webDriver, WebElement element) {
-        Actions builder = new Actions(webDriver);
+    static void moveMouseTo(IDriverFacade driverFacade, WebElement element) {
+        Actions builder = new Actions(driverFacade);
         builder.moveToElement(element).pause(200).build().perform();
     }
 
@@ -98,11 +98,11 @@ public interface IFacadeSelenium extends IFacadeReadable, IFacadeWait, IFacadeAb
     /**
      * Прокрутить страницу/список к элементу
      *
-     * @param webDriver драйвер
+     * @param driverFacade драйвер
      * @param element   элемент
      */
-    static void scrollIntoView(WebDriverFacade webDriver, WebElement element) {
-        webDriver.executeScript("arguments[0].scrollIntoView(true);", element);
+    static void scrollIntoView(IDriverFacade driverFacade, WebElement element) {
+        driverFacade.executeScript("arguments[0].scrollIntoView(true);", element);
     }
 
     /**
@@ -128,11 +128,11 @@ public interface IFacadeSelenium extends IFacadeReadable, IFacadeWait, IFacadeAb
     /**
      * Нажать правую кнопку мыши на элементе
      *
-     * @param webDriver драйвер
+     * @param driverFacade драйвер
      * @param element   элемент
      */
-    static void rightClick(WebDriverFacade webDriver, WebElement element) {
-        Actions builder = new Actions(webDriver);
+    static void rightClick(IDriverFacade driverFacade, WebElement element) {
+        Actions builder = new Actions(driverFacade);
         builder.contextClick(element).build().perform();
 //        webDriver.executeScript(
 //                "var evt = document.createEvent('MouseEvents');"

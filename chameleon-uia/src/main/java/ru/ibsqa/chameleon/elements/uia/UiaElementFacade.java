@@ -18,7 +18,6 @@ import java.awt.*;
 import java.awt.event.InputEvent;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -45,9 +44,9 @@ public abstract class UiaElementFacade extends WebElementFacade implements IUiaE
 
     public <T extends AutomationBase> T findElement(Class<T> clazz, String name, ControlType controlType) {
         // Дождемся появления элемента
-        AtomicReference<T> el = new AtomicReference<>();
+        ThreadLocal<T> el = new InheritableThreadLocal<>();
 
-        getWaitingUtils().waiting(getUiaDriver().getImplicitlywait() * 1000, () -> {
+        getWaitingUtils().waiting(getUiaDriver().getImplicitlyWait() * 1000, () -> {
             try {
                 Element ae = getUiaDriver().getAutomationWindow().getControlByControlType(name, controlType).getElement();
                 try {

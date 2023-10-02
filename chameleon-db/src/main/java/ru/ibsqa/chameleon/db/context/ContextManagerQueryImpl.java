@@ -27,9 +27,9 @@ public class ContextManagerQueryImpl implements IContextManagerQuery, IContextRe
     @Autowired
     private ILocaleManager localeManager;
 
-    private ThreadLocal<IQueryObject> currentQuery = new ThreadLocal<>();
+    private ThreadLocal<IQueryObject> currentQuery = new InheritableThreadLocal<>();
 
-    private ThreadLocal<IRowObject> currentRow = new ThreadLocal<>();
+    private ThreadLocal<IRowObject> currentRow = new InheritableThreadLocal<>();
 
     @Override
     public IQueryObject query(String dbName, String queryName, Map<String, String> params) {

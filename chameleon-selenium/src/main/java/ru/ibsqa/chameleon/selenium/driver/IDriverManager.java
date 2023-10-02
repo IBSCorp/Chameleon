@@ -4,9 +4,9 @@ import java.util.List;
 
 public interface IDriverManager {
 
-    WebDriverFacade getLastDriver();
-    WebDriverFacade getDriver(String driverId);
-    List<WebDriverFacade> getDrivers();
+    IDriverFacade getLastDriver();
+    IDriverFacade getDriver(String driverId);
+    List<IDriverFacade> getDrivers();
     void setCurrentDefaultDriverId(String driverId);
 
     void closeLastDriver();

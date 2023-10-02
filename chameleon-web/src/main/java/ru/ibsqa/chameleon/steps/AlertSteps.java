@@ -7,7 +7,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.ibsqa.chameleon.selenium.driver.IDriverManager;
-import ru.ibsqa.chameleon.selenium.driver.WebDriverFacade;
+import ru.ibsqa.chameleon.selenium.driver.IDriverFacade;
 
 import java.time.Duration;
 import java.util.Objects;
@@ -93,7 +93,7 @@ public class AlertSteps extends AbstractSteps {
     }
 
     public Alert getAlert() {
-        WebDriverFacade driver = driverManager.getLastDriver();
+        IDriverFacade driver = driverManager.getLastDriver();
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(driver.getDefaultWaitTimeOut()));
         try {
             return wait.until(ExpectedConditions.alertIsPresent());

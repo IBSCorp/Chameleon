@@ -1,13 +1,19 @@
 package ru.ibsqa.chameleon.page_factory.decorator;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.openqa.selenium.support.pagefactory.ElementLocatorFactory;
-import org.openqa.selenium.support.pagefactory.FieldDecorator;
+import ru.ibsqa.chameleon.page_factory.locator.IElementLocatorFactory;
 
-public abstract class AbstractFieldDecorator implements FieldDecorator {
+public abstract class AbstractFieldDecorator implements IFieldDecorator {
 
-    @Getter @Setter
-    private ElementLocatorFactory elementLocatorFactory;
+    private final ThreadLocal<IElementLocatorFactory> elementLocatorFactory = new InheritableThreadLocal<>();
+
+    @Override
+    public IElementLocatorFactory getElementLocatorFactory() {
+        return this.elementLocatorFactory.get();
+    }
+
+    @Override
+    public void setElementLocatorFactory(IElementLocatorFactory elementLocatorFactory) {
+        this.elementLocatorFactory.set(elementLocatorFactory);
+    }
 
 }

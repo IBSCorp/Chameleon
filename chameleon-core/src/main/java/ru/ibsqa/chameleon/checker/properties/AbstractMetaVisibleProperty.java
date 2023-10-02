@@ -37,7 +37,6 @@ public abstract class AbstractMetaVisibleProperty extends AbstractMetaProperty {
         return Optional.ofNullable(environment).orElse(false);
     }
 
-    @Getter
     @XmlAttribute
     private Integer priority;
 

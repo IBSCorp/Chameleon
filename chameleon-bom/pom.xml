@@ -5,7 +5,7 @@
     <parent>
         <artifactId>chameleon</artifactId>
         <groupId>ru.ibsqa.chameleon</groupId>
-        <version>3.5.0</version>
+        <version>3.6.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <packaging>pom</packaging>
@@ -139,6 +139,18 @@
             <dependency>
                 <groupId>ru.ibsqa.chameleon</groupId>
                 <artifactId>chameleon-log</artifactId>
+                <version>${chameleon.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>ru.ibsqa.chameleon</groupId>
+                <artifactId>chameleon-parallel</artifactId>
+                <version>${chameleon.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>ru.ibsqa.chameleon</groupId>
+                <artifactId>chameleon-parallel-cucumber</artifactId>
                 <version>${chameleon.version}</version>
             </dependency>
 
@@ -313,7 +325,7 @@
             <dependency>
                 <groupId>io.github.bonigarcia</groupId>
                 <artifactId>webdrivermanager</artifactId>
-                <version>5.3.1</version>
+                <version>5.4.1</version>
             </dependency>
 
             <dependency>

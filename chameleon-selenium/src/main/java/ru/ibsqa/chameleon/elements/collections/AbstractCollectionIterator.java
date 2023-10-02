@@ -33,7 +33,7 @@ public abstract class AbstractCollectionIterator<PAGE extends IPageObject> imple
         this.frames = frames;
         this.collectionObjectClass = collectionObjectClass;
         IFrameManager.collectionFrames(frames);
-        log.debug(String.format("getCollection(\"%s\")", collectionName));
+        log.debug(String.format("create new iterator for collection [%s]", collectionName));
     }
 
     protected abstract WebElement getNextWebElement();

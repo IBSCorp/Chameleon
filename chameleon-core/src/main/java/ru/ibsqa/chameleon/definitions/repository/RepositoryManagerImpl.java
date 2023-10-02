@@ -53,7 +53,7 @@ public class RepositoryManagerImpl implements IRepositoryManager {
      * @param repositories
      */
     @Deprecated(since = "3.1.0", forRemoval = true)
-    public void setRepositories(List<IRepositoryWrapper> repositories) {
+    public synchronized void setRepositories(List<IRepositoryWrapper> repositories) {
         this.repositories = repositories;
     }
 

@@ -32,8 +32,10 @@ public interface IContextExplorer extends ISearchElementException {
 
     <FACADE extends IFacade, CONTEXT extends IContextObject> PickElementResult<FACADE, CONTEXT> searchElement(String fullPathName, Class<FACADE> facadeClass) throws SearchElementException;
 
+    @Deprecated
     void addContextManager(IContextManager contextManager);
 
+    @Deprecated
     void removeContextManager(IContextManager contextManager);
 
     IVariableScope getPickElementScope();

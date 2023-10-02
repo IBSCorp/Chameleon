@@ -1,3 +1,21 @@
+# Версия 3.6.0 (released 30.09.2023)
+* Обновлена версия библиотеки webdrivermanager до 5.4.1
+* Добавлен модуль chameleon-parallel-cucumber для [поддержки параллельного выполнения тестов cucumber](https://docs.appline.ru/s/cidtla3ef9ut9rt76m1g/chameleon/d/cidtla3ef9ut9rt76m30/biblioteka-modulej?currentPageId=cj1ofhjef9ut9rt77uig)
+* В WebDriverFacade метод quit() закрывает WebDriver только для текущего потока. Добавлен новый метод quitAll(), который закрывает все драйверы, созданные для разных потоков. Его следует вызывать как destroy-method.
+* Добавлен интерфейс IDriverFacade, все взаимодействие с WebDriverFacade теперь рекомендуется выполнять через этот интерфейс
+* Добавлена возможность получения всех элементов страницы с учетом вложенности блоков, IPageObject.getSeleniumField() и IPageObject.getCollection()
+* Исправлено: при падении на не UI шагах, где браузер еще не запущен, происходит его запуск и создание скриншота с пустой страницы
+* Добавлена возможность переопределения кода, написанного в стандартный хуках фреймворка: интерфейсы IAssertsLifecycle и IStorageLifecycle
+* Исправлено: при использовании soft assertов не снимались скриншоты, если ошибки происходят чаще, чем раз в секунду
+* Добавлен вариант снятия скриншотов для избежания дублирования, если UI не менялся
+* Добавлены шаги ~SoftAssert "Прервать, если были ошибки" и ~SoftAssert "Выключить и прервать, если были ошибки", которые служат для управления прерыванием теста, если в блоке soft assert произошли ошибки. Без использования этих шагов выполнение теста происходит до конца или до появления первой ошибки, не включенной в блок soft assert.
+* Добавлена обработка исключительных ситуаций при ожидании элементов коллекции
+* Переработан механизм ожиданий элементов, добавлен служебный класс Waiting, поддерживающий различные сценарии ожидания
+* Доработан механизм генерации фабрик локаторов Selenium и работа с декораторами web-элементов
+
+# Версия 3.5.1 (released 31.07.2023)
+* В плагин добавлена поддержка IDEA 2023.1.4
+
 # Версия 3.5.0 (released 29.06.2023)
 * Изменено название фреймворка QualIT -> Chameleon
 * Пакеты переименованы ru.ibsqa.qualit -> ru.ibsqa.chameleon
@@ -15,7 +33,7 @@
     * Если на проекте подключен BDD фреймворк Cucumber, то также необходимо наличие файла cucumber.properties в ресурсных файлах проекта
 
 # Версия 3.4.0 (released 04.05.2023)
-* Изменен подход для операций сравнения и добавлена возможность создания кастомных операций сравнения [Операции сравнения](https://docs.appline.ru/s/cahgriref9uhhnfr4mug/qualit/d/cbmeatbef9uhhnfr4ti0/kastomizaciya-biblioteki-modulej?currentPageId=cg4r8d3ef9uhhnfr6feg)
+* Изменен подход для операций сравнения и добавлена возможность создания кастомных операций сравнения [Операции сравнения](https://docs.appline.ru/s/cidtla3ef9ut9rt76m1g/chameleon/d/cidtla3ef9ut9rt76m30/biblioteka-modulej?currentPageId=cidtla3ef9ut9rt76m6g)
 * Добавлена поддержка Java17
 * Добавлены контексты и автокомплит для шагов с базами данных
 * Сокращен вывод избыточной информации в лог при возникновении типовых ошибок
@@ -28,7 +46,7 @@
 * В плагин добавлена кнопка 'Показать команду запуска тестов для Maven'
 * В плагине исправлены ошибки при переносе шагов без аннотации @StepDescription из вкладки 'Действия' в сценарий
 * Для плагина добавлена поддержка версий IntelliJ IDEA до 2023.1.1 включительно
-* Дополнены [примеры](https://github.com/stars/IBSCorp/lists/qualit-examples)
+* Дополнены [примеры](https://github.com/stars/IBSCorp/lists/chameleon-examples)
 
 ## 3.3.1-SNAPSHOT (released 14.03.2023)
 * Исправлена ошибка для браузера Chrome 111
@@ -42,9 +60,9 @@
 * Обновление webdrivermanager до версии 5.3.1
 * Актуализированы проектные тесты
 * Убрана поддержка браузера OPERA
-* Добавлена поддержка [свободных конфигураций web-драйверов](https://docs.appline.ru/s/cahgriref9uhhnfr4mug/qualit/d/cahh0sref9uhhnfr4n1g/biblioteka-modulej?currentPageId=cdvl8u3ef9uhhnfr6d9g)
-* Добавлен функционал [Soft Assert](https://docs.appline.ru/s/cahgriref9uhhnfr4mug/qualit/d/cahh0sref9uhhnfr4n1g/biblioteka-modulej?currentPageId=cf059rref9uhhnfr6el0)
-* Добавлена аннотация [@HiddenStep](https://docs.appline.ru/s/cahgriref9uhhnfr4mug/qualit/d/cbmeatbef9uhhnfr4ti0/kastomizaciya-biblioteki-modulej?currentPageId=cbmefqbef9uhhnfr4tlg)
+* Добавлена поддержка [свободных конфигураций web-драйверов](https://docs.appline.ru/s/cidtla3ef9ut9rt76m1g/chameleon/d/cidtla3ef9ut9rt76m30/biblioteka-modulej?currentPageId=cidtla3ef9ut9rt76mhg)
+* Добавлен функционал [Soft Assert](https://docs.appline.ru/s/cidtla3ef9ut9rt76m1g/chameleon/d/cidtla3ef9ut9rt76m30/biblioteka-modulej?currentPageId=cidtla3ef9ut9rt76ma0)
+* Добавлена аннотация [@HiddenStep](https://docs.appline.ru/s/cidtla3ef9ut9rt76m1g/chameleon/d/cidtlabef9ut9rt76nc0/kastomizaciya-biblioteki-modulej?currentPageId=cidtlabef9ut9rt76ne0)
 * Добавлены шаги для работы с alert-ами - AlertSteps
 * IFacadeSelenium в методе isFieldExists() теперь не анализируется отсутствие поля на странице, при отсутствии поля будет ошибка, для проверки отсутствия поля используйте метод isAbsent()
 * ElementLocatorImpl:
@@ -89,7 +107,7 @@
 * В плагин добавлено управление модулями QualIT на вкладке 'Модули'
 * В плагин добавлена поддержка многомодульных проектов
 * В плагин добавлен генератор проектов QualIT и возможность подключить QualIT из плагина
-* Дополнены [примеры](https://github.com/stars/IBSCorp/lists/qualit-examples)
+* Дополнены [примеры](https://github.com/stars/IBSCorp/lists/chameleon-examples)
 
 ## 3.2.1-SNAPSHOT (released 16.11.2022)
 * В шагах работы с коллекциями добавлена поддержка  сравнения с пустыми значениями

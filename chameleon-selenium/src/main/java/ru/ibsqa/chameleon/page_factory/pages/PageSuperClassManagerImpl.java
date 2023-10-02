@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.ibsqa.chameleon.definitions.repository.selenium.IMetaPage;
 import ru.ibsqa.chameleon.i18n.ILocaleManager;
-import ru.ibsqa.chameleon.selenium.driver.WebDriverFacade;
+import ru.ibsqa.chameleon.selenium.driver.IDriverFacade;
 
 import java.util.Comparator;
 import java.util.List;
@@ -26,9 +26,9 @@ public class PageSuperClassManagerImpl implements IPageSuperClassManager {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T extends IPageObject> Class<T> getSuperClass(IMetaPage metaPage, WebDriverFacade webDriverFacade) {
+    public <T extends IPageObject> Class<T> getSuperClass(IMetaPage metaPage, IDriverFacade driverFacade) {
         return resolvers.stream()
-                .map(r -> (Class<T>) r.getSuperClass(metaPage, webDriverFacade))
+                .map(r -> (Class<T>) r.getSuperClass(metaPage, driverFacade))
                 .filter(Objects::nonNull)
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException(localeManager.getMessage("pageFacadeNotFound", metaPage.getClass().getCanonicalName())));

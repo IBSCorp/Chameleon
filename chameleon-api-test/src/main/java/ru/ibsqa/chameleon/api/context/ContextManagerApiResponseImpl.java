@@ -28,7 +28,7 @@ public class ContextManagerApiResponseImpl implements IContextManagerApiResponse
     @Autowired
     private IContextManagerApiEndpoint contextManagerRestEndpoint;
 
-    private ThreadLocal<IApiResponseObject> currentResponse = new ThreadLocal<IApiResponseObject>();
+    private ThreadLocal<IApiResponseObject> currentResponse = new InheritableThreadLocal<IApiResponseObject>();
 
     @Override
     public IApiResponseObject receiveResponse(String responseName) {

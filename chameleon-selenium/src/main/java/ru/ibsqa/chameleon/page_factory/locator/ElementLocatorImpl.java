@@ -31,7 +31,7 @@ public class ElementLocatorImpl extends AjaxElementLocator {
     private Field cachedElementListField;
     private Field timeoutField;
 
-    private ThreadLocal<Integer> timeOutInSecondsStore = new ThreadLocal<>();
+    private ThreadLocal<Integer> timeOutInSecondsStore = new InheritableThreadLocal<>();
 
     public ElementLocatorImpl(SearchContext context, int timeOutInSeconds, AbstractElementAnnotationsHandler annotations) {
         super(context, timeOutInSeconds, annotations);
@@ -65,11 +65,13 @@ public class ElementLocatorImpl extends AjaxElementLocator {
     }
 
     /**
-     * Поиск единственноего элемента. Производится в пределах timeOutInSeconds, пока элемент не будет найден или не закончится таймаут
+     * Поиск единственного элемента. Производится в пределах timeOutInSeconds, пока элемент не будет найден или не закончится таймаут
      * @return
      */
     public WebElement findElement() {
-        doDynamic();
+        synchronized (this) {
+            doDynamic();
+        }
         return super.findElement();
     }
 
@@ -78,16 +80,18 @@ public class ElementLocatorImpl extends AjaxElementLocator {
      * @return
      */
     public List<WebElement> findElements() {
-        doDynamic();
-        List<WebElement> list;
-        timeOutInSecondsStore.set(timeOutInSeconds);
-        try {
-            setTimeOutInSeconds(0);
-            list = super.findElements();
-        } finally {
-            setTimeOutInSeconds(timeOutInSecondsStore.get());
+        synchronized (this) {
+            doDynamic();
+            List<WebElement> list;
+            timeOutInSecondsStore.set(timeOutInSeconds);
+            try {
+                setTimeOutInSeconds(0);
+                list = super.findElements();
+            } finally {
+                setTimeOutInSeconds(timeOutInSecondsStore.get());
+            }
+            return list;
         }
-        return list;
     }
 
     protected void setTimeOutInSeconds(int timeOutInSeconds) {

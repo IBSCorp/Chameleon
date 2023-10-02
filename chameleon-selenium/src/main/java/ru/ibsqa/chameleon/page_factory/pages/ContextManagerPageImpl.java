@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -48,20 +49,29 @@ public class ContextManagerPageImpl implements IContextManagerPage, IContextRegi
     @Autowired
     protected IPageObjectConfiguration pageObjectConfiguration;
 
-    private ThreadLocal<IPageObject> currentPage = new ThreadLocal<>();
+    private final ThreadLocal<IPageObject> currentPage = new InheritableThreadLocal<>();
 
-    private List<IPageObject> pageStack = new ArrayList<>();
+    private final ThreadLocal<List<IPageObject>> pageStack = new InheritableThreadLocal<>();
 
     @Override
     public IPageObject getCurrentPage() {
         return currentPage.get();
     }
 
+    private synchronized List<IPageObject> getPageStack() {
+        List<IPageObject> result = pageStack.get();
+        if (Objects.isNull(result)) {
+            result = new ArrayList<>();
+            pageStack.set(result);
+        }
+        return result;
+    }
+
     @Override
     public void setCurrentPage(IPageObject page) {
         currentPage.set(page);
         contextManagerCollectionItem.clearCurrentCollectionItem();
-        pageStack.add(page);
+        getPageStack().add(page);
     }
 
     @Override
@@ -98,11 +108,11 @@ public class ContextManagerPageImpl implements IContextManagerPage, IContextRegi
     @Override
     public IPageObject switchToPreviousPage() {
         IPageObject prevPage = null;
-        if (pageStack.size()>1) {
-            int lastIndex = pageStack.size()-1;
+        if (getPageStack().size()>1) {
+            int lastIndex = getPageStack().size()-1;
             int prevIndex = lastIndex-1;
-            prevPage = pageStack.get(prevIndex);
-            pageStack.remove(lastIndex);
+            prevPage = getPageStack().get(prevIndex);
+            getPageStack().remove(lastIndex);
         }
         assertNotNull(prevPage, localeManager.getMessage("prevPageNotFoundAssertMessage"));
         currentPage.set(prevPage);

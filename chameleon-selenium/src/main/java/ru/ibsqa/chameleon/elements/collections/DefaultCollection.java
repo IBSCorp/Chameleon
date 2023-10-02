@@ -1,11 +1,16 @@
 package ru.ibsqa.chameleon.elements.collections;
 
+import lombok.extern.slf4j.Slf4j;
+import org.openqa.selenium.StaleElementReferenceException;
 import ru.ibsqa.chameleon.definitions.repository.ConfigurationPriority;
 import ru.ibsqa.chameleon.definitions.repository.selenium.elements.MetaCollection;
+import ru.ibsqa.chameleon.elements.InvokeFieldException;
 import ru.ibsqa.chameleon.elements.MetaElement;
+import ru.ibsqa.chameleon.i18n.ILocaleManager;
 import ru.ibsqa.chameleon.page_factory.pages.IPageObject;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.pagefactory.ElementLocator;
+import ru.ibsqa.chameleon.utils.spring.SpringUtils;
 
 import java.util.List;
 
@@ -16,6 +21,7 @@ import java.util.List;
  * @param <PAGE>
  */
 @MetaElement(value = MetaCollection.class, priority = ConfigurationPriority.LOW)
+@Slf4j
 public class DefaultCollection<PAGE extends IPageObject> extends AbstractCollection<PAGE> {
 
     @Override
@@ -40,7 +46,14 @@ public class DefaultCollection<PAGE extends IPageObject> extends AbstractCollect
 
         private List<WebElement> getWebElements() {
             if (null == webElements && null != getElementLocator()) {
-                webElements = getElementLocator().findElements();
+                try {
+                    webElements = getElementLocator().findElements();
+                    log.debug(String.format("find [%d] elements in collection [%s]", webElements.size(), getCollectionName()));
+                } catch (StaleElementReferenceException e) {
+                    log.debug(e.getLocalizedMessage(), e);
+                    ILocaleManager localeManager = SpringUtils.getBean(ILocaleManager.class);
+                    throw new InvokeFieldException(localeManager.getMessage("invokeFieldException", getCollectionName()), e);
+                }
             }
             return webElements;
         }

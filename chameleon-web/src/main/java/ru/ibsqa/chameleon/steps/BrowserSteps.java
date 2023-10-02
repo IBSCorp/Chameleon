@@ -9,10 +9,10 @@ import ru.ibsqa.chameleon.page_factory.pages.IContextManagerPage;
 import ru.ibsqa.chameleon.page_factory.pages.IPageObject;
 import ru.ibsqa.chameleon.page_factory.pages.Page;
 import ru.ibsqa.chameleon.selenium.driver.IDriverManager;
-import ru.ibsqa.chameleon.selenium.driver.WebDriverFacade;
-import ru.ibsqa.chameleon.utils.waiting.WaitingUtils;
+import ru.ibsqa.chameleon.selenium.driver.IDriverFacade;
+import ru.ibsqa.chameleon.utils.waiting.Waiting;
 
-import java.util.Optional;
+import java.time.Duration;
 import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -26,9 +26,6 @@ public class BrowserSteps extends AbstractSteps {
 
     @Autowired
     private IContextManagerPage contextManager;
-
-    @Autowired
-    private WaitingUtils waitingUtils;
 
     @Autowired
     private IFrameManager frameManager;
@@ -88,32 +85,26 @@ public class BrowserSteps extends AbstractSteps {
         openUrl(driverManager.getDriver(driver), url);
     }
 
-    private void openUrl(WebDriverFacade driver, String url) {
+    private void openUrl(IDriverFacade driver, String url) {
         driver.get(url);
     }
 
     @UIStep
     @TestStep("выполнен переход к окну \"${value}\"")
     public void switchToWindow(String value) {
-        if (!Optional.of(driverManager.getLastDriver())
-                .filter(driver ->
-                        waitingUtils.waiting(driver.getDefaultWaitTimeOut() * 1000, () -> {
-                                    for (String w : driver.getWindowHandles()) {
-                                        try {
-                                            driver.switchTo().window(w);
-                                            if (Pattern.matches(value, driver.getTitle())) {
-                                                return true;
-                                            }
-                                        } catch (Exception e) {
-                                        }
-                                    }
-                                    return false;
-                                }
-                        ))
-                .isPresent()
-        ) {
-            fail("Не найдено окно с заголовком: " + value);
-        }
+        IDriverFacade driver = driverManager.getLastDriver();
+        Waiting.on(Duration.ofSeconds(driver.getDefaultWaitTimeOut()))
+                .ignoring(Exception.class)
+                .check(() -> {
+                    for (String w : driver.getWindowHandles()) {
+                        driver.switchTo().window(w);
+                        if (Pattern.matches(value, driver.getTitle())) {
+                            return true;
+                        }
+                    }
+                    return false;
+                })
+                .ifNegative(() -> fail("Не найдено окно с заголовком: " + value));
     }
 
     @UIStep

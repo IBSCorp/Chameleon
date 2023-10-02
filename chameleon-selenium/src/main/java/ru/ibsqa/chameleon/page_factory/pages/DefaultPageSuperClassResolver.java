@@ -3,14 +3,14 @@ package ru.ibsqa.chameleon.page_factory.pages;
 import ru.ibsqa.chameleon.definitions.repository.ConfigurationPriority;
 import ru.ibsqa.chameleon.definitions.repository.selenium.IMetaPage;
 import org.springframework.stereotype.Component;
-import ru.ibsqa.chameleon.selenium.driver.WebDriverFacade;
+import ru.ibsqa.chameleon.selenium.driver.IDriverFacade;
 
 @Component
 public class DefaultPageSuperClassResolver implements IPageSuperClassResolver {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T extends IPageObject> Class<T> getSuperClass(IMetaPage metaPage, WebDriverFacade webDriverFacade) {
+    public <T extends IPageObject> Class<T> getSuperClass(IMetaPage metaPage, IDriverFacade driverFacade) {
         return (Class<T>) DefaultPageObject.class;
     }
 

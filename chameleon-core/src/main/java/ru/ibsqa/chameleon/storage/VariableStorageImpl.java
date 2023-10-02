@@ -6,19 +6,33 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @Component
 public class VariableStorageImpl implements IVariableStorage {
 
-    @Getter
-    private IVariableScope rootScope = new VariableScopeImpl();
+    private final ThreadLocal<IVariableScope> rootScope = new InheritableThreadLocal<>();
 
-    @Setter
-    private IVariableScope defaultScope;
+    private final ThreadLocal<IVariableScope> defaultScope = new InheritableThreadLocal<>();
 
     @Override
-    public IVariableScope getDefaultScope() {
-        return (null != defaultScope) ? defaultScope : rootScope;
+    public synchronized IVariableScope getRootScope() {
+        IVariableScope result = rootScope.get();
+        if (Objects.isNull(result)) {
+            result = new VariableScopeImpl();
+            rootScope.set(result);
+        }
+        return result;
+    }
+
+    @Override
+    public synchronized void setDefaultScope(IVariableScope defaultScope) {
+        this.defaultScope.set(defaultScope);
+    }
+
+    @Override
+    public synchronized IVariableScope getDefaultScope() {
+        return (null != defaultScope.get()) ? defaultScope.get() : getRootScope();
     }
 
     @Override

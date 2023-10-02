@@ -7,9 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.ibsqa.chameleon.definitions.repository.ConfigurationPriority;
 import ru.ibsqa.chameleon.reporter.IReporterManager;
+import ru.ibsqa.chameleon.selenium.driver.IDriverFacade;
 import ru.ibsqa.chameleon.selenium.driver.IDriverManager;
 import ru.ibsqa.chameleon.selenium.driver.ISupportedDriver;
-import ru.ibsqa.chameleon.selenium.driver.WebDriverFacade;
 import ru.ibsqa.chameleon.selenium.driver.configuration.IDriverConfiguration;
 import ru.ibsqa.chameleon.utils.spring.SpringUtils;
 import ru.yandex.qatools.ashot.AShot;
@@ -49,13 +49,13 @@ public class DefaultScreenshotSteps extends AbstractSteps implements IScreenshot
 
     @Override
     public void takeScreenshotToReport(String name, SeverityLevel level) {
-        WebDriverFacade webDriver = SpringUtils.getBean(IDriverManager.class).getLastDriver();
-        if (null != webDriver) {
-            IDriverConfiguration configuration = webDriver.getDriverFactory().getConfiguration();
+        IDriverFacade driverFacade = SpringUtils.getBean(IDriverManager.class).getLastDriver();
+        if (null != driverFacade) {
+            IDriverConfiguration configuration = driverFacade.getDriverFactory().getConfiguration();
             if (configuration.isAdvancedScreenshotMethod()) {
-                addScreenshot(name, () -> takeWebDriverAdvancedScreenshot(webDriver));
+                addScreenshot(name, () -> takeWebDriverAdvancedScreenshot(driverFacade));
             } else {
-                addScreenshot(name, () -> takeWebDriverSimpleScreenshot(webDriver));
+                addScreenshot(name, () -> takeWebDriverSimpleScreenshot(driverFacade));
             }
             if (configuration.isFullScreenshot()) {
                 addScreenshot(name + " (полноэкранный)", () -> getFullScreenshot());
@@ -66,11 +66,11 @@ public class DefaultScreenshotSteps extends AbstractSteps implements IScreenshot
     /**
      * Скриншот видимой части web-страницы
      *
-     * @param webDriver
+     * @param driverFacade
      * @return
      */
-    public InputStream takeWebDriverSimpleScreenshot(WebDriverFacade webDriver) {
-        File file = ((TakesScreenshot) webDriver).getScreenshotAs(OutputType.FILE);
+    public InputStream takeWebDriverSimpleScreenshot(IDriverFacade driverFacade) {
+        File file = ((TakesScreenshot) driverFacade).getScreenshotAs(OutputType.FILE);
         if (null != file) {
             Path content = Paths.get(file.getPath());
             try {
@@ -85,11 +85,11 @@ public class DefaultScreenshotSteps extends AbstractSteps implements IScreenshot
     /**
      * Скриншот полной web-страницы с вертикальной прокруткой
      *
-     * @param webDriver
+     * @param driverFacade
      * @return
      */
-    public InputStream takeWebDriverAdvancedScreenshot(WebDriverFacade webDriver) {
-        Screenshot screenshot = new AShot().shootingStrategy(ShootingStrategies.viewportPasting(SCROLL_TIMEOUT)).takeScreenshot(webDriver);
+    public InputStream takeWebDriverAdvancedScreenshot(IDriverFacade driverFacade) {
+        Screenshot screenshot = new AShot().shootingStrategy(ShootingStrategies.viewportPasting(SCROLL_TIMEOUT)).takeScreenshot(driverFacade);
         if (null != screenshot) {
             try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
                 ImageIO.write(screenshot.getImage(), ATTACHMENT_EXTENSION, os);

@@ -5,7 +5,7 @@
     <parent>
         <artifactId>chameleon</artifactId>
         <groupId>ru.ibsqa.chameleon</groupId>
-        <version>3.5.0</version>
+        <version>3.6.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -16,7 +16,7 @@
             <dependency>
                 <groupId>ru.ibsqa.chameleon</groupId>
                 <artifactId>chameleon-bom</artifactId>
-                <version>3.5.0</version>
+                <version>3.6.0</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

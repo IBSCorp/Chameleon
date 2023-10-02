@@ -25,6 +25,6 @@ public class UniversalDriver extends WebDriverFacade {
 
     @PreDestroy
     private void destroy() {
-        this.quit();
+        this.quitAll();
     }
 }

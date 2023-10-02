@@ -1,5 +1,7 @@
 package ru.ibsqa.chameleon.asserts;
 
+import org.junit.jupiter.api.Assertions;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -9,10 +11,13 @@ import java.util.Optional;
 @Component
 public class AssertManagerImpl implements IAssertManager {
 
-    private final ThreadLocal<Boolean> softAssert = new ThreadLocal<>();
-    private final ThreadLocal<Boolean> softAssertForNextStep = new ThreadLocal<>();
-    private final ThreadLocal<AssertLayer> currentLayer = new ThreadLocal<>();
-    private final ThreadLocal<AssertLayer> lastLayer = new ThreadLocal<>();
+    @Autowired
+    private IThrowableMixer throwableMixer;
+
+    private final ThreadLocal<Boolean> softAssert = new InheritableThreadLocal<>();
+    private final ThreadLocal<Boolean> softAssertForNextStep = new InheritableThreadLocal<>();
+    private final ThreadLocal<AssertLayer> currentLayer = new InheritableThreadLocal<>();
+    private final ThreadLocal<AssertLayer> lastLayer = new InheritableThreadLocal<>();
 
     @Override
     public void softAssertOn() {
@@ -22,6 +27,14 @@ public class AssertManagerImpl implements IAssertManager {
     @Override
     public void softAssertOff() {
         softAssert.set(false);
+    }
+
+    @Override
+    public void softAssertCheck() {
+        if (Objects.nonNull(getCurrentLayer().getParent())) {
+            throwableMixer.mixThrowableFromList(getCurrentLayer().getParent().getErrors())
+                    .ifPresent((throwable) -> Assertions.fail(throwable.getMessage(), throwable));
+        }
     }
 
     @Override
@@ -86,8 +99,9 @@ public class AssertManagerImpl implements IAssertManager {
     private String getMessage() {
         return Optional.ofNullable(getThrowable()).map(Throwable::getMessage).orElse("");
     }
+
     private Throwable getThrowable() {
-        return hasErrors() ? getErrors().get(0) : null;
+        return throwableMixer.mixThrowableFromList(getErrors()).orElse(null);
     }
 
 }

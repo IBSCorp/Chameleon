@@ -1,6 +1,6 @@
 package ru.ibsqa.chameleon;
 
-import ru.ibsqa.chameleon.selenium.driver.WebDriverFacade;
+import ru.ibsqa.chameleon.selenium.driver.IDriverFacade;
 import ru.ibsqa.chameleon.steps.AbstractSteps;
 import ru.ibsqa.chameleon.steps.TestStep;
 import org.openqa.selenium.remote.CommandExecutor;
@@ -18,7 +18,7 @@ public class ApplicationUtilSteps extends AbstractSteps {
     private WinProcessSteps winProcessSteps;
 
     @TestStep("показать приложение поверх всех окон")
-    public void showWindow(WebDriverFacade driverFacade){
+    public void showWindow(IDriverFacade driverFacade){
         String driverName = driverFacade.getDriverFactory().getConfiguration().getDriverType().name().toLowerCase();
         Field executor  = ReflectionUtils.findField(driverFacade.getWrappedDriver().getClass(), "executor");
         ReflectionUtils.makeAccessible(executor);

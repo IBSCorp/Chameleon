@@ -21,13 +21,14 @@ import ru.ibsqa.chameleon.page_factory.pages.ICollectionSuperClassManager;
 import ru.ibsqa.chameleon.page_factory.pages.IPageObject;
 import ru.ibsqa.chameleon.page_factory.pages.IPageSuperClassManager;
 import ru.ibsqa.chameleon.selenium.driver.IDriverManager;
-import ru.ibsqa.chameleon.selenium.driver.WebDriverFacade;
+import ru.ibsqa.chameleon.selenium.driver.IDriverFacade;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -71,7 +72,7 @@ public class DefaultPageFactory implements IPageFactory {
      * @return
      */
     @Override
-    public <PAGE extends IPageObject> Class<PAGE> generatePage(String pageName) {
+    public synchronized <PAGE extends IPageObject> Class<PAGE> generatePage(String pageName) {
 
         MetaPage metaPage = repositoryManager.pickElement(pageName, MetaPage.class);
 
@@ -79,7 +80,7 @@ public class DefaultPageFactory implements IPageFactory {
             return (Class<PAGE>) metaPage.getPageObjectClass();
         }
 
-        WebDriverFacade driver = driverManager.getDriver(metaPage.getDriver());
+        IDriverFacade driver = driverManager.getDriver(metaPage.getDriver());
 
         String className = toTranslit(metaPage.getName());
         if (CLASS_POOL.getOrNull(className) != null) {
@@ -118,7 +119,7 @@ public class DefaultPageFactory implements IPageFactory {
         return null;
     }
 
-    protected void setSuperClass(MetaPage metaPage, CtClass cc, WebDriverFacade driver) throws CannotCompileException, NotFoundException, ClassNotFoundException {
+    protected void setSuperClass(MetaPage metaPage, CtClass cc, IDriverFacade driver) throws CannotCompileException, NotFoundException, ClassNotFoundException {
         cc.setSuperclass(getPageSuperClass(metaPage, driver));
     }
 
@@ -146,7 +147,7 @@ public class DefaultPageFactory implements IPageFactory {
         }
     }
 
-    private CtClass getPageSuperClass(MetaPage metaPage, WebDriverFacade driver) throws NotFoundException, ClassNotFoundException {
+    private CtClass getPageSuperClass(MetaPage metaPage, IDriverFacade driver) throws NotFoundException, ClassNotFoundException {
         String customType = metaPage.getCustomType();
         Class<? extends IPageObject> aClass;
         if (Objects.nonNull(customType) && !customType.isEmpty()) {
@@ -158,7 +159,7 @@ public class DefaultPageFactory implements IPageFactory {
         return resolveCtClass(aClass);
     }
 
-    private CtClass getCollectionSuperClass(IMetaCollection metaCollection, WebDriverFacade driver) throws NotFoundException {
+    private CtClass getCollectionSuperClass(IMetaCollection metaCollection, IDriverFacade driver) throws NotFoundException {
         Class<? extends IPageObject> aClass = collectionSuperClassManager.getSuperClass(metaCollection, driver);
         ClassPool.getDefault().appendClassPath(new LoaderClassPath(aClass.getClassLoader()));
         return resolveCtClass(aClass);
@@ -334,7 +335,7 @@ public class DefaultPageFactory implements IPageFactory {
      * @param pageClass
      * @param metaField
      */
-    protected void generateField(String pageClassName, CtClass pageClass, IMetaField metaField, WebDriverFacade driver) {
+    protected void generateField(String pageClassName, CtClass pageClass, IMetaField metaField, IDriverFacade driver) {
         try {
             // Создать аннотацию для поля
             ConstPool constpool = pageClass.getClassFile().getConstPool();
@@ -368,7 +369,7 @@ public class DefaultPageFactory implements IPageFactory {
      * @param pageClass
      * @param metaCollection
      */
-    protected void generateCollection(String pageClassName, CtClass pageClass, IMetaCollection metaCollection, WebDriverFacade driver) {
+    protected void generateCollection(String pageClassName, CtClass pageClass, IMetaCollection metaCollection, IDriverFacade driver) {
         try {
 
             // Создать класс для элемента коллекции
@@ -465,17 +466,27 @@ public class DefaultPageFactory implements IPageFactory {
      * @return
      */
     private List<String> getNames(IPageObject pageObject, Class clazz) {
-        return Optional.ofNullable(pageObject).map(page ->
-                Arrays.stream(page.getClass().getDeclaredFields())
-                        .filter(field -> clazz.isAssignableFrom(field.getType()))
-                        .map(field -> Arrays.stream(field.getAnnotations())
-                                .filter(annotation -> Field.class.isAssignableFrom(annotation.annotationType()))
-                                .map(annotation -> ((Field) annotation).name())
-                                .findFirst().orElse(null)
-                        )
+        return Optional.ofNullable(pageObject)
+                .map(page -> getNames(page.getClass(), clazz, 0)
                         .filter(Objects::nonNull)
-                        .collect(Collectors.toList())
-        ).orElse(null);
+                        .collect(Collectors.toList()))
+                .orElse(null);
+    }
+
+    private Stream<String> getNames(Class pageClass, Class clazz, int deep) {
+        return Arrays.stream(pageClass.getDeclaredFields())
+                .flatMap(field -> {
+                    Class type = field.getType();
+                    if (IPageObject.class.isAssignableFrom(type) && deep < 15) { // Блоки
+                        return getNames(type, clazz, deep+1);
+                    } else if (clazz.isAssignableFrom(type)) {
+                        return Arrays.stream(field.getAnnotations())
+                                .filter((annotation) -> Field.class.isAssignableFrom(annotation.annotationType()) )
+                                .map((annotation) -> ((Field) annotation).name());
+                    } else {
+                        return Stream.empty();
+                    }
+                });
     }
 
     private void removeAllDeclaredMethods(String className) {
@@ -502,7 +513,7 @@ public class DefaultPageFactory implements IPageFactory {
         });
     }
 
-    private void generateClassPage(CtClass cc, String className, MetaPage metaPage, String pageName, WebDriverFacade driver) throws CannotCompileException {
+    private void generateClassPage(CtClass cc, String className, MetaPage metaPage, String pageName, IDriverFacade driver) throws CannotCompileException {
         // Создать метод для проверки загрузки страницы
         CtMethod ctIsLoadedMethod = makeIsLoadedMethod(cc, metaPage);
         cc.addMethod(ctIsLoadedMethod);
@@ -530,7 +541,7 @@ public class DefaultPageFactory implements IPageFactory {
         generatePageAnnotation(pageName, metaPage, cc);
     }
 
-    private void generateClassCollection(CtClass cc, IMetaCollection metaCollection, String subClassName, WebDriverFacade driver) throws CannotCompileException {
+    private void generateClassCollection(CtClass cc, IMetaCollection metaCollection, String subClassName, IDriverFacade driver) throws CannotCompileException {
         // Создать метод возвращающий имя коллекции
         CtMethod ctGetNameMethod = makeGetNameMethod(cc, metaCollection);
         cc.addMethod(ctGetNameMethod);

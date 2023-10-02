@@ -30,6 +30,25 @@ public class SoftAssertStorySteps extends AbstractSteps {
         );
     }
 
+    @StepDescription(action = "Условия->SoftAssert", subAction = "Прервать выполнение теста, если были ошибки", expertView = true)
+    @Когда("^~SoftAssert \"Прервать, если были ошибки\"$")
+    @HiddenStep
+    public void softAssertCheck() {
+        flow(() -> {
+            softAssertSteps.softAssertCheck();
+        });
+    }
+
+    @StepDescription(action = "Условия->SoftAssert", subAction = "Выключить SoftAssert и прервать выполнение теста, если были ошибки", expertView = true)
+    @Когда("^~SoftAssert \"Выключить и прервать, если были ошибки\"$")
+    @HiddenStep
+    public void softAssertOffAndCheck() {
+        flow(() -> {
+            softAssertSteps.softAssertCheck();
+            softAssertSteps.softAssertOff();
+        });
+    }
+
     @StepDescription(action = "Условия->SoftAssert", subAction = "SoftAssert для следующего шага", expertView = true)
     @Когда("^~SoftAssert \"Для следующего шага\"$")
     @HiddenStep

@@ -34,7 +34,7 @@ public class ContextManagerConnectionImpl implements IContextManagerConnection {
 
     @PostConstruct
     private void init() {
-        //connections1 = new ThreadLocal<>();
+        //connections1 = new InheritableThreadLocal<>();
         //connections1.set(new HashMap<>());
         connections2 = new HashMap<>();
     }

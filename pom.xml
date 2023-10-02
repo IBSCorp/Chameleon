@@ -5,7 +5,7 @@
 
     <groupId>ru.ibsqa.chameleon</groupId>
     <artifactId>chameleon</artifactId>
-    <version>3.5.0</version>
+    <version>3.6.0</version>
     <packaging>pom</packaging>
 
     <modules>
@@ -31,6 +31,8 @@
         <module>chameleon-json-cucumber</module>
         <module>chameleon-json-jbehave</module>
         <module>chameleon-log</module>
+        <module>chameleon-parallel</module>
+        <module>chameleon-parallel-cucumber</module>
         <module>chameleon-sap</module>
         <module>chameleon-sap-cucumber</module>
         <module>chameleon-screen-recorder</module>
@@ -132,7 +134,7 @@
     </distributionManagement>
 
     <properties>
-        <chameleon.version>3.5.0</chameleon.version>
+        <chameleon.version>3.6.0</chameleon.version>
 
         <encoding>UTF-8</encoding>
         <file.encoding>${encoding}</file.encoding>

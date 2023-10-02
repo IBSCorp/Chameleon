@@ -17,6 +17,7 @@
     <List name="screenshotConfiguration" label="Режим скриншотов" defaultValue="FOR_FAILURES"
           description="Выбирается условие снятия скриншотов.">
         <Item value="FOR_FAILURES" label="При ошибках"/>
+        <Item value="FOR_UI_FAILURES" label="При ошибках, и если менялся UI"/>
         <Item value="FOR_EACH_STEP" label="Для каждого шага"/>
         <Item value="BEFORE_AND_AFTER_EACH_STEP" label="До и после каждого шага"/>
         <Item value="DISABLED" label="Отключено"/>

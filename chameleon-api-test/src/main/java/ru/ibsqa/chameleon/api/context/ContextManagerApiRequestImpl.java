@@ -33,7 +33,7 @@ public class ContextManagerApiRequestImpl implements IContextManagerApiRequest, 
         this.currentRequest.set(currentRequest);
     }
 
-    private ThreadLocal<IApiRequestObject> currentRequest = new ThreadLocal<IApiRequestObject>();
+    private ThreadLocal<IApiRequestObject> currentRequest = new InheritableThreadLocal<IApiRequestObject>();
 
 
     @Override

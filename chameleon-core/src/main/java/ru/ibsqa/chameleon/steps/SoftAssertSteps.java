@@ -20,4 +20,8 @@ public class SoftAssertSteps extends AbstractSteps {
         assertManager.softAssertOff();
     }
 
+    public void softAssertCheck() {
+        assertManager.softAssertCheck();
+    }
+
 }

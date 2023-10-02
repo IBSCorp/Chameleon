@@ -115,6 +115,11 @@ public class ImageDriver<T extends WebElement> extends WebDriverFacade {
     }
 
     @Override
+    public void quitAll() {
+
+    }
+
+    @Override
     public Set<String> getWindowHandles() {
         return null;
     }

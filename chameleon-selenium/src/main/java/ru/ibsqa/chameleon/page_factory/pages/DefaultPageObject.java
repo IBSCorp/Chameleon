@@ -12,7 +12,7 @@ import ru.ibsqa.chameleon.page_factory.IPageObjectLoader;
 import ru.ibsqa.chameleon.page_factory.locator.IFrameManager;
 import ru.ibsqa.chameleon.page_factory.locator.ISearchStrategy;
 import ru.ibsqa.chameleon.selenium.driver.IDriverManager;
-import ru.ibsqa.chameleon.selenium.driver.WebDriverFacade;
+import ru.ibsqa.chameleon.selenium.driver.IDriverFacade;
 import ru.ibsqa.chameleon.selenium.enums.KeyEnum;
 import ru.ibsqa.chameleon.utils.spring.SpringUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -68,7 +68,8 @@ public abstract class DefaultPageObject implements IPageObject {
         Assertions.assertTrue(this.isLoaded(), ILocaleManager.message("pageNotLoadedAssertMessage", this));
     }
 
-    public WebDriverFacade getDriver() {
+    @Override
+    public IDriverFacade getDriver() {
         ru.ibsqa.chameleon.definitions.annotations.selenium.Page aPage = this.getClass().getAnnotation(Page.class);
         if (null != aPage) {
             return driverManager.getDriver(aPage.driver());

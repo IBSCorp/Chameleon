@@ -10,11 +10,11 @@ import org.springframework.stereotype.Component;
 import ru.ibsqa.chameleon.definitions.annotations.selenium.Page;
 import ru.ibsqa.chameleon.elements.selenium.BlockElement;
 import ru.ibsqa.chameleon.elements.selenium.WebElementFacade;
-import ru.ibsqa.chameleon.page_factory.decorator.AbstractFieldDecorator;
+import ru.ibsqa.chameleon.page_factory.decorator.IFieldDecorator;
 import ru.ibsqa.chameleon.page_factory.handlers.ElementBlockProxyHandler;
-import ru.ibsqa.chameleon.page_factory.locator.IFrameManager;
+import ru.ibsqa.chameleon.page_factory.locator.IElementLocatorFactoryCreator;
 import ru.ibsqa.chameleon.page_factory.pages.IPageObject;
-import ru.ibsqa.chameleon.selenium.driver.WebDriverFacade;
+import ru.ibsqa.chameleon.selenium.driver.IDriverFacade;
 
 import java.lang.reflect.InvocationHandler;
 
@@ -22,10 +22,10 @@ import java.lang.reflect.InvocationHandler;
 public class PageObjectLoaderImpl implements IPageObjectLoader {
 
     @Autowired
-    private IFrameManager frameSelector;
+    private IElementLocatorFactoryCreator elementLocatorFactoryCreator;
 
     @Autowired
-    private AbstractFieldDecorator fieldDecorator;
+    private IFieldDecorator fieldDecorator;
 
     @Override
     public void load(IPageObject pageObject, SearchContext searchContext) {
@@ -43,12 +43,17 @@ public class PageObjectLoaderImpl implements IPageObjectLoader {
     }
 
     private void initElements(SearchContext searchContext, IPageObject pageObject) {
-        fieldDecorator.setElementLocatorFactory(pageObject.getDriver().getElementLocatorFactory(searchContext));
+        fieldDecorator.setElementLocatorFactory(
+                elementLocatorFactoryCreator.createElementLocatorFactory(
+                        pageObject.getDriver(), searchContext
+                )
+        );
         PageFactory.initElements(fieldDecorator, pageObject);
     }
 
-    public <T extends WebElementFacade> WebElementFacade createBlockElement(IPageObject pageObject, SearchContext searchContext) {
-        ElementLocator locator = pageObject.getDriver().getElementLocatorFactory(searchContext).createLocator(pageObject.getClass());
+    protected <T extends WebElementFacade> WebElementFacade createBlockElement(IPageObject pageObject, SearchContext searchContext) {
+        ElementLocator locator = elementLocatorFactoryCreator.createElementLocatorFactory(pageObject.getDriver(), searchContext)
+                .createLocator(pageObject.getClass());
         String elementName = PageFactoryUtils.getElementNameAsString(pageObject.getClass());
         int waitTimeOut = PageFactoryUtils.getPageWaitTimeOut(pageObject.getClass());
         if (waitTimeOut < 0) {
@@ -60,7 +65,7 @@ public class PageObjectLoaderImpl implements IPageObjectLoader {
         return createBlockElement(pageObject.getDriver(), elementToWrap, elementName, waitTimeOut);
     }
 
-    public <T extends WebElementFacade> T createBlockElement(WebDriverFacade driver, WebElement elementToWrap, String elementName, int waitTimeOut) {
+    protected <T extends WebElementFacade> T createBlockElement(IDriverFacade driver, WebElement elementToWrap, String elementName, int waitTimeOut) {
         val blockElement = (T) new BlockElement();
         blockElement.pushArguments(elementToWrap, elementName, waitTimeOut, driver.getId());
         return blockElement;

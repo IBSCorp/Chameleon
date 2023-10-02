@@ -4,8 +4,8 @@ import org.openqa.selenium.support.pagefactory.ElementLocator;
 import org.openqa.selenium.support.pagefactory.internal.LocatingElementHandler;
 import ru.ibsqa.chameleon.elements.InvokeFieldException;
 import ru.ibsqa.chameleon.i18n.ILocaleManager;
+import ru.ibsqa.chameleon.selenium.driver.IDriverFacade;
 import ru.ibsqa.chameleon.selenium.driver.IDriverManager;
-import ru.ibsqa.chameleon.selenium.driver.WebDriverFacade;
 import ru.ibsqa.chameleon.utils.spring.SpringUtils;
 
 import java.time.Clock;
@@ -41,8 +41,8 @@ public abstract class AbstractElementHandler extends LocatingElementHandler {
             return this.waitTimeOut;
         }
         IDriverManager driverManager = SpringUtils.getBean(IDriverManager.class);
-        WebDriverFacade webDriverFacade = driverManager.getLastDriver();
-        return webDriverFacade.getDefaultWaitTimeOut();
+        IDriverFacade driverFacade = driverManager.getLastDriver();
+        return driverFacade.getDefaultWaitTimeOut();
     }
 
     protected long sleepFor() {

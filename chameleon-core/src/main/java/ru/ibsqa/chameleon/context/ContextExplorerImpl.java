@@ -1,7 +1,6 @@
 package ru.ibsqa.chameleon.context;
 
 import ru.ibsqa.chameleon.elements.IFacade;
-import ru.ibsqa.chameleon.evaluate.IEvaluateManager;
 import ru.ibsqa.chameleon.i18n.ILocaleManager;
 import ru.ibsqa.chameleon.storage.IVariableScope;
 import ru.ibsqa.chameleon.storage.IVariableStorage;
@@ -10,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -24,14 +24,16 @@ public class ContextExplorerImpl implements IContextExplorer {
     private ILocaleManager localeManager;
 
     @Autowired
-    private IEvaluateManager evaluateManager;
-
-    @Autowired
     private IFieldNameResolver fieldNameResolver;
 
+    @Deprecated
     private List<IContextManager> contextManagers = new ArrayList<>();
 
     private List<IContextRegistrator> contextRegistrators;
+
+    private ThreadLocal<IVariableScope> pickElementScope = new InheritableThreadLocal<>();
+
+    private final Pattern contextPattern = Pattern.compile("(?<context>.*?)::(?<name>.*?)");
 
     @Autowired
     private void collectContextRegistrators(List<IContextRegistrator> contextRegistrators) {
@@ -51,31 +53,28 @@ public class ContextExplorerImpl implements IContextExplorer {
         return allContextManagers;
     }
 
+    @Deprecated
     @Override
     public void addContextManager(IContextManager contextManager) {
         contextManagers.add(contextManager);
     }
 
+    @Deprecated
     @Override
     public void removeContextManager(IContextManager contextManager) {
         contextManagers.remove(contextManager);
     }
 
-    private IVariableScope pickElementScope = null;
-
     @Override
-    public IVariableScope resetPickElementScope() {
-        pickElementScope = variableStorage.getDefaultScope().createChild();
-        return pickElementScope;
+    public synchronized IVariableScope resetPickElementScope() {
+        pickElementScope.set(variableStorage.getDefaultScope().createChild());
+        return pickElementScope.get();
     }
 
     @Override
-    public IVariableScope getPickElementScope() {
-        return (null != pickElementScope) ? pickElementScope : variableStorage.getDefaultScope();
+    public synchronized IVariableScope getPickElementScope() {
+        return (Objects.nonNull(pickElementScope.get())) ? pickElementScope.get() : variableStorage.getDefaultScope();
     }
-
-    private final Pattern paramsPattern = Pattern.compile("(?<name>.*?)\\{(?<variables>.*?)}");
-    private final Pattern contextPattern = Pattern.compile("(?<context>.*?)::(?<name>.*?)");
 
     /**
      * Пример полного названия поля:

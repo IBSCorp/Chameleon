@@ -16,5 +16,5 @@ public interface IStepListenerManager {
 
     boolean isIgnoredMode();
 
-    void setIgnoredMode(boolean hiddenMode);
+    void setIgnoredMode(boolean ignoredMode);
 }

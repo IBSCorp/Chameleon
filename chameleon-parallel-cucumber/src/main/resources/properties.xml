@@ -1,0 +1,7 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<Properties xmlns="http://chameleon.ibs-qa.ru/schema/properties">
+    <CheckBox label="Автоматическое количество потоков" name="parallel.auto" defaultValue="false"
+          description="Определить количество одновременно выполняемых тестов в соответствии с числом доступных ядер процессора."/>
+    <Text label="Фиксированное количество потоков" name="parallel.count" defaultValue="2" regexp="\d+"
+          description="Количество одновременно выполняемых тестов. Не используется, если установлено автоматическое количество потоков."/>
+</Properties>

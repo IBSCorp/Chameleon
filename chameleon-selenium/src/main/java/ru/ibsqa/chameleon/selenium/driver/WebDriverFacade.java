@@ -1,27 +1,26 @@
 package ru.ibsqa.chameleon.selenium.driver;
 
+import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.interactions.*;
-import ru.ibsqa.chameleon.page_factory.locator.AbstractElementLocatorFactory;
 import ru.ibsqa.chameleon.selenium.driver.configuration.IDriverConfiguration;
 import ru.ibsqa.chameleon.utils.spring.SpringUtils;
 import lombok.Getter;
 import lombok.Setter;
 import org.openqa.selenium.*;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
-public class WebDriverFacade implements WebDriver, TakesScreenshot, JavascriptExecutor, HasCapabilities, Interactive {
+@Slf4j
+public class WebDriverFacade implements IDriverFacade {
 
     @Getter @Setter
     private boolean defaultDriver;
 
     // Значение реального драйвера изолированное для конкретного потока
-    private ThreadLocal<WebDriver> threadWrappedDriver = new ThreadLocal<>();
-    // Полный список всех реальных драйверов (используется только в методе quit)
+    private ThreadLocal<WebDriver> threadWrappedDriver = new InheritableThreadLocal<>();
+    // Полный список всех реальных драйверов (используется только в методе quitAll)
     private final List<WebDriver> allWrappedDrivers = new ArrayList<>();
 
     @Getter
@@ -30,24 +29,35 @@ public class WebDriverFacade implements WebDriver, TakesScreenshot, JavascriptEx
     @Getter
     private IDriverConfiguration configuration;
 
-    @Getter
-    private boolean timeoutsSupport = true;
+    private final ThreadLocal<Boolean> timeoutsSupport = new InheritableThreadLocal<>();
 
-    @Getter
-    private boolean framesSupport = true;
+    private final ThreadLocal<Boolean> framesSupport = new InheritableThreadLocal<>();
 
+    private int configImplicitlyWait;
+    private final ThreadLocal<Integer> implicitlyWait = new InheritableThreadLocal<>();
+
+    private int configDefaultWaitTimeOut;
+    private final ThreadLocal<Integer> defaultWaitTimeOut = new InheritableThreadLocal<>();;
+
+    public WebDriverFacade() {
+        initWrappedDrivers();
+    }
+
+    protected void initWrappedDrivers() {
+        this.allWrappedDrivers.clear();
+        this.threadWrappedDriver = new InheritableThreadLocal<>();
+    }
+
+    @Override
     public void setConfiguration(IDriverConfiguration configuration) {
         this.configuration = configuration;
         if (Objects.nonNull(configuration)) {
-            if (implicitlyWait <= 0) {
-                setImplicitlyWait(getDriverFactory().getConfiguration().getImplicitlyWait());
-            }
-            if (defaultWaitTimeOut <= 0) {
-                setDefaultWaitTimeOut(getDriverFactory().getConfiguration().getDefaultWaitTimeOut());
-            }
+            configImplicitlyWait = getDriverFactory().getConfiguration().getImplicitlyWait();
+            configDefaultWaitTimeOut = getDriverFactory().getConfiguration().getDefaultWaitTimeOut();
         }
     }
 
+    @Override
     public void setDriverFactory(IDriverFactory driverFactory) {
         this.driverFactory = driverFactory;
         setConfiguration(driverFactory.getConfiguration());
@@ -57,111 +67,88 @@ public class WebDriverFacade implements WebDriver, TakesScreenshot, JavascriptEx
         return Objects.nonNull(getConfiguration()) && getConfiguration().isCloseDriverAfterTest();
     }
 
-    @Autowired
-    @Getter
-    private AbstractElementLocatorFactory elementLocatorFactory;
-
-    public AbstractElementLocatorFactory getElementLocatorFactory(SearchContext searchContext) {
-        if (null == searchContext) {
-            return elementLocatorFactory;
-        }
-        AbstractElementLocatorFactory contextualElementLocatorFactory = SpringUtils.getBean(AbstractElementLocatorFactory.class);
-        contextualElementLocatorFactory.setSearchContext(searchContext);
-        return contextualElementLocatorFactory;
-    }
-
-    @PostConstruct
-    public void initialize(){
-        elementLocatorFactory.setSearchContext(this);
-        elementLocatorFactory.setDriverId(getId());
-    }
-
-    public String getId(){
+    @Override
+    public String getId() {
         return SpringUtils.getBeanName(this);
+    }
+
+    @Override
+    public boolean hasWrappedDriver() {
+        return Objects.nonNull(threadWrappedDriver.get());
     }
 
     protected WebDriver getPureWrappedDriver() {
         return threadWrappedDriver.get();
     }
 
+    @Override
     public WebDriver getWrappedDriver() {
-        if (Objects.isNull(threadWrappedDriver.get())) {
-            setWrappedDriver(newProxyDriver());
+        synchronized (this) {
+            if (Objects.isNull(threadWrappedDriver.get())) {
+                setWrappedDriver(newProxyDriver());
+            }
+            return getPureWrappedDriver();
         }
-        return getPureWrappedDriver();
     }
 
     protected void setWrappedDriver(WebDriver webDriver) {
-        if (Objects.nonNull(webDriver)) {
-            threadWrappedDriver.set(webDriver);
-            if (!allWrappedDrivers.contains(webDriver)) {
-                allWrappedDrivers.add(webDriver);
+        synchronized (this) {
+            if (Objects.nonNull(webDriver)) {
+                threadWrappedDriver.set(webDriver);
+                if (!allWrappedDrivers.contains(webDriver)) {
+                    allWrappedDrivers.add(webDriver);
+                }
+            } else {
+                WebDriver old = threadWrappedDriver.get();
+                if (Objects.nonNull(old)) {
+                    threadWrappedDriver.remove();
+                    allWrappedDrivers.remove(old);
+                }
             }
-        } else {
-            threadWrappedDriver.remove();
-            allWrappedDrivers.remove(webDriver);
         }
     }
 
     private void setImplicitlyWait(WebDriver webDriver, int implicitlyWait) {
-        if (timeoutsSupport) {
+        if (isTimeoutsSupport()) {
             try {
                 webDriver.manage().timeouts().implicitlyWait(implicitlyWait, TimeUnit.SECONDS);
             } catch (org.openqa.selenium.UnsupportedCommandException e) {
-                timeoutsSupport = false;
+                setTimeoutsSupport(false);
             }
         }
     }
 
+    @Override
     public void switchToDefaultContent() {
-        if (framesSupport && Objects.nonNull(getPureWrappedDriver())) {
+        if (isFramesSupport() && Objects.nonNull(getPureWrappedDriver())) {
             try {
                 if (Objects.nonNull(getPureWrappedDriver().switchTo())) {
                     getPureWrappedDriver().switchTo().defaultContent();
                 }
             } catch (org.openqa.selenium.UnsupportedCommandException e) {
-                framesSupport = false;
+                setFramesSupport(false);
             }
         }
     }
 
     protected WebDriver newProxyDriver() {
         WebDriver driver = getDriverFactory().newInstance(getId());
-        //driver.manage().timeouts().implicitlyWait(getImplicitlyWait(), TimeUnit.SECONDS);
         setImplicitlyWait(driver, getImplicitlyWait());
         return driver;
     }
 
-    @Getter
-    private int implicitlyWait;
-
-    public void setImplicitlyWait(int seconds) {
-        implicitlyWait = seconds;
-        if (Objects.nonNull(getPureWrappedDriver())) {
-            //getWrappedDriver().manage().timeouts().implicitlyWait(implicitlyWait, TimeUnit.SECONDS);
-            setImplicitlyWait(getPureWrappedDriver(), implicitlyWait);
-        }
-    }
-
-    @Deprecated
-    public void setImplicitlywait(long seconds) { // Для обратной совместимости
-        setImplicitlyWait((int) seconds);
-    }
-
-    public <R> R withImplicitlyWait(int seconds, Function<WebDriverFacade, R> webDriverFacadeConsumer) {
+    @Override
+    public <R> R withImplicitlyWait(int seconds, Function<IDriverFacade, R> consumer) {
         int implicitlyWait = this.getImplicitlyWait();
         try {
             this.setImplicitlyWait(seconds);
-            return webDriverFacadeConsumer.apply(this);
+            return consumer.apply(this);
         } finally {
             this.setImplicitlyWait(implicitlyWait);
         }
     }
 
-    @Getter
-    @Setter
-    private int defaultWaitTimeOut;
-
+    @Override
     public void maximizeWindow(){
         getWrappedDriver().manage().window().maximize();
     }
@@ -203,10 +190,27 @@ public class WebDriverFacade implements WebDriver, TakesScreenshot, JavascriptEx
 
     @Override
     public void quit() {
-        if (allWrappedDrivers.size()>0 && isCloseDriverAfterTest()) {
-            allWrappedDrivers.forEach(WebDriver::quit);
-            allWrappedDrivers.clear();
-            threadWrappedDriver = new ThreadLocal<>();
+        synchronized (this) {
+            WebDriver driver = getPureWrappedDriver();
+            if (Objects.nonNull(driver)) {
+                driver.quit();
+                allWrappedDrivers.remove(driver);
+                threadWrappedDriver.remove();
+            }
+        }
+    }
+
+    /**
+     * Закрытие WebDriver-ов для всех потоков. Вызывать как destroy-method.
+     * Закрытие не выполняется, если не установлено свойство closeDriverAfterTest=true
+     */
+    @Override
+    public void quitAll() {
+        synchronized (this) {
+            if (allWrappedDrivers.size() > 0 && isCloseDriverAfterTest()) {
+                allWrappedDrivers.forEach(WebDriver::quit);
+                initWrappedDrivers();
+            }
         }
     }
 
@@ -249,11 +253,13 @@ public class WebDriverFacade implements WebDriver, TakesScreenshot, JavascriptEx
     public Object executeAsyncScript(String script, Object... parameters) {
         return ((JavascriptExecutor) getWrappedDriver()).executeAsyncScript(script, parameters);
     }
+
     @Override
     public <X> X getScreenshotAs(OutputType<X> outputType) throws WebDriverException {
         return ((TakesScreenshot) getWrappedDriver()).getScreenshotAs(outputType);
     }
 
+    @Override
     public void showBrowser(){
         throw new UnsupportedOperationException();
     }
@@ -267,4 +273,48 @@ public class WebDriverFacade implements WebDriver, TakesScreenshot, JavascriptEx
     public void resetInputState() {
         ((Interactive) getWrappedDriver()).resetInputState();
     }
+
+    @Override
+    public boolean isTimeoutsSupport() {
+        return Optional.ofNullable(this.timeoutsSupport.get()).orElse(true);
+    }
+
+    @Override
+    public void setTimeoutsSupport(boolean timeoutsSupport) {
+        this.timeoutsSupport.set(timeoutsSupport);
+    }
+
+    @Override
+    public boolean isFramesSupport() {
+        return Optional.ofNullable(this.framesSupport.get()).orElse(true);
+    }
+
+    @Override
+    public void setFramesSupport(boolean framesSupport) {
+        this.framesSupport.set(framesSupport);
+    }
+
+    @Override
+    public int getImplicitlyWait() {
+        return Optional.ofNullable(this.implicitlyWait.get()).orElse(configImplicitlyWait);
+    }
+
+    @Override
+    public void setImplicitlyWait(int seconds) {
+        this.implicitlyWait.set(seconds);
+        if (Objects.nonNull(getPureWrappedDriver())) {
+            setImplicitlyWait(getPureWrappedDriver(), this.implicitlyWait.get());
+        }
+    }
+
+    @Override
+    public int getDefaultWaitTimeOut() {
+        return Optional.ofNullable(this.defaultWaitTimeOut.get()).orElse(configDefaultWaitTimeOut);
+    }
+
+    @Override
+    public void setDefaultWaitTimeOut(int seconds) {
+        this.defaultWaitTimeOut.set(seconds);
+    }
+
 }

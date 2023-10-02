@@ -5,11 +5,19 @@
             <Dependency artifactId="chameleon-core"/>
         </Dependencies>
     </Module>
-    <Module name="cucumber" label="BDD Cucumber">
-        <Dependencies>
-            <Dependency artifactId="chameleon-core-cucumber"/>
-        </Dependencies>
-    </Module>
+    <ModuleGroup label="BDD">
+        <Module name="cucumber" label="Cucumber">
+            <Dependencies>
+                <Dependency artifactId="chameleon-core-cucumber"/>
+            </Dependencies>
+        </Module>
+        <Module name="parallel" label="Параллелизация тестов">
+            <Dependencies>
+                <Dependency artifactId="chameleon-parallel" ifModule="cucumber"/>
+                <Dependency artifactId="chameleon-parallel-cucumber" ifModule="cucumber"/>
+            </Dependencies>
+        </Module>
+    </ModuleGroup>
     <ModuleGroup label="Интеграции">
         <Module name="testit" label="Интеграция с Test IT" restricted="true" message="Модуль поставляется отдельно">
             <Dependencies>

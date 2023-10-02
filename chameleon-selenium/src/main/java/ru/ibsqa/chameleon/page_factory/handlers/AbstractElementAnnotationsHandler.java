@@ -18,7 +18,7 @@ public abstract class AbstractElementAnnotationsHandler extends Annotations {
 
     /**
      * Признак того, что локатор содержит плейсхолдеры #{...}. Это означает, что требуется
-     * искать элемент не при создании формы, а при обращении к нему.
+     * формировать локатор не при создании формы, а при обращении к элементу.
      * @return
      */
     public abstract boolean isDynamic();

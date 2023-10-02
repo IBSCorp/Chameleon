@@ -17,7 +17,7 @@ public class ContextManagerApiEndpointImpl implements IContextManagerApiEndpoint
     @Autowired
     private ILocaleManager localeManager;
 
-    private ThreadLocal<IApiEndpointObject> currentEndpoint = new ThreadLocal<IApiEndpointObject>();
+    private ThreadLocal<IApiEndpointObject> currentEndpoint = new InheritableThreadLocal<IApiEndpointObject>();
 
     @Override
     public void setCurrentEndpoint(IApiEndpointObject endpoint) {

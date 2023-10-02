@@ -7,6 +7,7 @@ import java.util.Optional;
 public interface IAssertManager {
     void softAssertOn();
     void softAssertOff();
+    void softAssertCheck();
     boolean isSoftAssert();
     AssertLayer getLastLayer();
     AssertLayer getCurrentLayer();
@@ -36,4 +37,5 @@ public interface IAssertManager {
                 .map(AssertLayer::hasErrors)
                 .orElse(false);
     }
+
 }

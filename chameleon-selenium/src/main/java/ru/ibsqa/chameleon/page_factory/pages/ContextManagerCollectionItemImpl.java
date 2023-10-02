@@ -24,7 +24,7 @@ public class ContextManagerCollectionItemImpl implements IContextManagerCollecti
     @Autowired
     private IPageFactory pageFactory;
 
-    private ThreadLocal<ICollectionItemObject> currentCollectionItem = new ThreadLocal<>();
+    private ThreadLocal<ICollectionItemObject> currentCollectionItem = new InheritableThreadLocal<>();
 
     @Override
     public ICollectionItemObject getCurrentCollectionItem() {

@@ -20,16 +20,16 @@ public class DefaultDriverManager implements IDriverManager {
     @Autowired
     private ILocaleManager localeManager;
 
-    private final ThreadLocal<WebDriverFacade> lastDriver = new ThreadLocal<>();
+    private final ThreadLocal<IDriverFacade> lastDriver = new InheritableThreadLocal<>();
 
     @Setter
     private String currentDefaultDriverId;
 
     @Getter
-    private List<WebDriverFacade> drivers;
+    private List<IDriverFacade> drivers;
 
     @Autowired
-    private void collectDrivers(List<WebDriverFacade> drivers) {
+    private void collectDrivers(List<IDriverFacade> drivers) {
         this.drivers = drivers;
     }
 
@@ -40,12 +40,12 @@ public class DefaultDriverManager implements IDriverManager {
      * @return
      */
     @Override
-    public WebDriverFacade getDriver(String driverId) {
+    public IDriverFacade getDriver(String driverId) {
         if (null == driverId || driverId.isEmpty()) {
             lastDriver.set(getDefaultDriver());
             return lastDriver.get();
         }
-        lastDriver.set((WebDriverFacade) appContext.getBean(driverId));
+        lastDriver.set((IDriverFacade) appContext.getBean(driverId));
         return lastDriver.get();
     }
 
@@ -55,13 +55,13 @@ public class DefaultDriverManager implements IDriverManager {
      * @return lastDriver
      */
     @Override
-    public WebDriverFacade getLastDriver(){
+    public IDriverFacade getLastDriver(){
         if (lastDriver.get() == null) {
             if (drivers.size() == 1) {
                 return drivers.get(0);
             } else {
                 return drivers.stream()
-                        .filter(WebDriverFacade::isDefaultDriver)
+                        .filter(IDriverFacade::isDefaultDriver)
                         .findFirst()
                         .orElse(null);
             }
@@ -71,7 +71,7 @@ public class DefaultDriverManager implements IDriverManager {
 
     @Override
     public void closeDriver(String driverId) {
-        WebDriverFacade driver = getDriver(driverId);
+        IDriverFacade driver = getDriver(driverId);
         if (driver != null) {
             driver.quit();
         }
@@ -79,23 +79,25 @@ public class DefaultDriverManager implements IDriverManager {
 
     @Override
     public void closeAllDrivers() {
-        drivers.forEach(WebDriverFacade::quit);
+        drivers.forEach(IDriverFacade::quit);
     }
 
     @Override
     public void closeLastDriver() {
-        WebDriverFacade driver = getLastDriver();
+        IDriverFacade driver = getLastDriver();
         if (driver != null) {
             driver.quit();
         }
     }
 
-    private WebDriverFacade getDefaultDriver() {
+    private IDriverFacade getDefaultDriver() {
         if (drivers.size() == 1) {
             return drivers.get(0);
         }
 
-        WebDriverFacade driver = drivers.stream().filter(item -> currentDefaultDriverId == null ? item.isDefaultDriver() : item.getId().equals(currentDefaultDriverId)).findFirst().orElse(null);
+        IDriverFacade driver = drivers.stream()
+                .filter(item -> currentDefaultDriverId == null ? item.isDefaultDriver() : item.getId().equals(currentDefaultDriverId))
+                .findFirst().orElse(null);
 
         assertNotNull(driver, localeManager.getMessage("noDefaultDriverAssertMessage"));
 

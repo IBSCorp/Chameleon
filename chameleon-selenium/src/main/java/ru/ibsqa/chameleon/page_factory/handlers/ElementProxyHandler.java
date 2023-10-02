@@ -57,6 +57,7 @@ public class ElementProxyHandler extends AbstractElementHandler {
             try {
                 return super.invoke(o, method, objects);
             } catch (StaleElementReferenceException e) {
+                log.debug(e.getLocalizedMessage(), e);
                 lastException = e;
                 this.waitFor();
             }

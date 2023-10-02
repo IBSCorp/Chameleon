@@ -53,7 +53,7 @@ public class UiaSearchBy {
     public UiaElement create(UiaSearchContext searchContext, String locator) throws NoSuchElementException {
         UiaDriver driver = searchContext.getUiaDriver();
         try {
-            AutomationBase automationBase = search(searchContext, locator, driver.getImplicitlywait());
+            AutomationBase automationBase = search(searchContext, locator, driver.getImplicitlyWait());
             return new UiaElement((searchContext instanceof UiaTableRowSearchContext) ? UiaElementType.TABLE_CELL : null, automationBase, automationBase.getElement(), driver);
         } catch (Exception e) {
             log.error(e.getMessage(), e);

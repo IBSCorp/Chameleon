@@ -3,14 +3,14 @@ package ru.ibsqa.chameleon.page_factory.pages;
 import ru.ibsqa.chameleon.context.IContextObject;
 import ru.ibsqa.chameleon.elements.IFacadeExportToJson;
 import ru.ibsqa.chameleon.elements.selenium.WebElementFacade;
-import ru.ibsqa.chameleon.selenium.driver.WebDriverFacade;
+import ru.ibsqa.chameleon.selenium.driver.IDriverFacade;
 import ru.ibsqa.chameleon.selenium.enums.KeyEnum;
 import org.json.JSONObject;
 import org.openqa.selenium.SearchContext;
 
 public interface IPageObject extends IContextObject, IFacadeExportToJson<JSONObject> {
 
-    WebDriverFacade getDriver();
+    IDriverFacade getDriver();
 
     void initElements(SearchContext searchContext);
 

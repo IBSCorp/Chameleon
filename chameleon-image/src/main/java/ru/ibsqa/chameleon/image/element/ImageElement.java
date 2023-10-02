@@ -4,8 +4,8 @@ import ru.ibsqa.chameleon.elements.selenium.IFacadeSelenium;
 import ru.ibsqa.chameleon.image.driver.ImageDriver;
 import ru.ibsqa.chameleon.page_factory.locator.ISearchStrategy;
 import ru.ibsqa.chameleon.reporter.IReporterManager;
+import ru.ibsqa.chameleon.selenium.driver.IDriverFacade;
 import ru.ibsqa.chameleon.selenium.driver.IDriverManager;
-import ru.ibsqa.chameleon.selenium.driver.WebDriverFacade;
 import ru.ibsqa.chameleon.selenium.enums.KeyEnum;
 import ru.ibsqa.chameleon.utils.delay.DelayUtils;
 import ru.ibsqa.chameleon.utils.spring.SpringUtils;
@@ -44,13 +44,12 @@ public class ImageElement implements IFacadeSelenium {
 	private int x2;
 	private int y1;
 	private int y2;
-	private double max_val;
 
-	private final WebDriverFacade driver;
+	private final IDriverFacade driver;
 
-	private IReporterManager reporterManager = SpringUtils.getBean(IReporterManager.class);
+	private final IReporterManager reporterManager = SpringUtils.getBean(IReporterManager.class);
 
-	public ImageElement(String subImage, WebDriverFacade driver) {
+	public ImageElement(String subImage, IDriverFacade driver) {
 		this.driver = driver;
 		long start1 = System.currentTimeMillis();
 		InputStream screen = createActualImage(subImage);
@@ -69,8 +68,8 @@ public class ImageElement implements IFacadeSelenium {
 				this.x2 = JsonPath.from(response).get("pos_x2[0]");
 				this.y1 = JsonPath.from(response).get("pos_y1[0]");
 				this.y2 = JsonPath.from(response).get("pos_y2[0]");
-				this.max_val = Double.parseDouble(JsonPath.from(response).get("max_val[0]").toString());
-				if (this.max_val >= 0.75) {
+				double max_val = Double.parseDouble(JsonPath.from(response).get("max_val[0]").toString());
+				if (max_val >= 0.75) {
 					return;
 				}
 			}
@@ -80,7 +79,7 @@ public class ImageElement implements IFacadeSelenium {
 	}
 
 	private InputStream createActualImage(String subImage) {
-		WebDriverFacade defaultDriver = SpringUtils.getBean(IDriverManager.class).getDrivers().stream().filter(WebDriverFacade::isDefaultDriver).findAny().orElse(null);
+		IDriverFacade defaultDriver = SpringUtils.getBean(IDriverManager.class).getDrivers().stream().filter(IDriverFacade::isDefaultDriver).findAny().orElse(null);
 		InputStream screen = null;
 		if (defaultDriver!=null && defaultDriver.getWrappedDriver().getClass().getSuperclass().isAssignableFrom(RemoteWebDriver.class)){
 			if (subImage.contains(";")){
@@ -280,7 +279,7 @@ public class ImageElement implements IFacadeSelenium {
 	}
 
 	@Override
-	public WebDriverFacade getDriver() {
+	public IDriverFacade getDriver() {
 		return driver;
 	}
 
@@ -318,8 +317,8 @@ public class ImageElement implements IFacadeSelenium {
 		return null;
 	}
 
-	private InputStream takeWebDriverSimpleScreenshot(WebDriverFacade webDriver) {
-		byte[] bytes = ((TakesScreenshot) webDriver).getScreenshotAs(OutputType.BYTES);
+	private InputStream takeWebDriverSimpleScreenshot(IDriverFacade driverFacade) {
+		byte[] bytes = ((TakesScreenshot) driverFacade).getScreenshotAs(OutputType.BYTES);
 		try {
 			reporterManager.createAttachment("Актуальное изображение", new ByteArrayInputStream(bytes), null, null);
 			return new ByteArrayInputStream(bytes);
@@ -330,10 +329,10 @@ public class ImageElement implements IFacadeSelenium {
 	}
 
 
-	private InputStream takeWebElementSimpleScreenshot(String path, WebDriverFacade webDriver) {
+	private InputStream takeWebElementSimpleScreenshot(String path, IDriverFacade driverFacade) {
 		By by = SpringUtils.getBean(ISearchStrategy.class).getLocator(path.split(";")[1]);
-		WebElement element = webDriver.findElement(by);
-		JavascriptExecutor js = (JavascriptExecutor) webDriver;
+		WebElement element = driverFacade.findElement(by);
+		JavascriptExecutor js = (JavascriptExecutor) driverFacade;
 
 		js.executeScript(
 				"var headID = document.getElementsByTagName('head')[0];" +
@@ -341,12 +340,12 @@ public class ImageElement implements IFacadeSelenium {
 						"newScript.type = 'text/javascript';" +
 						"newScript.src = 'https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js';" +
 						"headID.appendChild(newScript);");
-		WebDriverWait waitJQ = new WebDriverWait(webDriver, Duration.ofSeconds(30));
+		WebDriverWait waitJQ = new WebDriverWait(driverFacade, Duration.ofSeconds(30));
 		Function<WebDriver, Boolean> jQueryAvailable = WebDriver -> (
 				(Boolean) js.executeScript("return (typeof jQuery != \"undefined\")")
 		);
 		waitJQ.until(jQueryAvailable);
-		Screenshot screenshot = new AShot().takeScreenshot(webDriver, element);
+		Screenshot screenshot = new AShot().takeScreenshot(driverFacade, element);
 		if (null != screenshot) {
 			try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
 				ImageIO.write(screenshot.getImage(), "png", os);

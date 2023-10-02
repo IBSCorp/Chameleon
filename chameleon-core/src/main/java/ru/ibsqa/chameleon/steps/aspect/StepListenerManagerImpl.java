@@ -22,7 +22,7 @@ public class StepListenerManagerImpl implements IStepListenerManager {
 
     private List<IStepListener> beforeListeners;
     private List<IStepListener> afterListeners;
-    private final ThreadLocal<Boolean> ignoredMode = new ThreadLocal<>();
+    private final ThreadLocal<Boolean> ignoredMode = new InheritableThreadLocal<>();
 
     @Autowired
     private IAssertManager assertManager;

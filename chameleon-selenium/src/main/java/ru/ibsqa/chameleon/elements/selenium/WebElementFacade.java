@@ -1,7 +1,9 @@
 package ru.ibsqa.chameleon.elements.selenium;
 
+import org.openqa.selenium.support.ui.FluentWait;
+import ru.ibsqa.chameleon.elements.InvokeFieldException;
 import ru.ibsqa.chameleon.selenium.driver.IDriverManager;
-import ru.ibsqa.chameleon.selenium.driver.WebDriverFacade;
+import ru.ibsqa.chameleon.selenium.driver.IDriverFacade;
 import ru.ibsqa.chameleon.selenium.enums.KeyEnum;
 import ru.ibsqa.chameleon.utils.spring.SpringUtils;
 import lombok.Getter;
@@ -15,8 +17,8 @@ import org.openqa.selenium.interactions.Coordinates;
 import org.openqa.selenium.interactions.Locatable;
 import org.openqa.selenium.interactions.MoveTargetOutOfBoundsException;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import ru.ibsqa.chameleon.utils.waiting.Waiting;
 
 import java.awt.*;
 import java.time.Duration;
@@ -32,7 +34,7 @@ public abstract class WebElementFacade implements IFacadeSelenium {
     private WebElement element;
 
     @Getter
-    private Wait<WebDriver> wait;
+    private FluentWait<WebDriver> wait;
 
     @Getter
     private String elementName;
@@ -47,7 +49,7 @@ public abstract class WebElementFacade implements IFacadeSelenium {
         this.element = element;
         this.elementName = elementName;
         this.driverId = driverId;
-        final WebDriverFacade driver = getDriver();
+        final IDriverFacade driver = getDriver();
         this.waitTimeOut = waitTimeOut < 0 ? getDriver().getDefaultWaitTimeOut() : waitTimeOut;
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(getWaitTimeOut()), Duration.ofMillis(200)).ignoring(StaleElementReferenceException.class).ignoring(NoSuchElementException.class).ignoring(MoveTargetOutOfBoundsException.class);
     }
@@ -163,16 +165,17 @@ public abstract class WebElementFacade implements IFacadeSelenium {
         }
     }
 
+    /**
+     * Этот метод используется при загрузке страниц, с помощью него оценивается наличие реперных элементов
+     *
+     * @return true, если поле появилось в пределах таймаута
+     */
     @Override
     public boolean waitToDisplayed() {
-        try {
-            if (getWrappedElement().isDisplayed()) return true;
-            wait.until(ExpectedConditions.visibilityOf(getWrappedElement()));
-            return getWrappedElement().isDisplayed();
-        } catch (WebDriverException e) {
-            log.debug(e.getMessage(), e);
-            return false;
-        }
+        return Waiting.on(this)
+                .ignoring(WebDriverException.class)
+                .check(() -> this.getWrappedElement().isDisplayed())
+                .isPositive();
     }
 
     @Override
@@ -214,7 +217,7 @@ public abstract class WebElementFacade implements IFacadeSelenium {
     }
 
     @Override
-    public WebDriverFacade getDriver() {
+    public IDriverFacade getDriver() {
         return driverManager.getDriver(driverId);
     }
 

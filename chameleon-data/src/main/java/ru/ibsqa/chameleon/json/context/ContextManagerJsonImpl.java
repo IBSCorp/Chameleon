@@ -38,7 +38,7 @@ public class ContextManagerJsonImpl implements IContextManagerJson, IContextRegi
     @Autowired
     private IRepositoryManager repositoryManager;
 
-    private ThreadLocal<IJsonLookObject> currentJson = new ThreadLocal<>();
+    private ThreadLocal<IJsonLookObject> currentJson = new InheritableThreadLocal<>();
 
     @Override
     public IJsonLookObject createJson(String lookName, String jsonValue) {

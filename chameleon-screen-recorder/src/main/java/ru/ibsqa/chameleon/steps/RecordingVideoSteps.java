@@ -1,8 +1,8 @@
 package ru.ibsqa.chameleon.steps;
 
 import ru.ibsqa.chameleon.driver.WebDriverVideoFacade;
+import ru.ibsqa.chameleon.selenium.driver.IDriverFacade;
 import ru.ibsqa.chameleon.selenium.driver.IDriverManager;
-import ru.ibsqa.chameleon.selenium.driver.WebDriverFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -18,7 +18,7 @@ public class RecordingVideoSteps extends AbstractSteps {
 
     @TestStep("выполняется запись видео")
     public void startVideo(){
-        WebDriverFacade driverFacade = driverManager.getLastDriver();
+        IDriverFacade driverFacade = driverManager.getLastDriver();
         if (driverFacade instanceof WebDriverVideoFacade){
             ((WebDriverVideoFacade)driverFacade).startVideo();
         }else{
@@ -29,7 +29,7 @@ public class RecordingVideoSteps extends AbstractSteps {
 
     @TestStep("запись видео остановлена")
     public File stopVideo(boolean attachToReport){
-        WebDriverFacade driverFacade = driverManager.getLastDriver();
+        IDriverFacade driverFacade = driverManager.getLastDriver();
         if (driverFacade instanceof WebDriverVideoFacade){
             return ((WebDriverVideoFacade)driverFacade).stopVideo(attachToReport);
         }else{

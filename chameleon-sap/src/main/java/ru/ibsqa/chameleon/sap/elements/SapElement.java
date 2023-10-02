@@ -5,7 +5,7 @@ import ru.ibsqa.chameleon.sap.driver.SapSearchBy;
 import ru.ibsqa.chameleon.sap.sapEnum.SapKeyEnum;
 import ru.ibsqa.chameleon.sap.search_context.SapSearchContext;
 import ru.ibsqa.chameleon.sap.search_context.SapTableRowSearchContext;
-import ru.ibsqa.chameleon.selenium.driver.WebDriverFacade;
+import ru.ibsqa.chameleon.selenium.driver.IDriverFacade;
 import ru.ibsqa.chameleon.selenium.enums.KeyEnum;
 import ru.ibsqa.chameleon.utils.spring.SpringUtils;
 import com.jacob.activeX.ActiveXComponent;
@@ -23,12 +23,12 @@ public class SapElement extends ActiveXComponent implements ISapElement {
 
     @Getter
     private final SapElementType sapElementType;
-    private WebDriverFacade driver;
+    private IDriverFacade driver;
     private Variant variant;
 
     private final SapSearchBy searchBy = SpringUtils.getBean(SapSearchBy.class);
 
-    public SapElement(SapElementType sapElementType, Variant variant, WebDriverFacade driver) {
+    public SapElement(SapElementType sapElementType, Variant variant, IDriverFacade driver) {
         super(variant.getDispatch());
         this.sapElementType = Objects.isNull(sapElementType) ? SapElementType.GENERAL : sapElementType;
         this.variant = variant;
@@ -172,7 +172,7 @@ public class SapElement extends ActiveXComponent implements ISapElement {
     }
 
     @Override
-    public WebDriverFacade getDriver() {
+    public IDriverFacade getDriver() {
         return driver;
     }
 

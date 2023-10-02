@@ -1,6 +1,6 @@
 package ru.ibsqa.chameleon.elements.uia;
 
-import ru.ibsqa.chameleon.selenium.driver.WebDriverFacade;
+import ru.ibsqa.chameleon.selenium.driver.IDriverFacade;
 import ru.ibsqa.chameleon.selenium.enums.KeyEnum;
 import ru.ibsqa.chameleon.uia.driver.UiaDriver;
 import ru.ibsqa.chameleon.uia.driver.UiaSearchBy;
@@ -34,7 +34,7 @@ public class UiaElement extends AutomationBase implements IUiaElement {
 
     @Getter
     private final UiaElementType uiaElementType;
-    private final WebDriverFacade driver;
+    private final IDriverFacade driver;
     private final AutomationBase automationBase;
     private final Element element;
     private final UiaSearchBy searchBy = SpringUtils.getBean(UiaSearchBy.class);
@@ -42,7 +42,7 @@ public class UiaElement extends AutomationBase implements IUiaElement {
     @Getter
     private DataGridCell cell = null;
 
-    public UiaElement(UiaElementType uiaElementType, AutomationBase automationBase, Element element, WebDriverFacade driver) {
+    public UiaElement(UiaElementType uiaElementType, AutomationBase automationBase, Element element, IDriverFacade driver) {
         super(new ElementBuilder(element));
         this.uiaElementType = Objects.isNull(uiaElementType) ? UiaElementType.GENERAL : uiaElementType;
         this.cell = getUiaElementType().equals(UiaElementType.TABLE_CELL) ? new DataGridCell(new ElementBuilder(element)) : null;
@@ -268,7 +268,7 @@ public class UiaElement extends AutomationBase implements IUiaElement {
     }
 
     @Override
-    public WebDriverFacade getDriver() {
+    public IDriverFacade getDriver() {
         return driver;
     }
 

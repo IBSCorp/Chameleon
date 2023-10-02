@@ -8,7 +8,7 @@
        default-lazy-init="true">
 
     <!-- В данном примере конфигурация создается непосредственно для данного драйвера -->
-    <bean id="chromeDriver" class="ru.ibsqa.chameleon.selenium.driver.WebDriverFacade" destroy-method="quit">
+    <bean id="chromeDriver" class="ru.ibsqa.chameleon.selenium.driver.WebDriverFacade" destroy-method="quitAll">
         <property name="defaultDriver" value="true"/>
         <property name="driverFactory">
             <bean class="ru.ibsqa.chameleon.selenium.driver.WebDriverFactory">
@@ -36,7 +36,7 @@
     </bean>
 
     <!-- В данном примере драйвер использует ранее созданную конфигурацию по ее id -->
-    <bean id="firefoxDriver" class="ru.ibsqa.chameleon.selenium.driver.WebDriverFacade" destroy-method="quit">
+    <bean id="firefoxDriver" class="ru.ibsqa.chameleon.selenium.driver.WebDriverFacade" destroy-method="quitAll">
         <property name="driverFactory">
             <bean class="ru.ibsqa.chameleon.selenium.driver.WebDriverFactory">
                 <constructor-arg ref="firefoxDriverConfiguration"/>
